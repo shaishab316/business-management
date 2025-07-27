@@ -27,20 +27,12 @@ export type T${mName} = {
   updatedAt?: Date;
 };`,
 
-  model: mName => /*javascript*/ `import { Schema, model } from 'mongoose';
-import { T${mName} } from './${mName}.interface';
-import { ${mName}Middlewares } from './${mName}.middleware';
+  model: mName => /*javascript*/ `model ${mName} {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-const ${mName[0].toLowerCase()}${mName.slice(1)}Schema = new Schema<T${mName}>(
-  {},
-  { timestamps: true, versionKey: false },
-);
-
-${mName}Middlewares.schema(${mName[0].toLowerCase()}${mName.slice(1)}Schema);
-
-const ${mName} = model<T${mName}>('${mName}', ${mName[0].toLowerCase()}${mName.slice(1)}Schema);
-
-export default ${mName};`,
+}`,
 
   controller:
     mName => /*javascript*/ `import { StatusCodes } from 'http-status-codes';
@@ -154,7 +146,7 @@ inquirer
       filesToCreate.forEach(fileType => {
         const filePath = path.join(
           folderPath,
-          `${capitalizedMName}.${fileType}.ts`,
+          `${capitalizedMName}.${fileType}.${fileType === 'model' ? 'prisma' : 'ts'}`,
         );
 
         const fileContent = fileTemplates[fileType](capitalizedMName) + '\n';

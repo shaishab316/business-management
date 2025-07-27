@@ -23,7 +23,12 @@
     "stripe": "stripe listen --forward-to http://192.168.10.132:3759/api/v1/payment/stripe/webhook",
     "lint": "eslint src --ignore-path .gitignore --ext .ts",
     "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio",
+    "prisma:push": "npx prisma db push"
   },
   "keywords": [
     "business",

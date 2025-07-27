@@ -1,17 +1,22 @@
-import { Types } from 'mongoose';
-import { EUserGender, EUserRole } from './User.enum';
+/* eslint-disable no-unused-vars */
 
 export type TUser = {
-  _id: Types.ObjectId;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
 
-  name?: string;
+  role: UserRole;
+  name?: string | null;
   email: string;
-  avatar?: string;
-  role: EUserRole;
-  phone?: string;
-  gender?: EUserGender;
-  birthDate?: Date;
-
-  createdAt?: Date;
-  updatedAt?: Date;
+  phone?: string | null;
+  avatar?: string | null;
+  city?: string | null;
+  socials?: string[];
+  followers: number;
 };
+
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  SUB_ADMIN = 'SUB_ADMIN',
+}

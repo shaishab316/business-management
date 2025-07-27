@@ -1,5 +1,8 @@
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   role      UserRole @default(USER)
   name      String?
   email     String   @unique
@@ -9,6 +12,8 @@ model User {
   city      String?
   socials   String[]
   followers Int      @default(0)
+
+  Auth Auth?
 }
 
 enum UserRole {
