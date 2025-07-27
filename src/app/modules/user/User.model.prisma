@@ -3,10 +3,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role      UserRole @default(USER)
+  role      UserRole @default(GUEST)
   name      String?
   email     String   @unique
-  phone     String?  @unique
+  phone     String?
   avatar    String?
   city      String?
   socials   String[]

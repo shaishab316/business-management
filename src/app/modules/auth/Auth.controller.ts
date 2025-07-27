@@ -4,6 +4,7 @@ import serveResponse from '../../../util/server/serveResponse';
 import { TToken } from './Auth.interface';
 import { OtpServices } from '../otp/Otp.service';
 import { EUserRole } from '../user/User.interface';
+import prisma from '../../../util/prisma';
 
 export const AuthControllers = {
   login: catchAsync(async ({ user, body }, res) => {
@@ -77,10 +78,14 @@ export const AuthControllers = {
         message: 'You are already verified!',
       });
 
-    await OtpServices.verify(user._id, body.otp);
+    await OtpServices.verify(user.id, body.otp);
 
     user.role = EUserRole.USER;
-    await user.save();
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: EUserRole.USER },
+    });
 
     serveResponse(res, {
       message: 'Account verified successfully!',

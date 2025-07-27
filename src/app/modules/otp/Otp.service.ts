@@ -7,10 +7,10 @@ import User from '../user/User.model';
 import { otpGenerator } from '../../../util/crypto/otpGenerator';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
-import { Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
 import { TOtp } from './Otp.interface';
 import { TUser } from '../user/User.interface';
+import prisma from '../../../util/prisma';
 
 export const OtpServices = {
   async send(user: TUser, type: 'resetPassword' | 'accountVerify') {
@@ -35,15 +35,26 @@ export const OtpServices = {
         }),
       });
 
-    return Otp.findOneAndUpdate(
-      { user: user.id },
-      { code: otp, exp: new Date(Date.now() + ms(config.otp.exp)) },
-      { upsert: true, new: true },
-    );
+    return prisma.otp.upsert({
+      where: { userId: user.id },
+      update: { code: otp, exp: new Date(Date.now() + ms(config.otp.exp)) },
+      create: {
+        userId: user.id,
+        code: otp,
+        exp: new Date(Date.now() + ms(config.otp.exp)),
+      },
+    });
   },
 
-  async verify(userId: Types.ObjectId, otp: string) {
-    const validOtp = await Otp.findOne({ user: userId, code: otp });
+  async verify(userId: string, code: string) {
+    /** Delete expired otp */
+    await prisma.otp.deleteMany({
+      where: { exp: { lt: new Date() } },
+    });
+
+    const validOtp = await prisma.otp.findFirst({
+      where: { userId, code, exp: { gt: new Date() } },
+    });
 
     if (!validOtp)
       throw new ServerError(
@@ -51,7 +62,7 @@ export const OtpServices = {
         'Your credentials are incorrect.',
       );
 
-    return validOtp.deleteOne();
+    return prisma.otp.delete({ where: { id: validOtp.id } });
   },
 
   async list({ page, limit, email }: TList & { email: string }) {

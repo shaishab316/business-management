@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
+import { UserRole as EUserRole } from '../../../../prisma';
 import { TAuth } from '../auth/Auth.interface';
+import { TOtp } from '../otp/Otp.interface';
 
 export type TUser = {
   id: string;
@@ -16,11 +18,7 @@ export type TUser = {
   followers: number;
 
   auth?: TAuth;
+  otp?: TOtp;
 };
 
-export enum EUserRole {
-  GUEST = 'GUEST',
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-  SUB_ADMIN = 'SUB_ADMIN',
-}
+export { EUserRole };

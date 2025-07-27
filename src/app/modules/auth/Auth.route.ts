@@ -59,6 +59,14 @@ router.post(
 );
 
 router.post(
+  '/account-verify-otp-send',
+  otpLimiter,
+  purifyRequest(OtpValidations.send),
+  UserMiddlewares.useUser(),
+  OtpControllers.accountVerifyOtpSend,
+);
+
+router.post(
   '/account-verify',
   otpLimiter,
   purifyRequest(OtpValidations.verify),

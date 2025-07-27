@@ -5,13 +5,15 @@ import { StatusCodes } from 'http-status-codes';
 import { AuthServices } from '../auth/Auth.service';
 import { OtpServices } from '../otp/Otp.service';
 import { errorLogger } from '../../../util/logger/logger';
+import { TUser } from './User.interface';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {
-    const user = await UserServices.create(body);
+    const user = (await UserServices.create(body)) as TUser;
+    let otp = null;
 
     try {
-      await OtpServices.send(user as any, 'accountVerify');
+      otp = await OtpServices.send(user, 'accountVerify');
     } catch (error) {
       errorLogger.error(error);
     }
@@ -28,6 +30,7 @@ export const UserControllers = {
       data: {
         access_token,
         user,
+        otp: { expiredAt: otp?.exp?.toLocaleTimeString() },
       },
     });
   }),
