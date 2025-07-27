@@ -1,15 +1,19 @@
 {
-  "name": "express-it",
+  "template": {
+    "name": "express-it",
+    "repository": "https://github.com/shaishab316/express-it.git"
+  },
+  "name": "business-management",
   "version": "1.0.0",
-  "description": "A modern, batteries-included Express.js boilerplate to kickstart your Node.js backend with best practices.",
+  "description": "Business Management System",
   "main": "dist/server.js",
   "author": {
     "name": "Shaishab Chandra Shil",
-    "github": "https://github.com/shaishabcoding"
+    "github": "https://github.com/shaishab316"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shaishabcoding/express-it.git"
+    "url": "https://github.com/shaishab316/business-management.git"
   },
   "scripts": {
     "new-module": "node ./src/app/modules/.builder.js",
@@ -22,16 +26,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "express-boilerplate",
-    "nodejs-starter",
-    "jwt-authentication",
-    "socket.io-express",
-    "file-upload-middleware",
-    "express.js-template",
-    "nodejs-backend-starter",
-    "mongodb-express-api",
-    "rest-api-boilerplate",
-    "modern-express-setup"
+    "business",
+    "management"
   ],
   "license": "MIT",
   "devDependencies": {
