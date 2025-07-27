@@ -2,8 +2,8 @@ import { AuthServices } from './Auth.service';
 import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { TToken } from './Auth.interface';
-import { EUserRole } from '../user/User.enum';
 import { OtpServices } from '../otp/Otp.service';
+import { EUserRole } from '../user/User.interface';
 
 export const AuthControllers = {
   login: catchAsync(async ({ user, body }, res) => {

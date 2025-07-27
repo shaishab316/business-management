@@ -1,10 +1,11 @@
-import { Types } from 'mongoose';
 import config from '../../../config';
+import { TUser } from '../user/User.interface';
 
 export type TAuth = {
-  _id: Types.ObjectId;
+  id: string;
 
-  user: Types.ObjectId;
+  userId: string;
+  user: TUser;
   password: string;
 };
 

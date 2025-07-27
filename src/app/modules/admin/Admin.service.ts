@@ -1,10 +1,10 @@
 import colors from 'colors';
 import { errorLogger } from '../../../util/logger/logger';
-import User from '../user/User.model';
 import { logger } from '../../../util/logger/logger';
 import config from '../../../config';
-import { EUserRole } from '../user/User.enum';
 import { UserServices } from '../user/User.service';
+import { EUserRole } from '../user/User.interface';
+import prisma from '../../../util/prisma';
 
 export const AdminServices = {
   /**
@@ -18,8 +18,8 @@ export const AdminServices = {
     const adminData = config.admin;
 
     try {
-      const admin = await User.exists({
-        email: adminData.email,
+      const admin = await prisma.user.findFirst({
+        where: { email: adminData.email },
       });
 
       if (admin) return;
@@ -29,7 +29,7 @@ export const AdminServices = {
       await UserServices.create({
         ...adminData,
         role: EUserRole.ADMIN,
-      });
+      } as any);
 
       logger.info(colors.green('✔ admin created successfully!'));
     } catch (error) {

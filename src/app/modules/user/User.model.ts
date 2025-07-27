@@ -1,6 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { TUser } from './User.interface';
-import { EUserGender, EUserRole } from './User.enum';
+import { EUserRole, TUser } from './User.interface';
 import config from '../../../config';
 
 const userSchema = new Schema<TUser>(
@@ -26,15 +25,6 @@ const userSchema = new Schema<TUser>(
     phone: {
       type: String,
       default: '0123456789',
-    },
-    gender: {
-      type: String,
-      enum: Object.values(EUserGender),
-      default: EUserGender.OTHER,
-    },
-    birthDate: {
-      type: Date,
-      default: new Date(),
     },
   },
   { timestamps: true, versionKey: false },

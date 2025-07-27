@@ -1,7 +1,4 @@
 import { z } from 'zod';
-import { EUserGender } from './User.enum';
-import { date } from '../../../util/transform/date';
-import { lower } from '../../../util/transform/lower';
 
 export const UserValidations = {
   create: z.object({
@@ -24,12 +21,6 @@ export const UserValidations = {
       name: z.string().optional(),
       avatar: z.string().optional(),
       phone: z.string().optional(),
-      gender: z
-        .string()
-        .transform(lower)
-        .pipe(z.nativeEnum(EUserGender))
-        .optional(),
-      birthDate: z.string().transform(date).optional(),
     }),
   }),
 

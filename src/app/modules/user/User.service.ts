@@ -1,41 +1,27 @@
 /* eslint-disable no-unused-vars */
 import { TUser } from './User.interface';
 import User from './User.model';
-import { StatusCodes } from 'http-status-codes';
-import ServerError from '../../../errors/ServerError';
 import { RootFilterQuery, Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
 import Auth from '../auth/Auth.model';
 import { TAuth } from '../auth/Auth.interface';
-import { useSession } from '../../../util/db/session';
 import { Request } from 'express';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
+import { useSession } from '../../../util/db/session';
+import prisma from '../../../util/prisma';
 
 export const UserServices = {
-  async create(userData: Partial<TUser & TAuth>) {
-    return useSession(async session => {
-      let user = await User.findOne({ email: userData.email }).session(session);
-
-      if (user)
-        throw new ServerError(
-          StatusCodes.CONFLICT,
-          `${user.role.toCapitalize()} already exists!`,
-        );
-
-      [user] = await User.create([userData], { session });
-
-      await Auth.create(
-        [
-          {
-            user: user._id,
-            password: userData.password,
+  async create({ password, ...userData }: TUser & TAuth) {
+    return prisma.user.create({
+      data: {
+        ...userData,
+        Auth: {
+          create: {
+            password: await password?.hash(),
           },
-        ],
-        { session },
-      );
-
-      return user;
+        },
+      },
     });
   },
 

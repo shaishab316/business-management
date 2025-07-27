@@ -3,8 +3,8 @@ import ServerError from '../../errors/ServerError';
 import User from '../modules/user/User.model';
 import { verifyToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
-import { EUserRole } from '../modules/user/User.enum';
 import { TToken } from '../modules/auth/Auth.interface';
+import { EUserRole } from '../modules/user/User.interface';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles
