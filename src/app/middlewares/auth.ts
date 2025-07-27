@@ -4,7 +4,7 @@ import User from '../modules/user/User.model';
 import { verifyToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
 import { TToken } from '../modules/auth/Auth.interface';
-import { EUserRole } from '../modules/user/User.interface';
+import { EUserRole } from '../../../prisma';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles

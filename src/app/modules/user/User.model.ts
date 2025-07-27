@@ -1,6 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { EUserRole, TUser } from './User.interface';
+import { TUser } from './User.interface';
 import config from '../../../config';
+import { EUserRole } from '../../../../prisma';
 
 const userSchema = new Schema<TUser>(
   {

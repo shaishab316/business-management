@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { UserRole as EUserRole } from '../../../../prisma';
+import { EUserRole } from '../../../../prisma';
 import { TAuth } from '../auth/Auth.interface';
 import { TOtp } from '../otp/Otp.interface';
 
@@ -20,5 +20,3 @@ export type TUser = {
   auth?: TAuth;
   otp?: TOtp;
 };
-
-export { EUserRole };

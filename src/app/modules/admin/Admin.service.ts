@@ -3,8 +3,8 @@ import { errorLogger } from '../../../util/logger/logger';
 import { logger } from '../../../util/logger/logger';
 import config from '../../../config';
 import { UserServices } from '../user/User.service';
-import { EUserRole } from '../user/User.interface';
 import prisma from '../../../util/prisma';
+import { EUserRole } from '../../../../prisma';
 
 export const AdminServices = {
   /**
