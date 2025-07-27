@@ -4,9 +4,6 @@ export type TOtp = {
   _id?: Types.ObjectId;
 
   user: Types.ObjectId;
-  otp: string;
+  code: string;
   exp: Date;
-
-  createdAt?: Date;
-  updatedAt?: Date;
 };

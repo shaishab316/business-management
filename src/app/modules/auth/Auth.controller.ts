@@ -7,10 +7,10 @@ import { EUserRole } from '../user/User.interface';
 
 export const AuthControllers = {
   login: catchAsync(async ({ user, body }, res) => {
-    await AuthServices.getAuth(user._id, body.password);
+    await AuthServices.getAuth(user.id, body.password);
 
     const { access_token, refresh_token } = await AuthServices.retrieveToken(
-      user._id,
+      user.id,
     );
 
     AuthServices.setTokens(res, {

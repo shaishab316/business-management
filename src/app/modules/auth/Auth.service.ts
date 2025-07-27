@@ -9,12 +9,15 @@ import { Response } from 'express';
 import Auth from './Auth.model';
 import ms from 'ms';
 import { TToken } from './Auth.interface';
+import prisma from '../../../util/prisma';
 
 export const AuthServices = {
-  async getAuth(userId: Types.ObjectId, password: string) {
-    const auth = (await Auth.findOne({ user: userId }))!;
+  async getAuth(userId: string, password: string) {
+    const auth = await prisma.auth.findFirst({
+      where: { user: { id: userId } },
+    });
 
-    if (!(await verifyPassword(password, auth.password)))
+    if (!(await verifyPassword(password, auth?.password ?? '')))
       throw new ServerError(
         StatusCodes.UNAUTHORIZED,
         'Your credentials are incorrect.',
@@ -46,7 +49,7 @@ export const AuthServices = {
     return Auth.updateOne({ user: userId }, { password });
   },
 
-  async retrieveToken(userId: Types.ObjectId) {
+  async retrieveToken(userId: string) {
     return {
       access_token: createToken({ userId }, 'access_token'),
       refresh_token: createToken({ userId }, 'refresh_token'),

@@ -4,6 +4,5 @@ export const userSearchableFields: (keyof TUser)[] = [
   'name',
   'email',
   'phone',
-  'gender',
   'role',
 ];

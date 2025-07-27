@@ -13,6 +13,9 @@ model User {
   followers Int      @default(0)
 
   Auth Auth?
+  Otp  Otp?
+
+  @@map("users")
 }
 
 enum UserRole {

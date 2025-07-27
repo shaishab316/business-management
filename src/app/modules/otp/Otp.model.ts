@@ -8,7 +8,7 @@ const otpSchema = new Schema<TOtp>(
       ref: 'User',
       required: true,
     },
-    otp: {
+    code: {
       type: String,
       required: true,
     },

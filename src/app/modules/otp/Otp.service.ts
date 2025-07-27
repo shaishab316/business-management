@@ -36,14 +36,14 @@ export const OtpServices = {
       });
 
     return Otp.findOneAndUpdate(
-      { user: user._id },
-      { otp, exp: new Date(Date.now() + ms(config.otp.exp)) },
+      { user: user.id },
+      { code: otp, exp: new Date(Date.now() + ms(config.otp.exp)) },
       { upsert: true, new: true },
     );
   },
 
   async verify(userId: Types.ObjectId, otp: string) {
-    const validOtp = await Otp.findOne({ user: userId, otp });
+    const validOtp = await Otp.findOne({ user: userId, code: otp });
 
     if (!validOtp)
       throw new ServerError(
