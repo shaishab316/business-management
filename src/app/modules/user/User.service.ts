@@ -26,11 +26,12 @@ export const UserServices = {
   },
 
   async edit({ user, body }: Request) {
-    if (body.avatar && user.avatar) await deleteImage(user.avatar);
+    if (body.avatar && user.avatar) deleteImage(user.avatar); //! for faster don't wait
 
-    Object.assign(user, body);
-
-    return user.save();
+    return prisma.user.update({
+      where: { id: user.id },
+      data: body,
+    });
   },
 
   async list({ page, limit, search }: TList) {

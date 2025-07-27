@@ -163,7 +163,7 @@ const storage = new GridFsStorage({
       .toLowerCase()}-${Date.now()}.png`,
     bucketName: 'images',
     metadata: {
-      uploadedBy: req?.user?._id ?? null,
+      uploadedBy: req?.user?.id?.oid ?? null,
       originalName: originalname,
     },
   }),

@@ -1,10 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
-import User from '../modules/user/User.model';
 import { verifyToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
 import { TToken } from '../modules/auth/Auth.interface';
 import { EUserRole } from '../../../prisma';
+import prisma from '../../util/prisma';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles
@@ -17,7 +17,9 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
       req.cookies[tokenType] ||
       req.headers.authorization?.split(/Bearer /i)?.[1];
 
-    req.user = (await User.findById(verifyToken(token, tokenType).userId))!;
+    req.user = (await prisma.user.findFirst({
+      where: { id: verifyToken(token, tokenType).userId },
+    }))!;
 
     if (
       !req.user ||
