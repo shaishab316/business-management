@@ -1,0 +1,18 @@
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  role      UserRole @default(USER)
+  name      String?
+  email     String   @unique
+  password  String
+  phone     String?  @unique
+  avatar    String?
+  city      String?
+  socials   String[]
+  followers Int      @default(0)
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUB_ADMIN
+}
