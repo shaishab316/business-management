@@ -5,6 +5,7 @@ import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { createToken } from '../auth/Auth.utils';
 import { OtpServices } from './Otp.service';
+import { AuthServices } from '../auth/Auth.service';
 
 export const OtpControllers = {
   resetPasswordOtpSend: catchAsync(async ({ user }, res) => {
@@ -17,13 +18,15 @@ export const OtpControllers = {
   }),
 
   resetPasswordOtpVerify: catchAsync(async ({ user, body }, res) => {
-    await OtpServices.verify(user._id, body.otp);
+    await OtpServices.verify(user.id, body.otp);
 
-    const resetToken = createToken({ userId: user._id }, 'reset_token');
+    const reset_token = createToken({ userId: user.id }, 'reset_token');
+
+    AuthServices.setTokens(res, { reset_token });
 
     serveResponse(res, {
       message: 'OTP verified successfully!',
-      data: { resetToken },
+      data: { reset_token },
     });
   }),
 

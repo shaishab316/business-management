@@ -3,10 +3,8 @@ import User from '../user/User.model';
 import { createToken, verifyPassword } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
-import { Types } from 'mongoose';
 import config from '../../../config';
 import { Response } from 'express';
-import Auth from './Auth.model';
 import ms from 'ms';
 import { TToken } from './Auth.interface';
 import prisma from '../../../util/prisma';
@@ -45,8 +43,11 @@ export const AuthServices = {
       });
   },
 
-  async resetPassword(userId: Types.ObjectId, password: string) {
-    return Auth.updateOne({ user: userId }, { password });
+  async resetPassword(userId: string, password: string) {
+    return prisma.auth.update({
+      where: { userId },
+      data: { password: await password?.hash() },
+    });
   },
 
   async retrieveToken(userId: string) {

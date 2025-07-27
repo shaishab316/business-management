@@ -34,10 +34,10 @@ export const AuthControllers = {
   }),
 
   resetPassword: catchAsync(async ({ body, user }, res) => {
-    await AuthServices.resetPassword(user._id, body.password);
+    await AuthServices.resetPassword(user.id, body.password);
 
     const { access_token, refresh_token } = await AuthServices.retrieveToken(
-      user._id,
+      user.id,
     );
 
     AuthServices.destroyTokens(res, ['reset_token']);
