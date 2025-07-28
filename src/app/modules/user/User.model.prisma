@@ -1,8 +1,7 @@
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   role      EUserRole @default(GUEST)
   name      String?
   email     String    @unique
@@ -11,9 +10,8 @@ model User {
   city      String?
   socials   String[]
   followers Int       @default(0)
-
-  Auth Auth?
-  Otp  Otp?
+  Auth      Auth?
+  Otp       Otp?
 
   @@map("users")
 }

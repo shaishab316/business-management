@@ -28,10 +28,9 @@ export type T${mName} = {
 };`,
 
   model: mName => `model ${mName} {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 
   @@map("${mName[0].toLowerCase()}${mName.slice(1)}s")
 }

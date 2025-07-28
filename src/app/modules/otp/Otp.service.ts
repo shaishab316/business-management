@@ -1,14 +1,11 @@
 import ms from 'ms';
 import config from '../../../config';
-import Otp from './Otp.model';
 import { sendEmail } from '../../../util/sendMail';
 import { OtpTemplates } from './Otp.template';
-import User from '../user/User.model';
 import { otpGenerator } from '../../../util/crypto/otpGenerator';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
-import { TOtp } from './Otp.interface';
 import { TUser } from '../user/User.interface';
 import prisma from '../../../util/prisma';
 
@@ -73,23 +70,24 @@ export const OtpServices = {
         'Service not available.',
       );
 
-    const filter: Partial<TOtp> = {};
+    const filter: { id?: string } = {};
 
     if (email) {
-      const user = await User.findOne({ email }).select('_id');
+      const user = await prisma.user.findFirst({ where: { email } });
 
       if (!user)
         throw new ServerError(StatusCodes.NOT_FOUND, 'User not found!');
 
-      filter.user = user._id;
+      filter.id = user.id;
     }
 
-    const otps = await Otp.find(filter)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('user', 'name email avatar');
+    const otps = await prisma.user.findMany({
+      where: filter,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-    const total = await Otp.countDocuments(filter);
+    const total = await prisma.user.count({ where: filter });
 
     return {
       meta: {
