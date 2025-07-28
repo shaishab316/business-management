@@ -10,8 +10,10 @@ export const AuthControllers = {
   login: catchAsync(async ({ user, body }, res) => {
     await AuthServices.getAuth(user.id, body.password);
 
-    const { access_token, refresh_token } = await AuthServices.retrieveToken(
+    const { access_token, refresh_token } = AuthServices.retrieveToken(
       user.id,
+      'access_token',
+      'refresh_token',
     );
 
     AuthServices.setTokens(res, {
@@ -36,8 +38,10 @@ export const AuthControllers = {
   resetPassword: catchAsync(async ({ body, user }, res) => {
     await AuthServices.resetPassword(user.id, body.password);
 
-    const { access_token, refresh_token } = await AuthServices.retrieveToken(
+    const { access_token, refresh_token } = AuthServices.retrieveToken(
       user.id,
+      'access_token',
+      'refresh_token',
     );
 
     AuthServices.destroyTokens(res, ['reset_token']);
@@ -50,7 +54,10 @@ export const AuthControllers = {
   }),
 
   refreshToken: catchAsync(async ({ user }, res) => {
-    const { access_token } = await AuthServices.retrieveToken(user._id);
+    const { access_token } = AuthServices.retrieveToken(
+      user.id,
+      'access_token',
+    );
 
     AuthServices.setTokens(res, { access_token });
 
@@ -61,11 +68,9 @@ export const AuthControllers = {
   }),
 
   changePassword: catchAsync(async ({ user, body }, res) => {
-    const auth = await AuthServices.getAuth(user._id, body.oldPassword);
+    const auth = await AuthServices.getAuth(user.id, body.oldPassword);
 
-    auth.password = body.newPassword;
-
-    await auth.save();
+    await AuthServices.changePassword(auth?.id, body.newPassword);
 
     serveResponse(res, {
       message: 'Password changed successfully!',

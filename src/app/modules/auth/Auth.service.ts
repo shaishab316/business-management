@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import User from '../user/User.model';
 import { createToken, verifyPassword } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
@@ -15,7 +14,7 @@ export const AuthServices = {
       where: { user: { id: userId } },
     });
 
-    if (!(await verifyPassword(password, auth?.password ?? '')))
+    if (!auth || !(await verifyPassword(password, auth.password)))
       throw new ServerError(
         StatusCodes.UNAUTHORIZED,
         'Your credentials are incorrect.',
@@ -50,11 +49,26 @@ export const AuthServices = {
     });
   },
 
-  async retrieveToken(userId: string) {
-    return {
-      access_token: createToken({ userId }, 'access_token'),
-      refresh_token: createToken({ userId }, 'refresh_token'),
-      user: await User.findById(userId).lean(),
-    };
+  /** this function returns an object of tokens
+   * e.g. retrieveToken(userId, 'access_token', 'refresh_token');
+   * returns { access_token, refresh_token }
+   */
+  retrieveToken<T extends readonly TToken[]>(
+    userId: string,
+    ...token_types: T
+  ) {
+    return Object.fromEntries(
+      token_types.map(token_type => [
+        token_type,
+        createToken({ userId }, token_type),
+      ]),
+    ) as Record<T[number], string>;
+  },
+
+  async changePassword(authId: string, password: string) {
+    return prisma.auth.update({
+      where: { id: authId },
+      data: { password: await password?.hash() },
+    });
   },
 };

@@ -18,8 +18,10 @@ export const UserControllers = {
       errorLogger.error(error);
     }
 
-    const { access_token, refresh_token } = await AuthServices.retrieveToken(
+    const { access_token, refresh_token } = AuthServices.retrieveToken(
       user.id,
+      'access_token',
+      'refresh_token',
     );
 
     AuthServices.setTokens(res, { access_token, refresh_token });

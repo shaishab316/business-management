@@ -3,7 +3,6 @@ import config from '../../../config';
 import ServerError from '../../../errors/ServerError';
 import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
-import { createToken } from '../auth/Auth.utils';
 import { OtpServices } from './Otp.service';
 import { AuthServices } from '../auth/Auth.service';
 
@@ -20,7 +19,7 @@ export const OtpControllers = {
   resetPasswordOtpVerify: catchAsync(async ({ user, body }, res) => {
     await OtpServices.verify(user.id, body.otp);
 
-    const reset_token = createToken({ userId: user.id }, 'reset_token');
+    const { reset_token } = AuthServices.retrieveToken(user.id, 'reset_token');
 
     AuthServices.setTokens(res, { reset_token });
 
