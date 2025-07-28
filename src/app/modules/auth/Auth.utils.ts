@@ -13,7 +13,7 @@ import { TToken } from './Auth.interface';
  * @param token_type - The type of token to create
  * @returns The signed token
  */
-export const createToken = (payload: JwtPayload, token_type: TToken) => {
+export const encodeToken = (payload: JwtPayload, token_type: TToken) => {
   try {
     return jwt.sign({ ...payload, token_type }, config.jwt[token_type].secret, {
       expiresIn: config.jwt[token_type].expire_in,
@@ -33,7 +33,7 @@ export const createToken = (payload: JwtPayload, token_type: TToken) => {
  * @param token_type - The type of token to verify
  * @returns The decoded token
  */
-export const verifyToken = (token = '', token_type: TToken) => {
+export const decodeToken = (token = '', token_type: TToken) => {
   token = token.trim();
   if (!token || !/^[\w-]+\.[\w-]+\.[\w-]+$/.test(token))
     throw new ServerError(

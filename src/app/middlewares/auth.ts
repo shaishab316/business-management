@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
-import { verifyToken } from '../modules/auth/Auth.utils';
+import { decodeToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
 import { TToken } from '../modules/auth/Auth.interface';
 import { EUserRole } from '../../../prisma';
@@ -18,7 +18,7 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
       req.headers.authorization?.split(/Bearer /i)?.[1];
 
     req.user = (await prisma.user.findFirst({
-      where: { id: verifyToken(token, tokenType).userId },
+      where: { id: decodeToken(token, tokenType).userId },
     }))!;
 
     if (

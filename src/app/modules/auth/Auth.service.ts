@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { createToken, verifyPassword } from './Auth.utils';
+import { encodeToken, verifyPassword } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import config from '../../../config';
@@ -60,7 +60,7 @@ export const AuthServices = {
     return Object.fromEntries(
       token_types.map(token_type => [
         token_type,
-        createToken({ userId }, token_type),
+        encodeToken({ userId }, token_type),
       ]),
     ) as Record<T[number], string>;
   },

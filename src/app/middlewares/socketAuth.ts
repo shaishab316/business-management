@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Socket } from 'socket.io';
-import { verifyToken } from '../modules/auth/Auth.utils';
+import { decodeToken } from '../modules/auth/Auth.utils';
 import User from '../modules/user/User.model';
 import { json } from '../../util/transform/json';
 
@@ -10,7 +10,7 @@ const socketAuth = async (socket: Socket, next: (err?: Error) => void) => {
   if (!token) return next(new Error('Token not provided'));
 
   try {
-    const { userId } = verifyToken(token, 'access_token');
+    const { userId } = decodeToken(token, 'access_token');
     const user = await User.findById(userId).lean();
 
     if (!user) return next(new Error('User not found'));
