@@ -10,15 +10,13 @@ import { TToken } from './Auth.interface';
 /**
  * Create a token
  * @param payload - The payload to sign
- * @param type - The type of token to create
+ * @param token_type - The type of token to create
  * @returns The signed token
  */
-export const createToken = (payload: JwtPayload, type: TToken) => {
-  payload.tokenType = type;
-
+export const createToken = (payload: JwtPayload, token_type: TToken) => {
   try {
-    return jwt.sign(payload, config.jwt[type].secret, {
-      expiresIn: config.jwt[type].expire_in,
+    return jwt.sign({ ...payload, token_type }, config.jwt[token_type].secret, {
+      expiresIn: config.jwt[token_type].expire_in,
     });
   } catch (error: any) {
     errorLogger.error(colors.red('🔑 Failed to create token'), error);
@@ -32,20 +30,23 @@ export const createToken = (payload: JwtPayload, type: TToken) => {
 /**
  * Verify a token with improved error handling
  * @param token - The token to verify
- * @param type - The type of token to verify
+ * @param token_type - The type of token to verify
  * @returns The decoded token
  */
-export const verifyToken = (token = '', type: TToken) => {
+export const verifyToken = (token = '', token_type: TToken) => {
   token = token.trim();
-  if (!token)
-    throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not logged in!');
+  if (!token || !/^[\w-]+\.[\w-]+\.[\w-]+$/.test(token))
+    throw new ServerError(
+      StatusCodes.UNAUTHORIZED,
+      `Please provide a valid ${token_type} token.`,
+    );
 
   try {
-    return jwt.verify(token, config.jwt[type].secret) as JwtPayload;
+    return jwt.verify(token, config.jwt[token_type].secret) as JwtPayload;
   } catch (error) {
     errorLogger.error(colors.red('🔑 Failed to verify token'), error);
 
-    if (type === 'reset_token')
+    if (token_type === 'reset_token')
       throw new ServerError(
         StatusCodes.UNAUTHORIZED,
         'Your password reset link has expired.',
