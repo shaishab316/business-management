@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
-import { Model } from 'mongoose';
-import { oid } from '../../../util/transform/oid';
+import { TModels } from '../../../util/prisma';
 
 export const QueryValidations = {
   list: z.object({
@@ -14,19 +13,12 @@ export const QueryValidations = {
   /**
    * Validation for checking if a document exists in the given model.
    * @param _id The name of the param containing the document ID
-   * @param model The mongoose model for the document
+   * @param model The prisma model for the document
    */
-  exists: (_id: string, model: Model<any>) =>
+  exists: (_id: string, model: TModels) =>
     z.object({
       params: z.object({
-        [_id]: z.string().transform(oid).refine(exists(model)),
-      }),
-    }),
-
-  validOid: (_id: string) =>
-    z.object({
-      params: z.object({
-        [_id]: z.string().transform(oid),
+        [_id]: z.string().refine(exists(model)),
       }),
     }),
 };

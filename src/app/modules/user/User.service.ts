@@ -1,14 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { TUser } from './User.interface';
-import User from './User.model';
-import { RootFilterQuery, Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
-import Auth from '../auth/Auth.model';
 import { TAuth } from '../auth/Auth.interface';
 import { Request } from 'express';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
-import { useSession } from '../../../util/db/session';
 import prisma from '../../../util/prisma';
 
 export const UserServices = {
@@ -35,21 +31,23 @@ export const UserServices = {
   },
 
   async list({ page, limit, search }: TList) {
-    const filter: RootFilterQuery<TUser> = {};
+    const filter: any = {};
 
     if (search)
-      filter.$or = searchFields.map(field => ({
+      filter.OR = searchFields.map(field => ({
         [field]: {
-          $regex: search,
-          $options: 'i',
+          contains: search,
+          mode: 'insensitive',
         },
       }));
 
-    const users = await User.find(filter)
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const users = await prisma.user.findMany({
+      where: filter,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-    const total = await User.countDocuments(filter);
+    const total = await prisma.user.count({ where: filter });
 
     return {
       meta: {
@@ -64,14 +62,13 @@ export const UserServices = {
     };
   },
 
-  async delete(userId: Types.ObjectId) {
-    return useSession(async session => {
-      const user = await User.findByIdAndDelete(userId).session(session);
-      await Auth.findOneAndDelete({ user: userId }).session(session);
+  async delete(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
-      if (user?.avatar) await deleteImage(user.avatar);
+    if (!user) throw new Error('User not found!');
 
-      return user;
-    });
+    if (user.avatar) deleteImage(user.avatar); //! for faster don't wait
+
+    return prisma.user.delete({ where: { id: userId } });
   },
 };

@@ -3,7 +3,6 @@ import { UserControllers } from './User.controller';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import { UserValidations } from './User.validation';
-import User from './User.model';
 import capture from '../../middlewares/capture';
 import { AuthControllers } from '../auth/Auth.controller';
 
@@ -18,7 +17,7 @@ admin.get(
 
 admin.delete(
   '/:userId/delete',
-  purifyRequest(QueryValidations.exists('userId', User)),
+  purifyRequest(QueryValidations.exists('userId', 'user')),
   UserControllers.delete,
 );
 

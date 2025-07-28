@@ -38,7 +38,7 @@ export const decodeToken = (token = '', token_type: TToken) => {
   if (!token || !/^[\w-]+\.[\w-]+\.[\w-]+$/.test(token))
     throw new ServerError(
       StatusCodes.UNAUTHORIZED,
-      `Please provide a valid ${token_type} token.`,
+      `Please provide a valid ${token_type.replace('_', ' ')}.`,
     );
 
   try {

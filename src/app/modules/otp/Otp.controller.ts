@@ -5,6 +5,7 @@ import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { OtpServices } from './Otp.service';
 import { AuthServices } from '../auth/Auth.service';
+import { EUserRole } from '../../../../prisma';
 
 export const OtpControllers = {
   resetPasswordOtpSend: catchAsync(async ({ user }, res) => {
@@ -30,6 +31,9 @@ export const OtpControllers = {
   }),
 
   accountVerifyOtpSend: catchAsync(async ({ user }, res) => {
+    if (user.role !== EUserRole.GUEST)
+      return serveResponse(res, { message: 'You are already verified!' });
+
     const otp = await OtpServices.send(user, 'accountVerify');
 
     serveResponse(res, {

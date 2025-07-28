@@ -70,7 +70,7 @@ export const OtpServices = {
         'Service not available.',
       );
 
-    const filter: { id?: string } = {};
+    const filter: { userId?: string } = {};
 
     if (email) {
       const user = await prisma.user.findFirst({ where: { email } });
@@ -78,16 +78,16 @@ export const OtpServices = {
       if (!user)
         throw new ServerError(StatusCodes.NOT_FOUND, 'User not found!');
 
-      filter.id = user.id;
+      filter.userId = user.id;
     }
 
-    const otps = await prisma.user.findMany({
+    const otps = await prisma.otp.findMany({
       where: filter,
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    const total = await prisma.user.count({ where: filter });
+    const total = await prisma.otp.count({ where: filter });
 
     return {
       meta: {
