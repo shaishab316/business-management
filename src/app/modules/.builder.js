@@ -11,7 +11,7 @@ import purifyRequest from '../../middlewares/purifyRequest';
 const router = Router();
 
 router.post(
-  '/',
+  '/create',
   purifyRequest(${mName}Validations.create),
   ${mName}Controllers.create,
 );
@@ -38,7 +38,7 @@ export type T${mName} = {
 
   controller:
     mName => /*javascript*/ `import { StatusCodes } from 'http-status-codes';
-import catchAsync from '../../../util/server/catchAsync';
+import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { ${mName}Services } from './${mName}.service';
 
@@ -54,10 +54,7 @@ export const ${mName}Controllers = {
   }),
 };`,
 
-  service:
-    mName => /*javascript*/ `import { T${mName} } from './${mName}.interface';
-import ${mName} from './${mName}.model';
-
+  service: mName => /*javascript*/ `
 export const ${mName}Services = {
   async create(${mName[0].toLowerCase()}${mName.slice(1)}Data: T${mName}) {
     return ${mName}.create(${mName[0].toLowerCase()}${mName.slice(1)}Data);
@@ -118,9 +115,9 @@ inquirer
       message: 'Select files to create (default is all selected):',
       choices: [
         { name: 'Route', value: 'route', checked: true },
-        { name: 'Interface', value: 'interface', checked: true },
+        { name: 'Interface', value: 'interface', checked: false },
         { name: 'Model', value: 'model', checked: true },
-        { name: 'Middleware', value: 'middleware', checked: true },
+        { name: 'Middleware', value: 'middleware', checked: false },
         { name: 'Controller', value: 'controller', checked: true },
         { name: 'Service', value: 'service', checked: true },
         { name: 'Validation', value: 'validation', checked: true },

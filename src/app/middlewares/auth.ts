@@ -28,15 +28,21 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
     )
       throw new ServerError(
         StatusCodes.FORBIDDEN,
-        `Permission denied. You are not ${roles.join(' or ')}!`,
+        `Permission denied. You are not a ${roles
+          .concat(EUserRole.ADMIN)
+          .map(role => role.toLocaleLowerCase().replace(/_/g, ' '))
+          .join(' or ')}!`,
       );
 
     next();
   });
 
 auth.admin = () => auth([EUserRole.ADMIN]);
+auth.subAdmin = () => auth([EUserRole.SUB_ADMIN]);
+auth.user = () =>
+  auth(Object.values(EUserRole).filter(role => role !== EUserRole.GUEST));
+
 auth.reset = () => auth([], 'reset_token');
 auth.refresh = () => auth([], 'refresh_token');
-auth.user = () => auth([EUserRole.USER, EUserRole.ADMIN]);
 
 export default auth;
