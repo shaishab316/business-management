@@ -7,13 +7,18 @@ model User {
   email     String    @unique
   phone     String?
   avatar    String?
-  city      String?
-  socials   String[]
-  followers Int       @default(0)
+  address   String?
+  socials   TSocial[]
   Auth      Auth?
   Otp       Otp?
 
   @@map("users")
+}
+
+type TSocial {
+  platform  String
+  link      String
+  followers Int    @default(0)
 }
 
 enum EUserRole {

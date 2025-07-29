@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
-import { TAuth } from './Auth.interface';
 import { hashPassword } from './Auth.utils';
+import { Auth as TAuth } from '../../../../prisma';
 
 export const AuthMiddlewares = {
   schema: (schema: Schema<TAuth>) => {

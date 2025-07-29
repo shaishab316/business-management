@@ -5,7 +5,8 @@ import { StatusCodes } from 'http-status-codes';
 import { errorLogger } from '../../../util/logger/logger';
 import colors from 'colors';
 import bcrypt from 'bcryptjs';
-import { TToken } from './Auth.interface';
+
+export type TToken = keyof typeof config.jwt;
 
 /**
  * Create a token

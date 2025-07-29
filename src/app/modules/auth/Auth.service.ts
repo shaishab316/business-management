@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { encodeToken, verifyPassword } from './Auth.utils';
+import { encodeToken, TToken, verifyPassword } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import config from '../../../config';
 import { Response } from 'express';
 import ms from 'ms';
-import { TToken } from './Auth.interface';
 import prisma from '../../../util/prisma';
 
 export const AuthServices = {

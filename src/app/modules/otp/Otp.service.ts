@@ -6,7 +6,7 @@ import { otpGenerator } from '../../../util/crypto/otpGenerator';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
-import { TUser } from '../user/User.interface';
+import { User as TUser } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 
 export const OtpServices = {

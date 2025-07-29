@@ -1,10 +1,10 @@
 import { AuthServices } from './Auth.service';
 import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
-import { TToken } from './Auth.interface';
 import { OtpServices } from '../otp/Otp.service';
 import prisma from '../../../util/prisma';
 import { EUserRole } from '../../../../prisma';
+import { TToken } from './Auth.utils';
 
 export const AuthControllers = {
   login: catchAsync(async ({ user, body }, res) => {

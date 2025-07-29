@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AuthServices } from '../auth/Auth.service';
 import { OtpServices } from '../otp/Otp.service';
 import { errorLogger } from '../../../util/logger/logger';
-import { TUser } from './User.interface';
+import { User as TUser } from '../../../../prisma';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {

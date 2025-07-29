@@ -1,8 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
-import { decodeToken } from '../modules/auth/Auth.utils';
+import { decodeToken, TToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
-import { TToken } from '../modules/auth/Auth.interface';
 import { EUserRole } from '../../../prisma';
 import prisma from '../../util/prisma';
 

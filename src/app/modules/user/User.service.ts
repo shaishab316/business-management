@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { TUser } from './User.interface';
 import { TList } from '../query/Query.interface';
-import { TAuth } from '../auth/Auth.interface';
 import { Request } from 'express';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
 import prisma from '../../../util/prisma';
+import { Auth as TAuth, User as TUser } from '../../../../prisma';
 
 export const UserServices = {
   async create({ password, ...userData }: TUser & TAuth) {
