@@ -1,0 +1,17 @@
+model Campaign {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  title            String
+  brand            String
+  banner           String
+  campaign_type    String
+  budget           Int
+  duration         String
+  content_type     String
+  payout_deadline  String
+  expected_metrics Json?
+  other_fields     Json?
+
+  @@map("campaigns")
+}

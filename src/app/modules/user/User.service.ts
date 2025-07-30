@@ -64,9 +64,7 @@ export const UserServices = {
   async delete(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    if (!user) throw new Error('User not found!');
-
-    if (user.avatar) deleteImage(user.avatar); //! for faster don't wait
+    user?.avatar?.pipe(deleteImage); // delete avatar
 
     return prisma.user.delete({ where: { id: userId } });
   },
