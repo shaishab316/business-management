@@ -5,6 +5,7 @@ import SubAdminRoutes from '../app/modules/subAdmin/SubAdmin.route';
 import { AuthRoutes } from '../app/modules/auth/Auth.route';
 import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
+import { CampaignRoutes } from '../app/modules/campaign/Campaign.route';
 
 const appRouter = Router();
 
@@ -22,6 +23,10 @@ appRouter.inject([
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/campaigns',
+    route: CampaignRoutes.talent,
   },
   {
     path: '/profile',

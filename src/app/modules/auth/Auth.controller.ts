@@ -85,11 +85,11 @@ export const AuthControllers = {
 
     await OtpServices.verify(user.id, body.otp);
 
-    user.role = EUserRole.USER;
+    user.role = EUserRole.TALENT;
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { role: EUserRole.USER },
+      data: { role: EUserRole.TALENT },
     });
 
     serveResponse(res, {

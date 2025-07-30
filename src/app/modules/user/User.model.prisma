@@ -23,7 +23,7 @@ type TSocial {
 
 enum EUserRole {
   GUEST
-  USER
+  TALENT
   ADMIN
   SUB_ADMIN
 }

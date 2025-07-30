@@ -6,45 +6,43 @@ import { UserValidations } from './User.validation';
 import capture from '../../middlewares/capture';
 import { AuthControllers } from '../auth/Auth.controller';
 
-/** Admin Routes */
 const admin = Router();
+{
+  admin.get(
+    '/',
+    purifyRequest(QueryValidations.list, UserValidations.list),
+    UserControllers.list,
+  );
 
-admin.get(
-  '/',
-  purifyRequest(QueryValidations.list, UserValidations.list),
-  UserControllers.list,
-);
-
-admin.delete(
-  '/:userId/delete',
-  purifyRequest(QueryValidations.exists('userId', 'user')),
-  UserControllers.delete,
-);
-
-/** User Routes */
+  admin.delete(
+    '/:userId/delete',
+    purifyRequest(QueryValidations.exists('userId', 'user')),
+    UserControllers.delete,
+  );
+}
 
 const user = Router();
+{
+  user.get('/', UserControllers.me);
 
-user.get('/', UserControllers.me);
+  user.patch(
+    '/edit',
+    capture({
+      avatar: {
+        size: 5 * 1024 * 1024,
+        maxCount: 1,
+      },
+    }),
+    purifyRequest(UserValidations.edit),
+    UserControllers.edit,
+  );
 
-user.patch(
-  '/edit',
-  capture({
-    avatar: {
-      maxCount: 1,
-      size: 5 * 1024 * 1024,
-      default: null,
-    },
-  }),
-  purifyRequest(UserValidations.edit),
-  UserControllers.edit,
-);
-
-user.post(
-  '/change-password',
-  purifyRequest(UserValidations.changePassword),
-  AuthControllers.changePassword,
-);
+  user.post(
+    '/change-password',
+    purifyRequest(UserValidations.changePassword),
+    AuthControllers.changePassword,
+  );
+}
 
 export const UserRoutes = {
   admin,

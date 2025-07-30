@@ -4,6 +4,6 @@ import { CampaignRoutes } from '../campaign/Campaign.route';
 export default Router().inject([
   {
     path: '/campaigns',
-    route: CampaignRoutes,
+    route: CampaignRoutes.subAdmin,
   },
 ]);
