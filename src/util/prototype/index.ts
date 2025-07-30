@@ -5,11 +5,12 @@ import './server';
 
 declare global {
   interface Object {
-    pipe<T, R>(f: (value: T) => R): R;
+    _pipe<T, R>(f: (value: T) => R): R;
   }
 }
 
-Object.defineProperty(Object.prototype, 'pipe', {
+// pipe create some issus, so i use _pipe
+Object.defineProperty(Object.prototype, '_pipe', {
   value<T, R>(f: (value: T) => R) {
     return f(this.valueOf() as T);
   },

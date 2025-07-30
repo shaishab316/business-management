@@ -16,7 +16,7 @@ export const CampaignServices = {
     });
 
     // delete old banner
-    if (campaignData.banner) campaign?.banner?.pipe(deleteImage);
+    if (campaignData.banner) campaign?.banner?._pipe(deleteImage);
 
     return prisma.campaign.update({
       where: { id: campaignId },
@@ -29,7 +29,7 @@ export const CampaignServices = {
       where: { id: campaignId },
     });
 
-    campaign?.banner?.pipe(deleteImage); // delete banner
+    campaign?.banner?._pipe(deleteImage); // delete banner
 
     return prisma.campaign.delete({ where: { id: campaignId } });
   },

@@ -5,19 +5,10 @@ import multer, { FileFilterCallback } from 'multer';
 import ServerError from '../../errors/ServerError';
 import catchAsync from './catchAsync';
 import config from '../../config';
-import mongoose from 'mongoose';
-import { GridFSBucket } from 'mongodb';
 import { errorLogger, logger } from '../../util/logger/logger';
 import colors from 'colors';
 import { json } from '../../util/transform/json';
-
-let bucket: GridFSBucket | null = null;
-
-mongoose.connection.on('connected', () => {
-  bucket ??= new GridFSBucket(mongoose.connection.db as any, {
-    bucketName: 'images',
-  });
-});
+import { getBucket } from '../../util/server/connectDB';
 
 /**
  * @description Multer middleware to handle image uploads to MongoDB GridFS
@@ -87,7 +78,7 @@ export default capture;
  * @description Retrieves an image from MongoDB GridFS
  */
 export const imageRetriever = catchAsync(async (req, res) => {
-  if (!bucket)
+  if (!getBucket())
     throw new ServerError(
       StatusCodes.SERVICE_UNAVAILABLE,
       'Images not available',
@@ -98,7 +89,7 @@ export const imageRetriever = catchAsync(async (req, res) => {
 
   if (shouldRedirect) filename = `${filename.replace(/\.[a-zA-Z]+$/, '')}.png`;
 
-  const fileExists = await bucket.find({ filename }).hasNext();
+  const fileExists = await getBucket()!.find({ filename }).hasNext();
   if (!fileExists)
     throw new ServerError(StatusCodes.NOT_FOUND, 'Image not found');
 
@@ -110,7 +101,7 @@ export const imageRetriever = catchAsync(async (req, res) => {
 
   return new Promise((resolve, reject) => {
     res.set('Content-Type', 'image/png');
-    const stream = bucket!
+    const stream = getBucket()!
       .openDownloadStreamByName(filename)
       .on('error', () =>
         reject(new ServerError(StatusCodes.NOT_FOUND, 'Stream error')),
@@ -129,16 +120,16 @@ export const deleteImage = async (filename: string) => {
   filename = filename.replace(/^\/images\//, '');
 
   try {
-    if (!bucket) return;
+    if (!getBucket()) return;
 
     logger.info(colors.yellow(`🗑️ Deleting image: '${filename}'`));
 
     const result = await Promise.all(
       (
-        await bucket
+        await getBucket()!
           .find({ filename: filename.replace(/^\/images\//, '') })
           .toArray()
-      )?.map(({ _id }) => bucket!.delete(_id)),
+      )?.map(({ _id }) => getBucket()!.delete(_id)),
     );
 
     if (result)
