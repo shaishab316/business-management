@@ -7,6 +7,14 @@ import { TaskValidations } from './Task.validation';
 const talent = Router();
 {
   talent.get('/', purifyRequest(QueryValidations.list), TaskControllers.getAll);
+
+  talent.post(
+    '/:taskId/cancel',
+    purifyRequest(QueryValidations.exists('taskId', 'task')),
+    TaskControllers.cancelTask,
+  );
+
+  
 }
 
 const subAdmin = Router();
@@ -15,6 +23,15 @@ const subAdmin = Router();
     '/',
     purifyRequest(QueryValidations.list, TaskValidations.superGetAll),
     TaskControllers.superGetAll,
+  );
+
+  subAdmin.post(
+    '/:taskId/:status',
+    purifyRequest(
+      QueryValidations.exists('taskId', 'task'),
+      TaskValidations.updateStatus,
+    ),
+    TaskControllers.updateStatus,
   );
 }
 

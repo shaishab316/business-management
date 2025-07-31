@@ -74,4 +74,11 @@ export const TaskServices = {
       tasks,
     };
   },
+
+  async updateStatus(taskId: string, status: ETaskStatus) {
+    return prisma.task.update({
+      where: { id: taskId },
+      data: { status },
+    });
+  },
 };
