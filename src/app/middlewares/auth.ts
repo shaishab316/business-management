@@ -16,7 +16,7 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
       req.cookies[tokenType] ||
       req.headers.authorization?.split(/Bearer /i)?.[1];
 
-    req.user = (await prisma.user.findFirst({
+    req.user = (await prisma.user.findUnique({
       where: { id: decodeToken(token, tokenType).userId },
     }))!;
 
@@ -28,10 +28,12 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
     )
       throw new ServerError(
         StatusCodes.FORBIDDEN,
-        `Permission denied. You are not a ${roles
-          .concat(EUserRole.ADMIN)
-          .map(role => role.toLocaleLowerCase().replace(/_/g, ' '))
-          .join(' or ')}!`,
+        req.user.role === EUserRole.GUEST
+          ? 'Your account is not verified yet. Please verify your account.'
+          : `Permission denied. You are not a ${roles
+              .concat(EUserRole.ADMIN)
+              .map(role => role.toLocaleLowerCase().replace(/_/g, ' '))
+              .join(' or ')}!`,
       );
 
     next();
@@ -39,8 +41,7 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
 
 auth.admin = () => auth([EUserRole.ADMIN]);
 auth.subAdmin = () => auth([EUserRole.SUB_ADMIN]);
-auth.user = () =>
-  auth(Object.values(EUserRole).filter(role => role !== EUserRole.GUEST));
+auth.user = () => auth(Object.values(EUserRole).excludes(EUserRole.GUEST));
 
 auth.reset = () => auth([], 'reset_token');
 auth.refresh = () => auth([], 'refresh_token');

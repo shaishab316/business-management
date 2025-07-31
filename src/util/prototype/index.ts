@@ -2,6 +2,7 @@
 import './string';
 import './router';
 import './server';
+import './array';
 
 declare global {
   interface Object {
