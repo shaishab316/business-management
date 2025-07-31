@@ -45,7 +45,7 @@ router.get('/refresh-token', auth.refresh(), AuthControllers.refreshToken);
 router.post(
   '/reset-password-otp-send',
   otpLimiter,
-  purifyRequest(OtpValidations.send),
+  purifyRequest(OtpValidations.email),
   UserMiddlewares.useUser(),
   OtpControllers.resetPasswordOtpSend,
 );
@@ -53,7 +53,7 @@ router.post(
 router.post(
   '/reset-password-otp-verify',
   otpLimiter,
-  purifyRequest(OtpValidations.verify),
+  purifyRequest(OtpValidations.email, OtpValidations.otp),
   UserMiddlewares.useUser(),
   OtpControllers.resetPasswordOtpVerify,
 );
@@ -69,7 +69,7 @@ router.post(
   '/account-verify',
   otpLimiter,
   auth.guest(),
-  purifyRequest(OtpValidations.verify),
+  purifyRequest(OtpValidations.otp),
   AuthControllers.verifyAccount,
 );
 

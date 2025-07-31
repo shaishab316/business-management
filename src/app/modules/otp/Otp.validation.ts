@@ -2,7 +2,7 @@ import { z } from 'zod';
 import config from '../../../config';
 
 export const OtpValidations = {
-  send: z.object({
+  email: z.object({
     body: z.object({
       email: z
         .string({ required_error: 'Email is missing' })
@@ -10,7 +10,7 @@ export const OtpValidations = {
     }),
   }),
 
-  verify: z.object({
+  otp: z.object({
     body: z.object({
       otp: z
         .string({ required_error: 'OTP is missing' })
