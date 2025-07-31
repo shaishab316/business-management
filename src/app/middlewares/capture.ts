@@ -23,18 +23,6 @@ const capture = (fields: {
   catchAsync(async (req, res, next) => {
     req.tempFiles ??= [];
 
-    Object.keys(fields).forEach(field => {
-      fields[field].maxCount ??= 5;
-      fields[field].size ??= 5;
-      if (fields[field].default === undefined)
-        fields[field].default = config.server.default_avatar;
-      else if (
-        Array.isArray(fields[field].default) &&
-        fields[field].default[0] === undefined
-      )
-        fields[field].default = [config.server.default_avatar];
-    });
-
     try {
       await new Promise<void>((resolve, reject) =>
         upload(fields)(req, res, err => (err ? reject(err) : resolve())),

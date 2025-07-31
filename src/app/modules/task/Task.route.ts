@@ -14,7 +14,14 @@ const talent = Router();
     TaskControllers.cancelTask,
   );
 
-  
+  talent.post(
+    '/:taskId/submit-post-link',
+    purifyRequest(
+      QueryValidations.exists('taskId', 'task'),
+      TaskValidations.submitPostLink,
+    ),
+    TaskControllers.submitPostLink,
+  );
 }
 
 const subAdmin = Router();

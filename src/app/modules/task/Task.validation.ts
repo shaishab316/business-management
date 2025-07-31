@@ -6,7 +6,7 @@ import { upper } from '../../../util/transform/upper';
 export const TaskValidations = {
   create: z.object({
     body: z.object({
-      talent_agreement_proof: z.string({
+      talentAgreementProof: z.string({
         required_error: 'Talent agreement proof is missing',
       }),
     }),
@@ -21,6 +21,16 @@ export const TaskValidations = {
   updateStatus: z.object({
     params: z.object({
       status: z.string().transform(upper).pipe(z.nativeEnum(ETaskStatus)),
+    }),
+  }),
+
+  submitPostLink: z.object({
+    body: z.object({
+      postLink: z
+        .string({
+          required_error: 'Post link is missing',
+        })
+        .url('Give a valid post link'),
     }),
   }),
 };

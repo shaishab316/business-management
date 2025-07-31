@@ -1,16 +1,16 @@
 model Task {
-  id                     String      @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  status                 ETaskStatus @default(PENDING)
-  campaignId             String      @db.ObjectId
-  campaign               Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  duration               DateTime
-  talentId               String      @db.ObjectId
-  talent                 User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
-  talent_agreement_proof String
-  post_link              String?
-  matrixes               Json[]
+  id                   String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  status               ETaskStatus @default(PENDING)
+  campaignId           String      @db.ObjectId
+  campaign             Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  duration             DateTime
+  talentId             String      @db.ObjectId
+  talent               User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  talentAgreementProof String
+  postLink             String?
+  matrixes             Json[]
 
   @@map("tasks")
 }

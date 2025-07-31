@@ -70,4 +70,16 @@ export const TaskControllers = {
       data,
     });
   }),
+
+  submitPostLink: catchAsync(async ({ params, body }, res) => {
+    const data = await TaskServices.submitPostLink(
+      params.taskId,
+      body.postLink,
+    );
+
+    serveResponse(res, {
+      message: 'Post link submitted successfully!',
+      data,
+    });
+  }),
 };

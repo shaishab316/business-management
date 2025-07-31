@@ -34,7 +34,7 @@ const talent = Router();
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
     auth.talent(),
     capture({
-      talent_agreement_proof: {
+      talentAgreementProof: {
         size: 5 * 1024 * 1024,
         maxCount: 1,
       },

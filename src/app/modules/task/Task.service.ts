@@ -81,4 +81,11 @@ export const TaskServices = {
       data: { status },
     });
   },
+
+  async submitPostLink(taskId: string, postLink: string) {
+    return prisma.task.update({
+      where: { id: taskId },
+      data: { postLink },
+    });
+  },
 };
