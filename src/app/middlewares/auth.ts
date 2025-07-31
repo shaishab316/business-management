@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
-import { decodeToken, TToken } from '../modules/auth/Auth.utils';
+import { decodeToken, superRoles, TToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
 import { EUserRole } from '../../../prisma';
 import prisma from '../../util/prisma';
@@ -23,7 +23,7 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
     if (
       !req.user ||
       (roles[0] &&
-        req.user.role !== EUserRole.ADMIN &&
+        !superRoles.includes(req.user.role) &&
         !roles.includes(req.user.role))
     )
       throw new ServerError(
