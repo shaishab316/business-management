@@ -78,11 +78,6 @@ export const AuthControllers = {
   }),
 
   verifyAccount: catchAsync(async ({ user, body }, res) => {
-    if (user.role !== EUserRole.GUEST)
-      return serveResponse(res, {
-        message: 'You are already verified!',
-      });
-
     await OtpServices.verify(user.id, body.otp);
 
     user.role = EUserRole.TALENT;

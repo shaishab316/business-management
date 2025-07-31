@@ -5,10 +5,8 @@ import { OtpTemplates } from './Otp.template';
 import { otpGenerator } from '../../../util/crypto/otpGenerator';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
-import { TList } from '../query/Query.interface';
 import { User as TUser } from '../../../../prisma';
 import prisma from '../../../util/prisma';
-import { TPagination } from '../../../util/server/serveResponse';
 
 export const OtpServices = {
   async send(user: TUser, type: 'resetPassword' | 'accountVerify') {
@@ -61,48 +59,5 @@ export const OtpServices = {
       );
 
     return prisma.otp.delete({ where: { id: validOtp.id } });
-  },
-
-  async list({ page, limit, email }: TList & { email: string }) {
-    //! only for development
-    if (!config.server.isDevelopment)
-      throw new ServerError(
-        StatusCodes.UNAVAILABLE_FOR_LEGAL_REASONS,
-        'Service not available.',
-      );
-
-    const filter: { userId?: string } = {};
-
-    if (email) {
-      const user = await prisma.user.findFirst({ where: { email } });
-
-      if (!user)
-        throw new ServerError(StatusCodes.NOT_FOUND, 'User not found!');
-
-      filter.userId = user.id;
-    }
-
-    const otps = await prisma.otp.findMany({
-      where: filter,
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-
-    const total = await prisma.otp.count({ where: filter });
-
-    return {
-      meta: {
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        } as TPagination,
-        query: {
-          email,
-        },
-      },
-      otps,
-    };
   },
 };
