@@ -8,6 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
 import { User as TUser } from '../../../../prisma';
 import prisma from '../../../util/prisma';
+import { TPagination } from '../../../util/server/serveResponse';
 
 export const OtpServices = {
   async send(user: TUser, type: 'resetPassword' | 'accountVerify') {
@@ -96,7 +97,7 @@ export const OtpServices = {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-        },
+        } as TPagination,
         query: {
           email,
         },

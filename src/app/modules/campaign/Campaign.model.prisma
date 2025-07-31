@@ -7,11 +7,13 @@ model Campaign {
   banner           String
   campaign_type    String
   budget           Int
-  duration         String
+  duration         DateTime
   content_type     String
   payout_deadline  String
   expected_metrics Json?
   other_fields     Json?
+
+  tasks Task[]
 
   @@map("campaigns")
 }

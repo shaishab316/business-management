@@ -5,6 +5,7 @@ import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
 import prisma from '../../../util/prisma';
 import { Auth as TAuth, User as TUser } from '../../../../prisma';
+import { TPagination } from '../../../util/server/serveResponse';
 
 export const UserServices = {
   async create({ password, ...userData }: TUser & TAuth) {
@@ -55,7 +56,7 @@ export const UserServices = {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-        },
+        } as TPagination,
       },
       users,
     };

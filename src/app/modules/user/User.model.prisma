@@ -11,6 +11,7 @@ model User {
   socials   TSocial[]
   Auth      Auth?
   Otp       Otp?
+  Task      Task[]
 
   @@map("users")
 }

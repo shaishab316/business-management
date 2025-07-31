@@ -27,6 +27,7 @@ export const CampaignServices = {
   async delete(campaignId: string) {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
+      select: { banner: true },
     });
 
     campaign?.banner?._pipe(deleteImage); // delete banner

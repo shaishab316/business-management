@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { json } from '../../../util/transform/json';
+import { date } from '../../../util/transform/date';
 
 export const CampaignValidations = {
   create: z.object({
@@ -33,7 +34,8 @@ export const CampaignValidations = {
           required_error: 'Duration is missing',
         })
         .trim()
-        .min(1, "Duration can't be empty"),
+        .transform(date)
+        .pipe(z.date()),
       content_type: z
         .string({
           required_error: 'Content type is missing',
@@ -84,7 +86,7 @@ export const CampaignValidations = {
       banner: z.string().trim().optional(),
       campaign_type: z.string().trim().optional(),
       budget: z.coerce.number().optional(),
-      duration: z.string().trim().optional(),
+      duration: z.string().trim().optional().transform(date).pipe(z.date()),
       content_type: z.string().trim().optional(),
       payout_deadline: z.string().trim().optional(),
       expected_metrics: z

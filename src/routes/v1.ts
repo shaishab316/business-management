@@ -6,6 +6,7 @@ import { AuthRoutes } from '../app/modules/auth/Auth.route';
 import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
 import { CampaignRoutes } from '../app/modules/campaign/Campaign.route';
+import { TaskRoutes } from '../app/modules/task/Task.route';
 
 const appRouter = Router();
 
@@ -19,7 +20,7 @@ const appRouter = Router();
   ),
 );
 
-appRouter.inject([
+export default appRouter.inject([
   {
     path: '/auth',
     route: AuthRoutes,
@@ -34,6 +35,11 @@ appRouter.inject([
     route: UserRoutes.user,
   },
   {
+    path: '/tasks',
+    middlewares: [auth.talent()],
+    route: TaskRoutes.talent,
+  },
+  {
     path: '/sub-admin',
     middlewares: [auth.subAdmin()],
     route: SubAdminRoutes,
@@ -44,5 +50,3 @@ appRouter.inject([
     route: AdminRoutes,
   },
 ]);
-
-export default appRouter;
