@@ -10,7 +10,7 @@ model Task {
   talent               User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
   talentAgreementProof String
   postLink             String?
-  matrixes             Json[]
+  matrix               Json?
 
   @@map("tasks")
 }

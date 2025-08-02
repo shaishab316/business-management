@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
 import { ETaskStatus } from '../../../../prisma';
 import { upper } from '../../../util/transform/upper';
+import prisma from '../../../util/prisma';
+import { Request } from 'express';
+import ServerError from '../../../errors/ServerError';
+import { StatusCodes } from 'http-status-codes';
 
 export const TaskValidations = {
   create: z.object({
@@ -33,4 +37,38 @@ export const TaskValidations = {
         .url('Give a valid post link'),
     }),
   }),
+
+  uploadMatrix: async ({ params }: Request) => {
+    const task = await prisma.task.findUnique({
+      where: { id: params.taskId },
+      select: {
+        campaign: {
+          select: {
+            expected_metrics: true,
+          },
+        },
+      },
+    });
+
+    if (!task) throw new ServerError(StatusCodes.NOT_FOUND, 'Task not found');
+
+    return z.object({
+      body: z.object({
+        screenshot: z.string({
+          required_error: 'Screenshot is missing',
+        }),
+
+        ...Object.fromEntries(
+          Object.entries(task.campaign.expected_metrics ?? {}).map(([key]) => [
+            key,
+            z
+              .string({
+                required_error: `${key} is missing`,
+              })
+              .min(1, `${key} can't be empty`),
+          ]),
+        ),
+      }),
+    });
+  },
 };

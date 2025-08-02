@@ -82,4 +82,13 @@ export const TaskControllers = {
       data,
     });
   }),
+
+  uploadMatrix: catchAsync(async ({ params, body }, res) => {
+    const data = await TaskServices.uploadMatrix(params.taskId, body);
+
+    serveResponse(res, {
+      message: 'Matrix uploaded successfully!',
+      data,
+    });
+  }),
 };

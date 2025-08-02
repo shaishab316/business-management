@@ -4,6 +4,7 @@ import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
+import { deleteImage } from '../../middlewares/capture';
 
 export const TaskServices = {
   async create(taskData: TTask) {
@@ -86,6 +87,20 @@ export const TaskServices = {
     return prisma.task.update({
       where: { id: taskId },
       data: { postLink },
+    });
+  },
+
+  async uploadMatrix(taskId: string, matrix: Record<string, string>) {
+    const task: any = await prisma.task.findUnique({
+      where: { id: taskId },
+      select: { matrix: true },
+    });
+
+    task?.matrix?.screenshot?._pipe(deleteImage);
+
+    return prisma.task.update({
+      where: { id: taskId },
+      data: { matrix },
     });
   },
 };

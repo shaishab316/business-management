@@ -3,6 +3,7 @@ import { TaskControllers } from './Task.controller';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import { TaskValidations } from './Task.validation';
+import capture from '../../middlewares/capture';
 
 const talent = Router();
 {
@@ -21,6 +22,13 @@ const talent = Router();
       TaskValidations.submitPostLink,
     ),
     TaskControllers.submitPostLink,
+  );
+
+  talent.post(
+    '/:taskId/upload-matrix',
+    capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    purifyRequest(TaskValidations.uploadMatrix),
+    TaskControllers.uploadMatrix,
   );
 }
 
