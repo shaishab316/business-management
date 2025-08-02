@@ -11,8 +11,13 @@ import { TErrorHandler, TErrorMessage } from '../../types/errors.types';
 import multer from 'multer';
 import handleMulterError from '../../errors/handleMulterError';
 import { deleteImage } from './capture';
+import { Prisma } from '../../../prisma';
+import {
+  handlePrismaRequestError,
+  handlePrismaValidationError,
+} from '../../errors/handlePrismaErrors';
 
-const defaultError: TErrorHandler = {
+export const defaultError: TErrorHandler = {
   statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
   message: 'Something went wrong',
   errorMessages: [],
@@ -41,6 +46,10 @@ export default globalErrorHandler;
 const formatError = (error: any): TErrorHandler => {
   if (error instanceof multer.MulterError) return handleMulterError(error);
   if (error instanceof ZodError) return handleZodError(error);
+  if (error instanceof Prisma.PrismaClientKnownRequestError)
+    return handlePrismaRequestError(error);
+  if (error instanceof Prisma.PrismaClientValidationError)
+    return handlePrismaValidationError(error);
   if (error instanceof ServerError)
     return {
       statusCode: error.statusCode,

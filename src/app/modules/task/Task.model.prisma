@@ -18,6 +18,7 @@ model Task {
 enum ETaskStatus {
   PENDING
   ACTIVE
+  REVISION
   COMPLETED
   CANCEL
   TIMEOUT
