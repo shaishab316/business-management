@@ -18,14 +18,7 @@ router.post(
 
 export const ${mName}Routes = router;`,
 
-  interface: mName => /*javascript*/ `import { Types } from 'mongoose';
-
-export type T${mName} = {
-  _id?: Types.ObjectId;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-};`,
+  interface: mName => /*javascript*/ `export type T${mName} = {};`,
 
   model: mName => `model ${mName} {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -69,29 +62,7 @@ export const ${mName}Validations = {
   }),
 };`,
 
-  middleware: mName => /*javascript*/ `import { Schema } from 'mongoose';
-import { T${mName} } from './${mName}.interface';
-
-export const ${mName}Middlewares = {
-  schema: (schema: Schema<T${mName}>) => {
-    ${['save', 'findOneAndDelete', 'findOneAndUpdate']
-      .map(event =>
-        ['pre', 'post']
-          .map(
-            fn => /*javascript*/ `
-    schema.${fn}('${event}', async function (${fn === 'pre' ? 'next' : 'doc, next'}) {
-      try {
-        // Do something ${fn === 'pre' ? 'before' : 'after'} ${event}
-      } finally {
-        next();
-      }
-    });`,
-          )
-          .join('\n'),
-      )
-      .join('\n')}
-  },
-};`,
+  middleware: mName => /*javascript*/ `export const ${mName}Middlewares = {};`,
 
   utils: () => '',
 

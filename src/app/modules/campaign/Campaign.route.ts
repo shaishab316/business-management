@@ -7,6 +7,8 @@ import { QueryValidations } from '../query/Query.validation';
 import { TaskValidations } from '../task/Task.validation';
 import { TaskControllers } from '../task/Task.controller';
 import auth from '../../middlewares/auth';
+import { ReviewValidations } from '../review/Review.validation';
+import { ReviewControllers } from '../review/Review.controller';
 
 const bannerCapture = capture({
   banner: {
@@ -41,6 +43,16 @@ const talent = Router();
     }),
     purifyRequest(TaskValidations.create),
     TaskControllers.create,
+  );
+
+  talent.post(
+    '/:campaignId/review',
+    auth.talent(),
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      ReviewValidations.giveReview,
+    ),
+    ReviewControllers.giveReview,
   );
 }
 

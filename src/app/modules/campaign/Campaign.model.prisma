@@ -12,8 +12,8 @@ model Campaign {
   payout_deadline  String
   expected_metrics Json?
   other_fields     Json?
-
-  tasks Task[]
+  tasks            Task[]
+  Review           Review[]
 
   @@map("campaigns")
 }
