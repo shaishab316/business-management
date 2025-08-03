@@ -4,6 +4,16 @@ import { ReviewServices } from './Review.service';
 import { CampaignServices } from '../campaign/Campaign.service';
 
 export const ReviewControllers = {
+  getAll: catchAsync(async ({ query }, res) => {
+    const { meta, reviews } = await ReviewServices.getAll(query);
+
+    serveResponse(res, {
+      message: 'Reviews retrieved successfully!',
+      meta,
+      data: reviews,
+    });
+  }),
+
   giveReview: catchAsync(async ({ body, user, params }, res) => {
     const data: any = await ReviewServices.giveReview({
       ...params,

@@ -2,6 +2,29 @@ import { StatusCodes } from 'http-status-codes';
 import { Review as TReview } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
+import { TList } from '../query/Query.interface';
+import { TPagination } from '../../../util/server/serveResponse';
+
+const select = (isTalent: any) =>
+  isTalent
+    ? {
+        talent: {
+          select: {
+            name: true,
+            avatar: true,
+            socials: true,
+          },
+        },
+      }
+    : {
+        campaign: {
+          select: {
+            title: true,
+            banner: true,
+            duration: true,
+          },
+        },
+      };
 
 export const ReviewServices = {
   async giveReview(reviewData: TReview) {
@@ -23,37 +46,17 @@ export const ReviewServices = {
       },
     });
 
-    const select = reviewData.talentId
-      ? {
-          talent: {
-            select: {
-              name: true,
-              avatar: true,
-              socials: true,
-            },
-          },
-        }
-      : {
-          campaign: {
-            select: {
-              title: true,
-              banner: true,
-              duration: true,
-            },
-          },
-        };
-
     if (existing) {
       return prisma.review.update({
         where: { id: existing.id },
         data: reviewData,
-        select,
+        select: select(reviewData.talentId),
       });
     }
 
     return prisma.review.create({
       data: reviewData,
-      select,
+      select: select(reviewData.talentId),
     });
   },
 
@@ -76,5 +79,35 @@ export const ReviewServices = {
       );
 
     return prisma.review.delete({ where: { id: reviewId } });
+  },
+
+  async getAll({ page, limit, talentId, campaignId, userId }: TList) {
+    const where: any = {};
+
+    if (talentId) where.talentId = talentId;
+    if (campaignId) where.campaignId = campaignId;
+    if (userId) where.userId = userId;
+
+    const reviews = await prisma.review.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      include: select(talentId),
+    });
+
+    const total = await prisma.review.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+        query: where,
+      },
+      reviews,
+    };
   },
 };
