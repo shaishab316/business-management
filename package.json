@@ -24,11 +24,10 @@
     "lint": "eslint src --ignore-path .gitignore --ext .ts",
     "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
-    "prisma:deploy": "npx prisma migrate deploy",
     "prisma:studio": "npx prisma studio",
-    "prisma:push": "npx prisma db push"
+    "prisma:generate": "npx prisma generate",
+    "prisma:push": "npx prisma db push",
+    "prisma:cleanup": "rm -rf ./prisma"
   },
   "keywords": [
     "business",

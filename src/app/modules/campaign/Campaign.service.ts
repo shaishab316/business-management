@@ -59,4 +59,25 @@ export const CampaignServices = {
   async getById(campaignId: string) {
     return prisma.campaign.findUnique({ where: { id: campaignId } });
   },
+
+  async updateRating(campaignId: string) {
+    const {
+      _avg: { rating },
+      _count,
+    } = await prisma.review.aggregate({
+      where: { campaignId },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    const campaign = await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { rating: rating ?? 0 },
+    });
+
+    return {
+      rating: campaign.rating,
+      review_count: _count.rating ?? 0,
+    };
+  },
 };

@@ -12,6 +12,7 @@ model Campaign {
   payout_deadline  String
   expected_metrics Json?
   other_fields     Json?
+  rating           Float    @default(0)
   tasks            Task[]
   Review           Review[]
 

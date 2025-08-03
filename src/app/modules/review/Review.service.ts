@@ -23,13 +23,37 @@ export const ReviewServices = {
       },
     });
 
+    const select = reviewData.talentId
+      ? {
+          talent: {
+            select: {
+              name: true,
+              avatar: true,
+              socials: true,
+            },
+          },
+        }
+      : {
+          campaign: {
+            select: {
+              title: true,
+              banner: true,
+              duration: true,
+            },
+          },
+        };
+
     if (existing) {
       return prisma.review.update({
         where: { id: existing.id },
         data: reviewData,
+        select,
       });
     }
 
-    return prisma.review.create({ data: reviewData });
+    return prisma.review.create({
+      data: reviewData,
+      select,
+    });
   },
 };
