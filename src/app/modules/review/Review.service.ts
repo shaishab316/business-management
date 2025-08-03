@@ -56,4 +56,25 @@ export const ReviewServices = {
       select,
     });
   },
+
+  async deleteReview(reviewId: string, userId: string) {
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (review?.userId !== userId)
+      throw new ServerError(
+        StatusCodes.FORBIDDEN,
+        `You can't delete ${review?.user?.name}'s review`,
+      );
+
+    return prisma.review.delete({ where: { id: reviewId } });
+  },
 };

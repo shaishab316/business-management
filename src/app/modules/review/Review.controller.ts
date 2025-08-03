@@ -21,4 +21,12 @@ export const ReviewControllers = {
       data,
     });
   }),
+
+  deleteReview: catchAsync(async ({ params, user }, res) => {
+    await ReviewServices.deleteReview(params.reviewId, user.id);
+
+    serveResponse(res, {
+      message: 'Review deleted successfully!',
+    });
+  }),
 };

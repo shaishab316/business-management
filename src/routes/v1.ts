@@ -7,6 +7,7 @@ import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
 import { CampaignRoutes } from '../app/modules/campaign/Campaign.route';
 import { TaskRoutes } from '../app/modules/task/Task.route';
+import { ReviewRoutes } from '../app/modules/review/Review.route';
 
 const appRouter = Router();
 
@@ -28,6 +29,10 @@ export default appRouter.inject([
   {
     path: '/campaigns',
     route: CampaignRoutes.talent,
+  },
+  {
+    path: '/reviews',
+    route: ReviewRoutes,
   },
   {
     path: '/profile',
