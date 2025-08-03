@@ -8,7 +8,7 @@ model Task {
   duration             DateTime
   talentId             String      @db.ObjectId
   talent               User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
-  talentAgreementProof String
+  talentAgreementProof String?
   postLink             String?
   matrix               Json?
 

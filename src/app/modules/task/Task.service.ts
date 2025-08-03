@@ -14,12 +14,19 @@ export const TaskServices = {
         talentId: taskData.talentId,
         status: ETaskStatus.PENDING,
       },
+      include: {
+        talent: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (existsTask)
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
-        'You already have a pending task for this campaign.',
+        `${existsTask.talent?.name} is already assigned to this campaign`,
       );
 
     const campaign = (await prisma.campaign.findUnique({

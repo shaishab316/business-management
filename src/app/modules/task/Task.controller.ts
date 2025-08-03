@@ -7,10 +7,9 @@ import prisma from '../../../util/prisma';
 import ServerError from '../../../errors/ServerError';
 
 export const TaskControllers = {
-  create: catchAsync(async ({ body, params, user }, res) => {
+  create: catchAsync(async ({ body, params }, res) => {
     const data = await TaskServices.create({
       ...body,
-      talentId: user.id,
       campaignId: params.campaignId,
     });
 

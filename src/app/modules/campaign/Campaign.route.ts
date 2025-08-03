@@ -4,11 +4,11 @@ import { CampaignValidations } from './Campaign.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
 import { QueryValidations } from '../query/Query.validation';
-import { TaskValidations } from '../task/Task.validation';
 import { TaskControllers } from '../task/Task.controller';
 import auth from '../../middlewares/auth';
 import { ReviewValidations } from '../review/Review.validation';
 import { ReviewControllers } from '../review/Review.controller';
+import { TaskValidations } from '../task/Task.validation';
 
 const bannerCapture = capture({
   banner: {
@@ -32,20 +32,6 @@ const talent = Router();
   );
 
   talent.post(
-    '/:campaignId/create-task',
-    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
-    auth.talent(),
-    capture({
-      talentAgreementProof: {
-        size: 5 * 1024 * 1024,
-        maxCount: 1,
-      },
-    }),
-    purifyRequest(TaskValidations.create),
-    TaskControllers.create,
-  );
-
-  talent.post(
     '/:campaignId/review',
     auth.talent(),
     purifyRequest(
@@ -63,6 +49,15 @@ const subAdmin = Router();
     bannerCapture,
     purifyRequest(CampaignValidations.create),
     CampaignControllers.create,
+  );
+
+  subAdmin.post(
+    '/:campaignId/create-task',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      TaskValidations.create,
+    ),
+    TaskControllers.create,
   );
 
   subAdmin.patch(
