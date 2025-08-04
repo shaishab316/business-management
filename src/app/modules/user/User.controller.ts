@@ -56,7 +56,7 @@ export const UserControllers = {
     });
   }),
 
-  me: catchAsync(({ user }, res) => {
+  profile: catchAsync(({ user }, res) => {
     serveResponse(res, {
       message: 'Profile retrieved successfully!',
       data: user,

@@ -2,6 +2,7 @@ import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { ReviewServices } from './Review.service';
 import { CampaignServices } from '../campaign/Campaign.service';
+import { UserServices } from '../user/User.service';
 
 export const ReviewControllers = {
   getAll: catchAsync(async ({ query }, res) => {
@@ -25,6 +26,9 @@ export const ReviewControllers = {
       data.updatedCampaign = await CampaignServices.updateRating(
         params.campaignId,
       );
+
+    if (params.talentId)
+      data.updatedTalent = await UserServices.updateRating(params.talentId);
 
     serveResponse(res, {
       message: 'Reviewed successfully!',

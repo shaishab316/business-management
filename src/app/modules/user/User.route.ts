@@ -5,6 +5,8 @@ import { QueryValidations } from '../query/Query.validation';
 import { UserValidations } from './User.validation';
 import capture from '../../middlewares/capture';
 import { AuthControllers } from '../auth/Auth.controller';
+import { ReviewValidations } from '../review/Review.validation';
+import { ReviewControllers } from '../review/Review.controller';
 
 const admin = Router();
 {
@@ -23,7 +25,7 @@ const admin = Router();
 
 const user = Router();
 {
-  user.get('/', UserControllers.me);
+  user.get('/', UserControllers.profile);
 
   user.patch(
     '/edit',
@@ -44,7 +46,20 @@ const user = Router();
   );
 }
 
+const subAdmin = Router();
+{
+  subAdmin.post(
+    '/:talentId/review',
+    purifyRequest(
+      QueryValidations.exists('talentId', 'user'),
+      ReviewValidations.giveReview,
+    ),
+    ReviewControllers.giveReview,
+  );
+}
+
 export const UserRoutes = {
   admin,
   user,
+  subAdmin,
 };
