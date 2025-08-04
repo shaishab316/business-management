@@ -57,7 +57,7 @@ const subAdmin = Router();
       QueryValidations.exists('campaignId', 'campaign'),
       TaskValidations.create,
     ),
-    TaskControllers.create,
+    TaskControllers.createTask,
   );
 
   subAdmin.patch(

@@ -7,8 +7,8 @@ import prisma from '../../../util/prisma';
 import ServerError from '../../../errors/ServerError';
 
 export const TaskControllers = {
-  create: catchAsync(async ({ body, params }, res) => {
-    const data = await TaskServices.create({
+  createTask: catchAsync(async ({ body, params }, res) => {
+    const data = await TaskServices.createTask({
       ...body,
       campaignId: params.campaignId,
     });
@@ -16,6 +16,19 @@ export const TaskControllers = {
     serveResponse(res, {
       statusCode: StatusCodes.CREATED,
       message: 'Task created successfully!',
+      data,
+    });
+  }),
+
+  acceptTask: catchAsync(async ({ body, params, user }, res) => {
+    const data = await TaskServices.acceptTask({
+      ...body,
+      id: params.taskId,
+      talentId: user.id,
+    });
+
+    serveResponse(res, {
+      message: 'Task accepted successfully!',
       data,
     });
   }),

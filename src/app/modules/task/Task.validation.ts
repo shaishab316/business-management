@@ -8,13 +8,13 @@ import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 
 export const TaskValidations = {
-  // create: z.object({
-  //   body: z.object({
-  //     talentAgreementProof: z.string({
-  //       required_error: 'Talent agreement proof is missing',
-  //     }),
-  //   }),
-  // }),
+  acceptTask: z.object({
+    body: z.object({
+      talentAgreementProof: z.string({
+        required_error: 'Talent agreement proof is missing',
+      }),
+    }),
+  }),
 
   create: z.object({
     body: z.object({

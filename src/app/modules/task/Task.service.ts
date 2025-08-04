@@ -7,7 +7,7 @@ import { TList } from '../query/Query.interface';
 import { deleteImage } from '../../middlewares/capture';
 
 export const TaskServices = {
-  async create(taskData: TTask) {
+  async createTask(taskData: TTask) {
     const existsTask = await prisma.task.findFirst({
       where: {
         campaignId: taskData.campaignId,
@@ -53,6 +53,39 @@ export const TaskServices = {
             socials: true,
           },
         },
+      },
+    });
+  },
+
+  async acceptTask({ id, talentId, ...taskData }: TTask) {
+    const task = await prisma.task.findUnique({
+      where: { id },
+      include: {
+        talent: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (task?.talentId !== talentId)
+      throw new ServerError(
+        StatusCodes.FORBIDDEN,
+        `You cannot accept ${task?.talent?.name}'s task.`,
+      );
+
+    if (task?.status !== ETaskStatus.PENDING)
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        `Task already ${task?.status?.toLocaleLowerCase()}.`,
+      );
+
+    return prisma.task.update({
+      where: { id },
+      data: {
+        ...taskData,
+        status: ETaskStatus.ACTIVE,
       },
     });
   },

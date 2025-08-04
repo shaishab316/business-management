@@ -10,6 +10,14 @@ const talent = Router();
   talent.get('/', purifyRequest(QueryValidations.list), TaskControllers.getAll);
 
   talent.post(
+    '/:taskId/accept',
+    purifyRequest(QueryValidations.exists('taskId', 'task')),
+    capture({ talentAgreementProof: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    purifyRequest(TaskValidations.acceptTask),
+    TaskControllers.acceptTask,
+  );
+
+  talent.post(
     '/:taskId/cancel',
     purifyRequest(QueryValidations.exists('taskId', 'task')),
     TaskControllers.cancelTask,
