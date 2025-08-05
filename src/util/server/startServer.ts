@@ -7,6 +7,7 @@ import shutdownServer from './shutdownServer';
 import connectDB from './connectDB';
 import { AdminServices } from '../../app/modules/admin/Admin.service';
 import killPort from 'kill-port';
+import { Server } from 'http';
 
 const {
   server: { port, ip_address, name },
@@ -19,24 +20,30 @@ const {
  * It also seeds the admin user if it doesn't exist in the database.
  */
 export default async function startServer() {
+  let server: Server;
+
   try {
-    await killPort(port);
+    try {
+      await killPort(port);
+    } finally {
+      await connectDB();
+      await AdminServices.seed();
 
-    await connectDB();
-    await AdminServices.seed();
+      server = createServer(app).listen(port, ip_address, () => {
+        logger.info(
+          colors.yellow(
+            `🚀 ${name} is running on http://${ip_address}:${port}`,
+          ),
+        );
+      });
 
-    const server = createServer(app).listen(port, '0.0.0.0', () => {
-      logger.info(
-        colors.yellow(`🚀 ${name} is running on http://${ip_address}:${port}`),
+      ['SIGTERM', 'SIGINT', 'unhandledRejection', 'uncaughtException'].forEach(
+        signal =>
+          process.on(signal, async (err?: Error) => {
+            await shutdownServer(server, signal, err);
+          }),
       );
-    });
-
-    ['SIGTERM', 'SIGINT', 'unhandledRejection', 'uncaughtException'].forEach(
-      signal =>
-        process.on(signal, async (err?: Error) => {
-          await shutdownServer(server, signal, err);
-        }),
-    );
+    }
 
     return server;
   } catch (error) {

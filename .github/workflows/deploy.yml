@@ -22,5 +22,6 @@ jobs:
             echo "${{ secrets.ENV_CONTENT }}" > .env
             git pull origin main
             npm install
+            npm run prisma:cleanup && npm run prisma:generate
             npm run build
             pm2 reload ${{ secrets.APP_NAME }} || pm2 start npm --name ${{ secrets.APP_NAME }} -- start
