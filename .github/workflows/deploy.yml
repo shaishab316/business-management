@@ -19,7 +19,6 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd ${{ secrets.APP_DIR }}/${{ secrets.APP_NAME }}
-            echo "${{ secrets.ENV_CONTENT }}" > .env
             git pull origin main
             npm install
             npm run prisma:cleanup && npm run prisma:generate
