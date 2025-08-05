@@ -79,6 +79,12 @@ const subAdmin = Router();
   );
 
   subAdmin.post(
+    '/:influencerId/decline',
+    purifyRequest(QueryValidations.exists('influencerId', 'user')),
+    UserControllers.declineInfluencer,
+  );
+
+  subAdmin.post(
     '/:influencerId/review',
     purifyRequest(
       QueryValidations.exists('influencerId', 'user'),

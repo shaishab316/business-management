@@ -112,4 +112,13 @@ export const UserControllers = {
       data,
     });
   }),
+
+  declineInfluencer: catchAsync(async ({ params }, res) => {
+    const data = await UserServices.declineInfluencer(params.influencerId);
+
+    serveResponse(res, {
+      message: 'Influencer declined successfully!',
+      data,
+    });
+  }),
 };

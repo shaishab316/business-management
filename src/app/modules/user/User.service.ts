@@ -135,4 +135,11 @@ export const UserServices = {
       data: { role: EUserRole.INFLUENCER },
     });
   },
+
+  async declineInfluencer(userId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { socials: [], role: EUserRole.USER },
+    });
+  },
 };

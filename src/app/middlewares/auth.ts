@@ -33,7 +33,9 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
           : `Permission denied. You are not a ${roles
               .concat(EUserRole.ADMIN)
               .map(role => role.toLocaleLowerCase().replace(/_/g, ' '))
-              .join(' or ')}!`,
+              .join(
+                ' or ',
+              )}! You are a ${req.user.role.toLocaleLowerCase().replace(/_/g, ' ')}!`,
       );
 
     next();
