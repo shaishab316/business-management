@@ -46,8 +46,8 @@ export const UserControllers = {
     });
   }),
 
-  list: catchAsync(async (req, res) => {
-    const { meta, users } = await UserServices.list(req.query);
+  getAllUser: catchAsync(async ({ query }, res) => {
+    const { meta, users } = await UserServices.list(query);
 
     serveResponse(res, {
       message: 'Users retrieved successfully!',

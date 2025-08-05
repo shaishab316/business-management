@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { EUserRole } from '../../../../prisma';
+import { _enum } from '../../../util/transform/enum';
 
 export const UserValidations = {
   create: z.object({
@@ -41,9 +43,14 @@ export const UserValidations = {
     }),
   }),
 
-  list: z.object({
+  getAllUser: z.object({
     query: z.object({
       search: z.string().trim().optional(),
+      role: z
+        .string()
+        .optional()
+        .transform(_enum)
+        .pipe(z.nativeEnum(EUserRole).optional()),
     }),
   }),
 };

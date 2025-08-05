@@ -10,12 +10,6 @@ import { ReviewControllers } from '../review/Review.controller';
 
 const admin = Router();
 {
-  admin.get(
-    '/',
-    purifyRequest(QueryValidations.list, UserValidations.list),
-    UserControllers.list,
-  );
-
   admin.delete(
     '/:userId/delete',
     purifyRequest(QueryValidations.exists('userId', 'user')),
@@ -48,6 +42,12 @@ const user = Router();
 
 const subAdmin = Router();
 {
+  subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list, UserValidations.getAllUser),
+    UserControllers.getAllUser,
+  );
+
   subAdmin.post(
     '/:talentId/review',
     purifyRequest(

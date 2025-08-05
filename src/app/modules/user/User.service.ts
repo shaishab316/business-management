@@ -30,8 +30,8 @@ export const UserServices = {
     });
   },
 
-  async list({ page, limit, search }: TList) {
-    const filter: any = {};
+  async list({ page, limit, search, ...filter }: TUser & TList) {
+    filter ??= {} as any;
 
     if (search)
       filter.OR = searchFields.map(field => ({
