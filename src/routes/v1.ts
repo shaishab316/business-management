@@ -28,7 +28,7 @@ export default appRouter.inject([
   },
   {
     path: '/campaigns',
-    route: CampaignRoutes.talent,
+    route: CampaignRoutes.influencer,
   },
   {
     path: '/reviews',
@@ -42,7 +42,7 @@ export default appRouter.inject([
   {
     path: '/tasks',
     middlewares: [auth.influencer()],
-    route: TaskRoutes.talent,
+    route: TaskRoutes.influencer,
   },
   {
     path: '/sub-admin',

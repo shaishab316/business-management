@@ -70,23 +70,23 @@ export const UserServices = {
     return prisma.user.delete({ where: { id: userId } });
   },
 
-  async updateRating(talentId: string) {
+  async updateRating(influencerId: string) {
     const {
       _avg: { rating },
       _count,
     } = await prisma.review.aggregate({
-      where: { talentId },
+      where: { influencerId },
       _avg: { rating: true },
       _count: { rating: true },
     });
 
-    const talent = await prisma.user.update({
-      where: { id: talentId },
+    const influencer = await prisma.user.update({
+      where: { id: influencerId },
       data: { rating: rating ?? 0 },
     });
 
     return {
-      rating: talent.rating,
+      rating: influencer.rating,
       review_count: _count.rating ?? 0,
     };
   },

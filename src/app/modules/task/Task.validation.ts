@@ -10,21 +10,21 @@ import { StatusCodes } from 'http-status-codes';
 export const TaskValidations = {
   acceptTask: z.object({
     body: z.object({
-      talentAgreementProof: z.string({
-        required_error: 'Talent agreement proof is missing',
+      influencerAgreementProof: z.string({
+        required_error: 'Influencer agreement proof is missing',
       }),
     }),
   }),
 
   create: z.object({
     body: z.object({
-      talentId: z.string().refine(exists('user')),
+      influencerId: z.string().refine(exists('user')),
     }),
   }),
 
   superGetAll: z.object({
     query: z.object({
-      talentId: z.string().optional().refine(exists('user')),
+      influencerId: z.string().optional().refine(exists('user')),
     }),
   }),
 

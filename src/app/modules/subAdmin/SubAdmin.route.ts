@@ -13,7 +13,7 @@ export default Router().inject([
     route: TaskRoutes.subAdmin,
   },
   {
-    path: '/talents',
+    path: '/influencers',
     route: UserRoutes.subAdmin,
   },
 ]);

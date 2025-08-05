@@ -17,21 +17,21 @@ const bannerCapture = capture({
   },
 });
 
-const talent = Router();
+const influencer = Router();
 {
-  talent.get(
+  influencer.get(
     '/',
     purifyRequest(QueryValidations.list),
     CampaignControllers.getAll,
   );
 
-  talent.get(
+  influencer.get(
     '/:campaignId',
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
     CampaignControllers.getById,
   );
 
-  talent.post(
+  influencer.post(
     '/:campaignId/review',
     auth.influencer(),
     purifyRequest(
@@ -74,4 +74,4 @@ const subAdmin = Router();
   );
 }
 
-export const CampaignRoutes = { subAdmin, talent };
+export const CampaignRoutes = { subAdmin, influencer };

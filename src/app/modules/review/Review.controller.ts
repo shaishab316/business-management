@@ -27,8 +27,10 @@ export const ReviewControllers = {
         params.campaignId,
       );
 
-    if (params.talentId)
-      data.updatedTalent = await UserServices.updateRating(params.talentId);
+    if (params.influencerId)
+      data.updatedInfluencer = await UserServices.updateRating(
+        params.influencerId,
+      );
 
     serveResponse(res, {
       message: 'Reviewed successfully!',

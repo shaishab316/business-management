@@ -49,9 +49,9 @@ const subAdmin = Router();
   );
 
   subAdmin.post(
-    '/:talentId/review',
+    '/:influencerId/review',
     purifyRequest(
-      QueryValidations.exists('talentId', 'user'),
+      QueryValidations.exists('influencerId', 'user'),
       ReviewValidations.giveReview,
     ),
     ReviewControllers.giveReview,

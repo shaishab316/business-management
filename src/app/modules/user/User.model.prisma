@@ -14,7 +14,7 @@ model User {
   Otp             Otp?
   Task            Task[]
   reviewsGiven    Review[]  @relation("ReviewByUser")
-  reviewsReceived Review[]  @relation("ReviewForTalent")
+  reviewsReceived Review[]  @relation("ReviewForInfluencer")
 
   @@map("users")
 }

@@ -21,7 +21,7 @@ export const ReviewValidations = {
 
   getAll: z.object({
     query: z.object({
-      talentId: z.string().trim().optional().refine(exists('user')),
+      influencerId: z.string().trim().optional().refine(exists('user')),
       userId: z.string().trim().optional().refine(exists('user')),
       campaignId: z.string().trim().optional().refine(exists('campaign')),
     }),

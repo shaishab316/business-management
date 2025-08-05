@@ -5,25 +5,31 @@ import { QueryValidations } from '../query/Query.validation';
 import { TaskValidations } from './Task.validation';
 import capture from '../../middlewares/capture';
 
-const talent = Router();
+const influencer = Router();
 {
-  talent.get('/', purifyRequest(QueryValidations.list), TaskControllers.getAll);
+  influencer.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    TaskControllers.getAll,
+  );
 
-  talent.post(
+  influencer.post(
     '/:taskId/accept',
     purifyRequest(QueryValidations.exists('taskId', 'task')),
-    capture({ talentAgreementProof: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    capture({
+      influencerAgreementProof: { maxCount: 1, size: 5 * 1024 * 1024 },
+    }),
     purifyRequest(TaskValidations.acceptTask),
     TaskControllers.acceptTask,
   );
 
-  talent.post(
+  influencer.post(
     '/:taskId/cancel',
     purifyRequest(QueryValidations.exists('taskId', 'task')),
     TaskControllers.cancelTask,
   );
 
-  talent.post(
+  influencer.post(
     '/:taskId/submit-post-link',
     purifyRequest(
       QueryValidations.exists('taskId', 'task'),
@@ -32,7 +38,7 @@ const talent = Router();
     TaskControllers.submitPostLink,
   );
 
-  talent.post(
+  influencer.post(
     '/:taskId/upload-matrix',
     capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
     purifyRequest(TaskValidations.uploadMatrix),
@@ -58,4 +64,4 @@ const subAdmin = Router();
   );
 }
 
-export const TaskRoutes = { talent, subAdmin };
+export const TaskRoutes = { influencer, subAdmin };

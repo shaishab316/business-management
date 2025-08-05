@@ -5,10 +5,10 @@ import prisma from '../../../util/prisma';
 import { TList } from '../query/Query.interface';
 import { TPagination } from '../../../util/server/serveResponse';
 
-const select = (isTalent: any) =>
-  isTalent
+const select = (isInfluencer: any) =>
+  isInfluencer
     ? {
-        talent: {
+        influencer: {
           select: {
             name: true,
             avatar: true,
@@ -40,8 +40,8 @@ export const ReviewServices = {
     const existing = await prisma.review.findFirst({
       where: {
         userId: reviewData.userId!,
-        ...(reviewData.talentId
-          ? { talentId: reviewData.talentId }
+        ...(reviewData.influencerId
+          ? { influencerId: reviewData.influencerId }
           : { campaignId: reviewData.campaignId }),
       },
     });
@@ -50,13 +50,13 @@ export const ReviewServices = {
       return prisma.review.update({
         where: { id: existing.id },
         data: reviewData,
-        select: select(reviewData.talentId),
+        select: select(reviewData.influencerId),
       });
     }
 
     return prisma.review.create({
       data: reviewData,
-      select: select(reviewData.talentId),
+      select: select(reviewData.influencerId),
     });
   },
 
@@ -81,10 +81,10 @@ export const ReviewServices = {
     return prisma.review.delete({ where: { id: reviewId } });
   },
 
-  async getAll({ page, limit, talentId, campaignId, userId }: TList) {
+  async getAll({ page, limit, influencerId, campaignId, userId }: TList) {
     const where: any = {};
 
-    if (talentId) where.talentId = talentId;
+    if (influencerId) where.influencerId = influencerId;
     if (campaignId) where.campaignId = campaignId;
     if (userId) where.userId = userId;
 
@@ -92,7 +92,7 @@ export const ReviewServices = {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      include: select(talentId),
+      include: select(influencerId),
     });
 
     const total = await prisma.review.count({ where });

@@ -24,7 +24,7 @@ export const TaskControllers = {
     const data = await TaskServices.acceptTask({
       ...body,
       id: params.taskId,
-      talentId: user.id,
+      influencerId: user.id,
     });
 
     serveResponse(res, {
@@ -36,7 +36,7 @@ export const TaskControllers = {
   getAll: catchAsync(async ({ query, user }, res) => {
     const data = await TaskServices.getAll({
       ...query,
-      talentId: user.id,
+      influencerId: user.id,
     });
 
     serveResponse(res, {
@@ -66,13 +66,13 @@ export const TaskControllers = {
   cancelTask: catchAsync(async ({ params, user }, res) => {
     const task = await prisma.task.findUnique({
       where: { id: params.taskId },
-      include: { talent: true },
+      include: { influencer: true },
     });
 
-    if (task?.talentId !== user.id)
+    if (task?.influencerId !== user.id)
       throw new ServerError(
         StatusCodes.FORBIDDEN,
-        `You cannot cancel ${task?.talent?.name}'s task.`,
+        `You cannot cancel ${task?.influencer?.name}'s task.`,
       );
 
     const data = await TaskServices.updateStatus(task?.id, ETaskStatus.CANCEL);

@@ -11,11 +11,11 @@ export const TaskServices = {
     const existsTask = await prisma.task.findFirst({
       where: {
         campaignId: taskData.campaignId,
-        talentId: taskData.talentId,
+        influencerId: taskData.influencerId,
         status: ETaskStatus.PENDING,
       },
       include: {
-        talent: {
+        influencer: {
           select: {
             name: true,
           },
@@ -26,7 +26,7 @@ export const TaskServices = {
     if (existsTask)
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
-        `${existsTask.talent?.name} is already assigned to this campaign`,
+        `${existsTask.influencer?.name} is already assigned to this campaign`,
       );
 
     const campaign = (await prisma.campaign.findUnique({
@@ -46,7 +46,7 @@ export const TaskServices = {
             banner: true,
           },
         },
-        talent: {
+        influencer: {
           select: {
             name: true,
             avatar: true,
@@ -57,11 +57,11 @@ export const TaskServices = {
     });
   },
 
-  async acceptTask({ id, talentId, ...taskData }: TTask) {
+  async acceptTask({ id, influencerId, ...taskData }: TTask) {
     const task = await prisma.task.findUnique({
       where: { id },
       include: {
-        talent: {
+        influencer: {
           select: {
             name: true,
           },
@@ -69,10 +69,10 @@ export const TaskServices = {
       },
     });
 
-    if (task?.talentId !== talentId)
+    if (task?.influencerId !== influencerId)
       throw new ServerError(
         StatusCodes.FORBIDDEN,
-        `You cannot accept ${task?.talent?.name}'s task.`,
+        `You cannot accept ${task?.influencer?.name}'s task.`,
       );
 
     if (task?.status !== ETaskStatus.PENDING)
@@ -90,10 +90,10 @@ export const TaskServices = {
     });
   },
 
-  async getAll({ page, limit, talentId }: TList) {
+  async getAll({ page, limit, influencerId }: TList) {
     const filter: any = {};
 
-    if (talentId) filter.talentId = talentId;
+    if (influencerId) filter.influencerId = influencerId;
 
     const tasks = await prisma.task.findMany({
       where: filter,
