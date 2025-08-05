@@ -66,6 +66,12 @@ const subAdmin = Router();
     UserControllers.getAllUser,
   );
 
+  subAdmin.get(
+    '/pending-influencers',
+    purifyRequest(QueryValidations.list),
+    UserControllers.getPendingInfluencers,
+  );
+
   subAdmin.post(
     '/:influencerId/review',
     purifyRequest(

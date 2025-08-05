@@ -92,4 +92,15 @@ export const UserControllers = {
       data,
     });
   }),
+
+  getPendingInfluencers: catchAsync(async ({ query }, res) => {
+    const { meta, influencers } =
+      await UserServices.getPendingInfluencers(query);
+
+    serveResponse(res, {
+      message: 'Influencers retrieved successfully!',
+      meta,
+      data: influencers,
+    });
+  }),
 };

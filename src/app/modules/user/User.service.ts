@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
 import prisma from '../../../util/prisma';
-import { Auth as TAuth, User as TUser } from '../../../../prisma';
+import { EUserRole, Auth as TAuth, User as TUser } from '../../../../prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 
 export const UserServices = {
@@ -91,10 +91,41 @@ export const UserServices = {
     };
   },
 
-  requestForInfluencer({ id, ...userData }: Partial<TUser>) {
+  async requestForInfluencer({ id, ...userData }: Partial<TUser>) {
     return prisma.user.update({
       where: { id },
       data: userData,
     });
+  },
+
+  async getPendingInfluencers({ page, limit }: TList) {
+    const where = {
+      role: EUserRole.USER,
+      socials: {
+        some: {},
+      },
+    };
+
+    const influencers = await prisma.user.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.user.count({
+      where,
+    });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+      },
+      influencers,
+    };
   },
 };
