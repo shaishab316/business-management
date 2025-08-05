@@ -21,6 +21,6 @@ jobs:
             cd ${{ secrets.APP_DIR }}/${{ secrets.APP_NAME }}
             echo "${{ secrets.ENV_CONTENT }}" > .env
             git pull origin main
-            npm install --omit=dev
+            npm install
             npm run build
             pm2 reload ${{ secrets.APP_NAME }} || pm2 start npm --name ${{ secrets.APP_NAME }} -- start
