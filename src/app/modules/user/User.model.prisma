@@ -27,7 +27,8 @@ type TSocial {
 
 enum EUserRole {
   GUEST
-  TALENT
+  USER
+  INFLUENCER
   ADMIN
   SUB_ADMIN
 }

@@ -33,7 +33,7 @@ const talent = Router();
 
   talent.post(
     '/:campaignId/review',
-    auth.talent(),
+    auth.influencer(),
     purifyRequest(
       QueryValidations.exists('campaignId', 'campaign'),
       ReviewValidations.giveReview,

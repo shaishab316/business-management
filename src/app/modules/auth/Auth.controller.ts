@@ -80,11 +80,11 @@ export const AuthControllers = {
   verifyAccount: catchAsync(async ({ user, body }, res) => {
     await OtpServices.verify(user.id, body.otp);
 
-    user.role = EUserRole.TALENT;
-
-    await prisma.user.update({
+    user = await prisma.user.update({
       where: { id: user.id },
-      data: { role: EUserRole.TALENT },
+      data: {
+        role: EUserRole.USER,
+      },
     });
 
     serveResponse(res, {

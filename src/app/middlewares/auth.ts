@@ -41,7 +41,8 @@ const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
 
 auth.admin = () => auth([EUserRole.ADMIN]);
 auth.subAdmin = () => auth([EUserRole.SUB_ADMIN]);
-auth.talent = () => auth(Object.values(EUserRole).excludes(EUserRole.GUEST));
+auth.influencer = () => auth([EUserRole.INFLUENCER, EUserRole.SUB_ADMIN]);
+auth.user = () => auth(Object.values(EUserRole).excludes(EUserRole.GUEST));
 auth.guest = () => auth([EUserRole.GUEST]);
 
 auth.reset = () => auth([], 'reset_token');

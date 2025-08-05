@@ -41,7 +41,7 @@ export default appRouter.inject([
   },
   {
     path: '/tasks',
-    middlewares: [auth.talent()],
+    middlewares: [auth.influencer()],
     route: TaskRoutes.talent,
   },
   {
