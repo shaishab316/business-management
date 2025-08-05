@@ -73,6 +73,12 @@ const subAdmin = Router();
   );
 
   subAdmin.post(
+    '/:influencerId/approve',
+    purifyRequest(QueryValidations.exists('influencerId', 'user')),
+    UserControllers.approveInfluencer,
+  );
+
+  subAdmin.post(
     '/:influencerId/review',
     purifyRequest(
       QueryValidations.exists('influencerId', 'user'),

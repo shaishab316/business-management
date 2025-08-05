@@ -103,4 +103,13 @@ export const UserControllers = {
       data: influencers,
     });
   }),
+
+  approveInfluencer: catchAsync(async ({ params }, res) => {
+    const data = await UserServices.approveInfluencer(params.influencerId);
+
+    serveResponse(res, {
+      message: 'Influencer accepted successfully!',
+      data,
+    });
+  }),
 };

@@ -128,4 +128,11 @@ export const UserServices = {
       influencers,
     };
   },
+
+  async approveInfluencer(userId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { role: EUserRole.INFLUENCER },
+    });
+  },
 };
