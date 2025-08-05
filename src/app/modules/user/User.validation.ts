@@ -53,4 +53,32 @@ export const UserValidations = {
         .pipe(z.nativeEnum(EUserRole).optional()),
     }),
   }),
+
+  requestForInfluencer: z.object({
+    body: z.object({
+      avatar: z.string().optional(),
+      address: z
+        .string({
+          required_error: 'Address is missing',
+        })
+        .trim()
+        .min(1, "Address can't be empty"),
+      platform: z
+        .string({
+          required_error: 'Platform is missing',
+        })
+        .trim()
+        .min(1, "Platform can't be empty"),
+      link: z
+        .string({
+          required_error: 'Link is missing',
+        })
+        .url({
+          message: 'Give a valid link',
+        }),
+      followers: z.coerce.number({
+        required_error: 'Followers is missing',
+      }),
+    }),
+  }),
 };

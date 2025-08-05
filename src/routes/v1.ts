@@ -36,7 +36,6 @@ export default appRouter.inject([
   },
   {
     path: '/profile',
-    middlewares: [auth()],
     route: UserRoutes.user,
   },
   {

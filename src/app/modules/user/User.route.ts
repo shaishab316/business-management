@@ -7,6 +7,14 @@ import capture from '../../middlewares/capture';
 import { AuthControllers } from '../auth/Auth.controller';
 import { ReviewValidations } from '../review/Review.validation';
 import { ReviewControllers } from '../review/Review.controller';
+import auth from '../../middlewares/auth';
+
+const avatarCapture = capture({
+  avatar: {
+    size: 5 * 1024 * 1024,
+    maxCount: 1,
+  },
+});
 
 const admin = Router();
 {
@@ -19,24 +27,34 @@ const admin = Router();
 
 const user = Router();
 {
-  user.get('/', UserControllers.profile);
+  user.get('/', auth(), UserControllers.profile);
 
   user.patch(
     '/edit',
-    capture({
-      avatar: {
-        size: 5 * 1024 * 1024,
-        maxCount: 1,
-      },
-    }),
+    auth(),
+    avatarCapture,
     purifyRequest(UserValidations.edit),
     UserControllers.edit,
   );
 
   user.post(
     '/change-password',
+    auth(),
     purifyRequest(UserValidations.changePassword),
     AuthControllers.changePassword,
+  );
+
+  user.post(
+    '/request-for-influencer',
+    auth.user(),
+    capture({
+      avatar: {
+        size: 5 * 1024 * 1024,
+        maxCount: 1,
+      },
+    }),
+    purifyRequest(UserValidations.requestForInfluencer),
+    UserControllers.requestForInfluencer,
   );
 }
 

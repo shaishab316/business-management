@@ -90,4 +90,11 @@ export const UserServices = {
       review_count: _count.rating ?? 0,
     };
   },
+
+  requestForInfluencer({ id, ...userData }: Partial<TUser>) {
+    return prisma.user.update({
+      where: { id },
+      data: userData,
+    });
+  },
 };
