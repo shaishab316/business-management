@@ -47,12 +47,7 @@ const user = Router();
   user.post(
     '/request-for-influencer',
     auth.user(),
-    capture({
-      avatar: {
-        size: 5 * 1024 * 1024,
-        maxCount: 1,
-      },
-    }),
+    avatarCapture,
     purifyRequest(UserValidations.requestForInfluencer),
     UserControllers.requestForInfluencer,
   );

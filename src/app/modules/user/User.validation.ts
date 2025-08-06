@@ -23,6 +23,7 @@ export const UserValidations = {
       name: z.string().optional(),
       avatar: z.string().optional(),
       phone: z.string().optional(),
+      fcmToken: z.string().optional(),
     }),
   }),
 

@@ -2,6 +2,7 @@ model User {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  fcmToken        String?
   role            EUserRole @default(GUEST)
   name            String?
   email           String    @unique

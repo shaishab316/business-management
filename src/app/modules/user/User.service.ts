@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { TList } from '../query/Query.interface';
-import { Request } from 'express';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
 import prisma from '../../../util/prisma';
@@ -21,8 +20,8 @@ export const UserServices = {
     });
   },
 
-  async edit({ user, body }: Request) {
-    if (body.avatar && user.avatar) deleteImage(user.avatar); //! for faster don't wait
+  async edit({ user, body }: { user: TUser; body: Partial<TUser> }) {
+    if (body.avatar) user?.avatar?._pipe(deleteImage);
 
     return prisma.user.update({
       where: { id: user.id },
@@ -89,13 +88,6 @@ export const UserServices = {
       rating: influencer.rating,
       review_count: _count.rating ?? 0,
     };
-  },
-
-  async requestForInfluencer({ id, ...userData }: Partial<TUser>) {
-    return prisma.user.update({
-      where: { id },
-      data: userData,
-    });
   },
 
   async getPendingInfluencers({ page, limit }: TList) {

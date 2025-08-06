@@ -74,17 +74,19 @@ export const UserControllers = {
   requestForInfluencer: catchAsync(async ({ body, user }, res) => {
     const { avatar, address, followers, link, platform } = body;
 
-    const data = await UserServices.requestForInfluencer({
-      id: user.id,
-      avatar,
-      address,
-      socials: [
-        {
-          followers,
-          link,
-          platform,
-        },
-      ],
+    const data = await UserServices.edit({
+      user,
+      body: {
+        avatar,
+        address,
+        socials: [
+          {
+            followers,
+            link,
+            platform,
+          },
+        ],
+      },
     });
 
     serveResponse(res, {
