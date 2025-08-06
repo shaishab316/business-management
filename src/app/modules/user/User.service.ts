@@ -20,7 +20,13 @@ export const UserServices = {
     });
   },
 
-  async edit({ user, body }: { user: TUser; body: Partial<TUser> }) {
+  async updateUser({
+    user,
+    body,
+  }: {
+    user: Partial<TUser>;
+    body: Partial<TUser>;
+  }) {
     if (body.avatar) user?.avatar?._pipe(deleteImage);
 
     return prisma.user.update({
@@ -119,19 +125,5 @@ export const UserServices = {
       },
       influencers,
     };
-  },
-
-  async approveInfluencer(userId: string) {
-    return prisma.user.update({
-      where: { id: userId },
-      data: { role: EUserRole.INFLUENCER },
-    });
-  },
-
-  async declineInfluencer(userId: string) {
-    return prisma.user.update({
-      where: { id: userId },
-      data: { socials: [], role: EUserRole.USER },
-    });
   },
 };

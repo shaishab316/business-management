@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AuthServices } from '../auth/Auth.service';
 import { OtpServices } from '../otp/Otp.service';
 import { errorLogger } from '../../../util/logger/logger';
-import { User as TUser } from '../../../../prisma';
+import { EUserRole, User as TUser } from '../../../../prisma';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {
@@ -38,7 +38,7 @@ export const UserControllers = {
   }),
 
   edit: catchAsync(async (req, res) => {
-    const data = await UserServices.edit(req);
+    const data = await UserServices.updateUser(req);
 
     serveResponse(res, {
       message: 'Profile updated successfully!',
@@ -74,7 +74,7 @@ export const UserControllers = {
   requestForInfluencer: catchAsync(async ({ body, user }, res) => {
     const { avatar, address, followers, link, platform } = body;
 
-    const data = await UserServices.edit({
+    const data = await UserServices.updateUser({
       user,
       body: {
         avatar,
@@ -107,7 +107,10 @@ export const UserControllers = {
   }),
 
   approveInfluencer: catchAsync(async ({ params }, res) => {
-    const data = await UserServices.approveInfluencer(params.influencerId);
+    const data = await UserServices.updateUser({
+      user: { id: params.influencerId },
+      body: { role: EUserRole.INFLUENCER },
+    });
 
     serveResponse(res, {
       message: 'Influencer accepted successfully!',
@@ -116,7 +119,13 @@ export const UserControllers = {
   }),
 
   declineInfluencer: catchAsync(async ({ params }, res) => {
-    const data = await UserServices.declineInfluencer(params.influencerId);
+    const data = await UserServices.updateUser({
+      user: { id: params.influencerId },
+      body: {
+        socials: [],
+        role: EUserRole.USER,
+      },
+    });
 
     serveResponse(res, {
       message: 'Influencer declined successfully!',
