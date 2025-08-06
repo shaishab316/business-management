@@ -1,0 +1,23 @@
+model Notification {
+  id           String              @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  title        String
+  body         String
+  recipientIds String[]            @db.ObjectId
+  type         ENotificationType   @default(SOFT)
+  status       ENotificationStatus @default(UNREAD)
+
+  @@map("notifications")
+}
+
+enum ENotificationType {
+  HARD
+  SOFT
+}
+
+enum ENotificationStatus {
+  UNREAD
+  READ
+  PUSHED
+}
