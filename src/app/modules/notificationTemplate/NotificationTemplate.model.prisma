@@ -1,0 +1,8 @@
+model NotificationTemplate {
+  id    String            @id @default(auto()) @map("_id") @db.ObjectId
+  type  ENotificationType @default(SOFT)
+  title String
+  body  String
+
+  @@map("notificationTemplates")
+}
