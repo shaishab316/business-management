@@ -15,7 +15,10 @@ export const NotificationTemplateControllers = {
   }),
 
   update: catchAsync(async ({ params, body }, res) => {
-    const data = await NotificationTemplateServices.update(params.id, body);
+    const data = await NotificationTemplateServices.update(
+      params.notificationTemplateId,
+      body,
+    );
 
     serveResponse(res, {
       message: 'NotificationTemplate updated successfully!',
@@ -24,7 +27,7 @@ export const NotificationTemplateControllers = {
   }),
 
   delete: catchAsync(async ({ params }, res) => {
-    await NotificationTemplateServices.delete(params.id);
+    await NotificationTemplateServices.delete(params.notificationTemplateId);
 
     serveResponse(res, {
       message: 'NotificationTemplate deleted successfully!',
@@ -43,7 +46,9 @@ export const NotificationTemplateControllers = {
   }),
 
   getById: catchAsync(async ({ params }, res) => {
-    const data = await NotificationTemplateServices.getById(params.id);
+    const data = await NotificationTemplateServices.getById(
+      params.notificationTemplateId,
+    );
 
     serveResponse(res, {
       message: 'NotificationTemplate retrieved successfully!',
