@@ -3,6 +3,7 @@ import { exists } from '../../../util/db/exists';
 import { ENotificationType } from '../../../../prisma';
 import { _enum } from '../../../util/transform/enum';
 import { rmNull } from '../../../util/transform/filterBoolean';
+import { date } from '../../../util/transform/date';
 
 export const NotificationValidations = {
   send: z.object({
@@ -32,6 +33,7 @@ export const NotificationValidations = {
         .transform(_enum)
         .optional()
         .pipe(z.nativeEnum(ENotificationType).optional()),
+      scheduledAt: z.string().optional().transform(date),
     }),
   }),
 };
