@@ -40,14 +40,18 @@ export const NotificationServices = {
     if (!recipientSet.size)
       throw new ServerError(StatusCodes.BAD_REQUEST, 'No recipients found');
 
-    return prisma.notification.create({
-      data: {
-        ...rest,
-        scheduledAt,
-        type,
-        status,
-        recipientIds: Array.from(recipientSet),
-      },
-    });
+    await Promise.all(
+      Array.from(recipientSet).map(userId =>
+        prisma.notification.create({
+          data: {
+            ...rest,
+            scheduledAt,
+            type,
+            status,
+            userId,
+          },
+        }),
+      ),
+    );
   },
 };
