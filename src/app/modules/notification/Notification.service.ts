@@ -41,14 +41,14 @@ export const NotificationServices = {
       throw new ServerError(StatusCodes.BAD_REQUEST, 'No recipients found');
 
     await Promise.all(
-      Array.from(recipientSet).map(userId =>
+      Array.from(recipientSet).map(influencerId =>
         prisma.notification.create({
           data: {
             ...rest,
             scheduledAt,
             type,
             status,
-            userId,
+            influencerId,
           },
         }),
       ),

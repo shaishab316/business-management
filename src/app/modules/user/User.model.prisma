@@ -17,6 +17,7 @@ model User {
   reviewsGiven    Review[]       @relation("ReviewByUser")
   reviewsReceived Review[]       @relation("ReviewForInfluencer")
   Notification    Notification[]
+  Compromise      Compromise[]
 
   @@map("users")
 }
