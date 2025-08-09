@@ -18,7 +18,9 @@ export const QueryValidations = {
   exists: (_id: string, model: TModels) =>
     z.object({
       params: z.object({
-        [_id]: z.string().refine(exists(model)),
+        [_id]: z.string().refine(exists(model), id => ({
+          message: `${model.toCapitalize()} not found with id: ${id}`,
+        })),
       }),
     }),
 };

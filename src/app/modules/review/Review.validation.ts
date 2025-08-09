@@ -21,9 +21,27 @@ export const ReviewValidations = {
 
   getAll: z.object({
     query: z.object({
-      influencerId: z.string().trim().optional().refine(exists('user')),
-      userId: z.string().trim().optional().refine(exists('user')),
-      campaignId: z.string().trim().optional().refine(exists('campaign')),
+      influencerId: z
+        .string()
+        .trim()
+        .optional()
+        .refine(exists('user'), (influencerId) => ({
+          message: 'Influencer not found with id: ' + influencerId,
+        })),
+      userId: z
+        .string()
+        .trim()
+        .optional()
+        .refine(exists('user'), (userId) => ({
+          message: 'User not found with id: ' + userId,
+        })),
+      campaignId: z
+        .string()
+        .trim()
+        .optional()
+        .refine(exists('campaign'), (campaignId) => ({
+          message: 'Campaign not found with id: ' + campaignId,
+        })),
     }),
   }),
 };

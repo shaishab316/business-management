@@ -9,11 +9,19 @@ export const NotificationValidations = {
   send: z.object({
     body: z.object({
       influencerIds: z
-        .array(z.string().refine(exists('user')))
+        .array(
+          z.string().refine(exists('user'), influencerId => ({
+            message: 'Influencer not found with id: ' + influencerId,
+          })),
+        )
         .transform(rmNull)
         .default([]),
       campaignIds: z
-        .array(z.string().refine(exists('campaign')))
+        .array(
+          z.string().refine(exists('campaign'), campaignId => ({
+            message: 'Campaign not found with id: ' + campaignId,
+          })),
+        )
         .transform(rmNull)
         .default([]),
       scheduledAt: z.string().optional().transform(date),

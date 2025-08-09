@@ -18,13 +18,20 @@ export const TaskValidations = {
 
   create: z.object({
     body: z.object({
-      influencerId: z.string().refine(exists('user')),
+      influencerId: z.string().refine(exists('user'), influencerId => ({
+        message: 'Influencer not found with id: ' + influencerId,
+      })),
     }),
   }),
 
   superGetAll: z.object({
     query: z.object({
-      influencerId: z.string().optional().refine(exists('user')),
+      influencerId: z
+        .string()
+        .optional()
+        .refine(exists('user'), influencerId => ({
+          message: 'Influencer not found with id: ' + influencerId,
+        })),
     }),
   }),
 
