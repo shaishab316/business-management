@@ -13,4 +13,14 @@ export const NotificationControllers = {
       data,
     });
   }),
+
+  getAll: catchAsync(async ({ query }, res) => {
+    const { meta, notifications } = await NotificationServices.getAll(query);
+
+    serveResponse(res, {
+      message: 'Notifications retrieved successfully!',
+      meta,
+      data: notifications,
+    });
+  }),
 };

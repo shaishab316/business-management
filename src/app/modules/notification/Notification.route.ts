@@ -6,6 +6,7 @@ import { NotificationTemplateValidations } from '../notificationTemplate/Notific
 import { NotificationTemplateRoutes } from '../notificationTemplate/NotificationTemplate.route';
 import { CompromiseValidations } from '../compromise/Compromise.validation';
 import { CompromiseControllers } from '../compromise/Compromise.controller';
+import { QueryValidations } from '../query/Query.validation';
 
 const subAdmin = Router();
 {
@@ -23,6 +24,12 @@ const subAdmin = Router();
 
 const influencer = Router();
 {
+  influencer.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    NotificationControllers.getAll,
+  );
+
   influencer.post(
     '/:notificationId/compromise',
     purifyRequest(CompromiseValidations.create),

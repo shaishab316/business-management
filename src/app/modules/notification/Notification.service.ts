@@ -3,6 +3,8 @@ import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TNotificationSend } from './Notification.validation';
 import { ENotificationStatus } from '../../../../prisma';
+import { TList } from '../query/Query.interface';
+import { TPagination } from '../../../util/server/serveResponse';
 
 export const NotificationServices = {
   async send({
@@ -53,5 +55,29 @@ export const NotificationServices = {
         }),
       ),
     );
+  },
+
+  async getAll({ page, limit }: TList) {
+    const where: any = {};
+
+    const notifications = await prisma.notification.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.notification.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+      },
+      notifications,
+    };
   },
 };
