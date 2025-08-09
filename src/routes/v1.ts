@@ -5,9 +5,7 @@ import SubAdminRoutes from '../app/modules/subAdmin/SubAdmin.route';
 import { AuthRoutes } from '../app/modules/auth/Auth.route';
 import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
-import { CampaignRoutes } from '../app/modules/campaign/Campaign.route';
-import { TaskRoutes } from '../app/modules/task/Task.route';
-import { ReviewRoutes } from '../app/modules/review/Review.route';
+import InfluencerRoutes from '../app/modules/influencer/Influencer.route';
 
 const appRouter = Router();
 
@@ -27,21 +25,13 @@ export default appRouter.inject([
     route: AuthRoutes,
   },
   {
-    path: '/campaigns',
-    route: CampaignRoutes.influencer,
-  },
-  {
-    path: '/reviews',
-    route: ReviewRoutes,
-  },
-  {
     path: '/profile',
     route: UserRoutes.user,
   },
   {
-    path: '/tasks',
+    path: '/influencer',
     middlewares: [auth.influencer()],
-    route: TaskRoutes.influencer,
+    route: InfluencerRoutes,
   },
   {
     path: '/sub-admin',

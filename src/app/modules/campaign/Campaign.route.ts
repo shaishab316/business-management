@@ -5,7 +5,6 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
 import { QueryValidations } from '../query/Query.validation';
 import { TaskControllers } from '../task/Task.controller';
-import auth from '../../middlewares/auth';
 import { ReviewValidations } from '../review/Review.validation';
 import { ReviewControllers } from '../review/Review.controller';
 import { TaskValidations } from '../task/Task.validation';
@@ -33,7 +32,6 @@ const influencer = Router();
 
   influencer.post(
     '/:campaignId/review',
-    auth.influencer(),
     purifyRequest(
       QueryValidations.exists('campaignId', 'campaign'),
       ReviewValidations.giveReview,
