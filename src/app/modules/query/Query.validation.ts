@@ -20,6 +20,7 @@ export const QueryValidations = {
       params: z.object({
         [_id]: z.string().refine(exists(model), id => ({
           message: `${model.toCapitalize()} not found with id: ${id}`,
+          path: [_id],
         })),
       }),
     }),

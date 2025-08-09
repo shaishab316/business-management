@@ -20,6 +20,7 @@ export const TaskValidations = {
     body: z.object({
       influencerId: z.string().refine(exists('user'), influencerId => ({
         message: 'Influencer not found with id: ' + influencerId,
+        path: ['influencerId'],
       })),
     }),
   }),
@@ -31,6 +32,7 @@ export const TaskValidations = {
         .optional()
         .refine(exists('user'), influencerId => ({
           message: 'Influencer not found with id: ' + influencerId,
+          path: ['influencerId'],
         })),
     }),
   }),

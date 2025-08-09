@@ -12,6 +12,7 @@ export const NotificationValidations = {
         .array(
           z.string().refine(exists('user'), influencerId => ({
             message: 'Influencer not found with id: ' + influencerId,
+            path: ['influencerIds'],
           })),
         )
         .transform(rmNull)
@@ -20,6 +21,7 @@ export const NotificationValidations = {
         .array(
           z.string().refine(exists('campaign'), campaignId => ({
             message: 'Campaign not found with id: ' + campaignId,
+            path: ['campaignIds'],
           })),
         )
         .transform(rmNull)

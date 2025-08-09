@@ -25,22 +25,25 @@ export const ReviewValidations = {
         .string()
         .trim()
         .optional()
-        .refine(exists('user'), (influencerId) => ({
+        .refine(exists('user'), influencerId => ({
           message: 'Influencer not found with id: ' + influencerId,
+          path: ['influencerId'],
         })),
       userId: z
         .string()
         .trim()
         .optional()
-        .refine(exists('user'), (userId) => ({
+        .refine(exists('user'), userId => ({
           message: 'User not found with id: ' + userId,
+          path: ['userId'],
         })),
       campaignId: z
         .string()
         .trim()
         .optional()
-        .refine(exists('campaign'), (campaignId) => ({
+        .refine(exists('campaign'), campaignId => ({
           message: 'Campaign not found with id: ' + campaignId,
+          path: ['campaignId'],
         })),
     }),
   }),
