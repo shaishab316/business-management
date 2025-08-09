@@ -1,7 +1,5 @@
 import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
-
-import { rmNull } from '../../../util/transform/filterBoolean';
 import { date } from '../../../util/transform/date';
 import { NotificationTemplateValidations } from '../notificationTemplate/NotificationTemplate.validation';
 
@@ -15,7 +13,6 @@ export const NotificationValidations = {
             path: ['influencerIds'],
           })),
         )
-        .transform(rmNull)
         .default([]),
       campaignIds: z
         .array(
@@ -24,7 +21,6 @@ export const NotificationValidations = {
             path: ['campaignIds'],
           })),
         )
-        .transform(rmNull)
         .default([]),
       scheduledAt: z.string().optional().transform(date),
     }),
