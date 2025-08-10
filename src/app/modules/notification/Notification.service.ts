@@ -47,7 +47,7 @@ export const NotificationServices = {
         prisma.notification.create({
           data: {
             ...rest,
-            publishedAt: scheduledAt,
+            scheduledAt,
             type,
             status,
             influencerId,
@@ -58,7 +58,9 @@ export const NotificationServices = {
   },
 
   async getAll({ page, limit, ...where }: TList) {
-    where.publishedAt = { gte: new Date() };
+    where.status = {
+      not: ENotificationStatus.PENDING,
+    };
 
     const notifications = await prisma.notification.findMany({
       where,
@@ -89,7 +91,7 @@ export const NotificationServices = {
     if (notification?.status !== ENotificationStatus.UNREAD)
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
-        'Notification already read',
+        `${notification?.status?.toCapitalize()} notification cannot be read`,
       );
 
     await prisma.notification.update({

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import colors from 'colors';
 import { createServer } from 'http';
 import app from '../../app';
@@ -7,6 +8,7 @@ import shutdownServer from './shutdownServer';
 import connectDB from './connectDB';
 import { AdminServices } from '../../app/modules/admin/Admin.service';
 import killPort from 'kill-port';
+import { verifyEmailTransporter } from '../sendMail';
 
 const {
   server: { port, ip_address, name },
@@ -26,14 +28,21 @@ export default async function startServer() {
       console.log(error);
     }
 
-    await connectDB();
-    await AdminServices.seed();
+    await Promise.all([
+      connectDB(),
+      AdminServices.seed(),
+      verifyEmailTransporter(),
+    ]);
 
-    const server = createServer(app).listen(port, ip_address, () => {
-      logger.info(
-        colors.yellow(`🚀 ${name} is running on http://${ip_address}:${port}`),
-      );
+    const server = createServer(app);
+
+    await new Promise<void>(resolve => {
+      server.listen(port, ip_address, resolve);
     });
+
+    logger.info(
+      colors.yellow(`🚀 ${name} is running on http://${ip_address}:${port}`),
+    );
 
     ['SIGTERM', 'SIGINT', 'unhandledRejection', 'uncaughtException'].forEach(
       signal =>

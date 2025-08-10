@@ -8,7 +8,7 @@ model Notification {
   influencer   User                @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   type         ENotificationType   @default(SOFT)
   status       ENotificationStatus @default(UNREAD)
-  publishedAt  DateTime            @default(now())
+  scheduledAt  DateTime?
   Compromise   Compromise[]
 
   @@map("notifications")

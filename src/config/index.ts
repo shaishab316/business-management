@@ -186,6 +186,12 @@ const config = {
       }),
     },
   },
+
+  notification_interval: env<ms.StringValue>('notification interval', '10m', {
+    up: 'Notification - start',
+    regex: '^\d+[smhd]$',
+    down: 'Notification - end',
+  }),
 };
 
 export default config;
