@@ -14,13 +14,46 @@ export const NotificationControllers = {
     });
   }),
 
-  getAll: catchAsync(async ({ query }, res) => {
+  getAll: catchAsync(async ({ query, user }, res) => {
+    const { meta, notifications } = await NotificationServices.getAll({
+      ...query,
+      influencerId: user.id,
+    });
+
+    serveResponse(res, {
+      message: 'Notifications retrieved successfully!',
+      meta,
+      data: notifications,
+    });
+  }),
+
+  superGetAll: catchAsync(async ({ query }, res) => {
     const { meta, notifications } = await NotificationServices.getAll(query);
 
     serveResponse(res, {
       message: 'Notifications retrieved successfully!',
       meta,
       data: notifications,
+    });
+  }),
+
+  readNotification: catchAsync(async ({ params }, res) => {
+    const data = await NotificationServices.readNotification(
+      params.notificationId,
+    );
+
+    serveResponse(res, {
+      message: 'Notification read successfully!',
+      data,
+    });
+  }),
+
+  readAllNotifications: catchAsync(async ({ user }, res) => {
+    const data = await NotificationServices.readAllNotifications(user.id);
+
+    serveResponse(res, {
+      message: 'All notifications read successfully!',
+      data,
     });
   }),
 };

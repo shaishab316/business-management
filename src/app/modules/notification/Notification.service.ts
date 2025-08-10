@@ -47,7 +47,7 @@ export const NotificationServices = {
         prisma.notification.create({
           data: {
             ...rest,
-            scheduledAt,
+            publishedAt: scheduledAt,
             type,
             status,
             influencerId,
@@ -57,8 +57,8 @@ export const NotificationServices = {
     );
   },
 
-  async getAll({ page, limit }: TList) {
-    const where: any = {};
+  async getAll({ page, limit, ...where }: TList) {
+    where.publishedAt = { gte: new Date() };
 
     const notifications = await prisma.notification.findMany({
       where,
@@ -79,5 +79,29 @@ export const NotificationServices = {
       },
       notifications,
     };
+  },
+
+  async readNotification(notificationId: string) {
+    const notification = await prisma.notification.findUnique({
+      where: { id: notificationId },
+    });
+
+    if (notification?.status !== ENotificationStatus.UNREAD)
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        'Notification already read',
+      );
+
+    await prisma.notification.update({
+      where: { id: notificationId },
+      data: { status: ENotificationStatus.READ },
+    });
+  },
+
+  async readAllNotifications(influencerId: string) {
+    await prisma.notification.updateMany({
+      where: { influencerId, status: ENotificationStatus.UNREAD },
+      data: { status: ENotificationStatus.READ },
+    });
   },
 };

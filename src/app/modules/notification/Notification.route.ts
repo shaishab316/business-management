@@ -10,6 +10,12 @@ import { QueryValidations } from '../query/Query.validation';
 
 const subAdmin = Router();
 {
+  subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list, NotificationValidations.getAll),
+    NotificationControllers.superGetAll,
+  );
+
   subAdmin.use('/templates', NotificationTemplateRoutes);
 
   subAdmin.post(
@@ -26,8 +32,16 @@ const influencer = Router();
 {
   influencer.get(
     '/',
-    purifyRequest(QueryValidations.list),
+    purifyRequest(QueryValidations.list, NotificationValidations.getAll),
     NotificationControllers.getAll,
+  );
+
+  influencer.post('/read-all', NotificationControllers.readAllNotifications);
+
+  influencer.post(
+    '/:notificationId/read',
+    purifyRequest(QueryValidations.exists('notificationId', 'notification')),
+    NotificationControllers.readNotification,
   );
 
   influencer.post(

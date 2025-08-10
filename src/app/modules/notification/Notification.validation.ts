@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
 import { date } from '../../../util/transform/date';
 import { NotificationTemplateValidations } from '../notificationTemplate/NotificationTemplate.validation';
+import { _enum } from '../../../util/transform/enum';
+import { ENotificationStatus } from '../../../../prisma';
 
 export const NotificationValidations = {
   send: z.object({
@@ -23,6 +25,16 @@ export const NotificationValidations = {
         )
         .default([]),
       scheduledAt: z.string().optional().transform(date),
+    }),
+  }),
+
+  getAll: z.object({
+    query: z.object({
+      status: z
+        .string()
+        .optional()
+        .transform(_enum)
+        .pipe(z.nativeEnum(ENotificationStatus).optional()),
     }),
   }),
 };
