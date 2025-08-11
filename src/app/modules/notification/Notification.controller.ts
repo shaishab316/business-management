@@ -17,13 +17,16 @@ export const NotificationControllers = {
   getAll: catchAsync(async ({ query, user }, res) => {
     const { meta, notifications } = await NotificationServices.getAll({
       ...query,
-      influencerId: user.id,
+      recipientIds: { has: user.id },
     });
 
     serveResponse(res, {
       message: 'Notifications retrieved successfully!',
       meta,
-      data: notifications,
+      data: notifications.map(notification => ({
+        ...notification,
+        recipientIds: undefined,
+      })),
     });
   }),
 

@@ -42,19 +42,15 @@ export const NotificationServices = {
     if (!recipientSet.size)
       throw new ServerError(StatusCodes.BAD_REQUEST, 'No recipients found');
 
-    await Promise.all(
-      Array.from(recipientSet).map(influencerId =>
-        prisma.notification.create({
-          data: {
-            ...rest,
-            scheduledAt,
-            type,
-            status,
-            influencerId,
-          },
-        }),
-      ),
-    );
+    await prisma.notification.create({
+      data: {
+        ...rest,
+        scheduledAt,
+        type,
+        status,
+        recipientIds: Array.from(recipientSet),
+      },
+    });
   },
 
   async getAll({ page, limit, ...where }: TList) {
@@ -102,7 +98,10 @@ export const NotificationServices = {
 
   async readAllNotifications(influencerId: string) {
     await prisma.notification.updateMany({
-      where: { influencerId, status: ENotificationStatus.UNREAD },
+      where: {
+        recipientIds: { has: influencerId },
+        status: ENotificationStatus.UNREAD,
+      },
       data: { status: ENotificationStatus.READ },
     });
   },

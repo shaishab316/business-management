@@ -4,8 +4,7 @@ model Notification {
   updatedAt    DateTime            @updatedAt
   title        String
   body         String
-  influencerId String              @db.ObjectId
-  influencer   User                @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  recipientIds String[]            @default([]) @db.ObjectId
   type         ENotificationType   @default(SOFT)
   status       ENotificationStatus @default(UNREAD)
   scheduledAt  DateTime?
