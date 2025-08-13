@@ -18,6 +18,26 @@ const avatarCapture = capture({
 
 const admin = Router();
 {
+  admin.get(
+    '/',
+    purifyRequest(QueryValidations.list, UserValidations.getAllUser),
+    UserControllers.getAllUser,
+  );
+
+  admin.post(
+    '/create-sub-admin',
+    avatarCapture,
+    purifyRequest(UserValidations.create, UserValidations.edit),
+    UserControllers.createSubAdmin,
+  );
+
+  admin.patch(
+    ':userId/edit',
+    avatarCapture,
+    purifyRequest(UserValidations.edit),
+    UserControllers.superEdit,
+  );
+
   admin.delete(
     '/:userId/delete',
     purifyRequest(QueryValidations.exists('userId', 'user')),

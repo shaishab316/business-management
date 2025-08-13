@@ -6,9 +6,10 @@ import { AuthServices } from '../auth/Auth.service';
 import { OtpServices } from '../otp/Otp.service';
 import { errorLogger } from '../../../util/logger/logger';
 import { EUserRole, User as TUser } from '../../../../prisma';
+import prisma from '../../../util/prisma';
 
 export const UserControllers = {
-  create: catchAsync(async ({ body }, res) => {
+  createUser: catchAsync(async ({ body }, res) => {
     const user = (await UserServices.create(body)) as TUser;
     let otp = null;
 
@@ -37,6 +38,19 @@ export const UserControllers = {
     });
   }),
 
+  createSubAdmin: catchAsync(async ({ body }, res) => {
+    const user = (await UserServices.create({
+      ...body,
+      role: EUserRole.SUB_ADMIN,
+    })) as TUser;
+
+    serveResponse(res, {
+      statusCode: StatusCodes.CREATED,
+      message: `${user.role.toCapitalize() ?? 'User'} registered successfully!`,
+      data: user,
+    });
+  }),
+
   edit: catchAsync(async (req, res) => {
     const data = await UserServices.updateUser(req);
 
@@ -46,8 +60,24 @@ export const UserControllers = {
     });
   }),
 
+  superEdit: catchAsync(async ({ params, body }, res) => {
+    const user = (await prisma.user.findUnique({
+      where: { id: params.userId },
+    })) as TUser;
+
+    const data = await UserServices.updateUser({
+      user,
+      body,
+    });
+
+    serveResponse(res, {
+      message: `${user?.role?.toCapitalize() ?? 'User'} updated successfully!`,
+      data,
+    });
+  }),
+
   getAllUser: catchAsync(async ({ query }, res) => {
-    const { meta, users } = await UserServices.list(query);
+    const { meta, users } = await UserServices.getAllUser(query);
 
     serveResponse(res, {
       message: 'Users retrieved successfully!',

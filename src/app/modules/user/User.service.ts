@@ -35,11 +35,11 @@ export const UserServices = {
     });
   },
 
-  async list({ page, limit, search, ...filter }: TUser & TList) {
-    filter ??= {} as any;
+  async getAllUser({ page, limit, search, ...where }: TUser & TList) {
+    where ??= {} as any;
 
     if (search)
-      filter.OR = searchFields.map(field => ({
+      where.OR = searchFields.map(field => ({
         [field]: {
           contains: search,
           mode: 'insensitive',
@@ -47,12 +47,12 @@ export const UserServices = {
       }));
 
     const users = await prisma.user.findMany({
-      where: filter,
+      where,
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    const total = await prisma.user.count({ where: filter });
+    const total = await prisma.user.count({ where });
 
     return {
       meta: {

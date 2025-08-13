@@ -17,7 +17,7 @@ router.post(
   '/register',
   capture({ avatar: { maxCount: 1, size: 5 * 1024 * 1024 } }),
   purifyRequest(UserValidations.create, UserValidations.edit),
-  UserControllers.create,
+  UserControllers.createUser,
 );
 
 router.post(
