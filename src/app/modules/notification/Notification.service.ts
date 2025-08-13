@@ -5,6 +5,7 @@ import { TNotificationSend } from './Notification.validation';
 import { ENotificationStatus } from '../../../../prisma';
 import { TList } from '../query/Query.interface';
 import { TPagination } from '../../../util/server/serveResponse';
+import { sendUserPostNotification } from './Notification.utils';
 
 export const NotificationServices = {
   async send({
@@ -12,7 +13,8 @@ export const NotificationServices = {
     campaignIds,
     type,
     scheduledAt,
-    ...rest
+    title,
+    body,
   }: TNotificationSend) {
     let status: ENotificationStatus = ENotificationStatus.UNREAD;
 
@@ -42,9 +44,20 @@ export const NotificationServices = {
     if (!recipientSet.size)
       throw new ServerError(StatusCodes.BAD_REQUEST, 'No recipients found');
 
+    if (!scheduledAt) {
+      const done = await sendUserPostNotification({
+        userIds: Array.from(recipientSet),
+        title,
+        body,
+      });
+
+      if (done) status = ENotificationStatus.PUSHED;
+    }
+
     await prisma.notification.create({
       data: {
-        ...rest,
+        title,
+        body,
         scheduledAt,
         type,
         status,

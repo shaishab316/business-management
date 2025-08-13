@@ -192,6 +192,49 @@ const config = {
     regex: '^\d+[smhd]$',
     down: 'Notification - end',
   }),
+
+  firebase: {
+    type: env('firebase type', '', {
+      up: 'Firebase credentials - start',
+      regex: '^service_account$',
+    }),
+    project_id: env('firebase project id', '', {
+      regex: '^notification-69041$',
+    }),
+    private_key_id: env('firebase private key id', '', {
+      regex: '^[a-f0-9]{40}$',
+    }),
+    private_key: env('firebase private key', '', {
+      regex:
+        '^-----BEGIN PRIVATE KEY-----\\n[A-Za-z0-9+/=\\n]+-----END PRIVATE KEY-----\\n$',
+    }),
+    client_email: env('firebase client email', '', {
+      regex: '^[\\w.-]+@\\w+\\.[a-z]{2,}$',
+    }),
+    client_id: env('firebase client id', '', {
+      regex: '^\\d+$',
+    }),
+    auth_uri: env('firebase auth uri', '', {
+      regex: '^https://accounts\\.google\\.com/o/oauth2/auth$',
+    }),
+    token_uri: env('firebase token uri', '', {
+      regex: '^https://oauth2\\.googleapis\\.com/token$',
+    }),
+    auth_provider_x509_cert_url: env(
+      'firebase auth provider x509 cert url',
+      '',
+      {
+        regex: '^https://www\\.googleapis\\.com/oauth2/v1/certs$',
+      },
+    ),
+    client_x509_cert_url: env('firebase client x509 cert url', '', {
+      regex: '^https://www\\.googleapis\\.com/robot/v1/metadata/x509/.+$',
+    }),
+    universe_domain: env('firebase universe domain', '', {
+      regex: '^googleapis\\.com$',
+      down: 'Firebase credentials - end',
+    }),
+  },
 };
 
 export default config;

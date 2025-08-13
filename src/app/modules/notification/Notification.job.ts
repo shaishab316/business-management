@@ -4,6 +4,7 @@ import config from '../../../config';
 import prisma from '../../../util/prisma';
 import { ENotificationStatus } from '../../../../prisma';
 import colors from 'colors';
+import { sendUserPostNotification } from './Notification.utils';
 
 const time = ms(config.notification_interval);
 
@@ -18,19 +19,34 @@ export const NotificationJobs = {
 
     (async function publish() {
       try {
-        const { count } = await prisma.notification.updateMany({
+        const notifications = await prisma.notification.findMany({
           where: {
             status: ENotificationStatus.PENDING,
             scheduledAt: { lte: new Date() },
           },
-
-          data: {
-            status: ENotificationStatus.UNREAD,
-            scheduledAt: null,
-          },
         });
 
-        console.log(`Published ${count} notifications`);
+        for (const notification of notifications) {
+          const done = await sendUserPostNotification({
+            userIds: notification.recipientIds,
+            title: notification.title,
+            body: notification.body,
+          });
+
+          if (done) {
+            await prisma.notification.update({
+              where: { id: notification.id },
+              data: {
+                status: done
+                  ? ENotificationStatus.PUSHED
+                  : ENotificationStatus.UNREAD,
+                scheduledAt: null,
+              },
+            });
+          }
+        }
+
+        console.log(`Published ${notifications.length} notifications`);
       } catch (error) {
         console.error('Failed to publish notifications:', error);
       } finally {
