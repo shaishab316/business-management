@@ -4,7 +4,9 @@ model Compromise {
   influencer     User         @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   notificationId String       @db.ObjectId
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  history        DateTime[]   @default([])
   date           DateTime
 
+  @@unique([notificationId, influencerId])
   @@map("compromises")
 }

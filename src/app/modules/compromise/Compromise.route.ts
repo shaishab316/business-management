@@ -1,14 +1,24 @@
 import { Router } from 'express';
 import { CompromiseControllers } from './Compromise.controller';
-import { CompromiseValidations } from './Compromise.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
+import { QueryValidations } from '../query/Query.validation';
 
-const router = Router();
+const influencer = Router();
+{
+  influencer.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    CompromiseControllers.getAll,
+  );
+}
 
-router.post(
-  '/create',
-  purifyRequest(CompromiseValidations.create),
-  CompromiseControllers.create,
-);
+const subAdmin = Router();
+{
+  subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    CompromiseControllers.superGetAll,
+  );
+}
 
-export const CompromiseRoutes = router;
+export const CompromiseRoutes = { influencer, subAdmin };

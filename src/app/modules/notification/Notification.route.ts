@@ -46,8 +46,8 @@ const influencer = Router();
 
   influencer.post(
     '/:notificationId/compromise',
-    purifyRequest(CompromiseValidations.create),
-    CompromiseControllers.create,
+    purifyRequest(CompromiseValidations.compromise),
+    CompromiseControllers.compromise,
   );
 }
 

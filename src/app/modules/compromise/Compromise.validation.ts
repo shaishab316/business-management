@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { date } from '../../../util/transform/date';
 
 export const CompromiseValidations = {
-  create: z.object({
+  compromise: z.object({
     body: z.object({
       date: z
         .string({
