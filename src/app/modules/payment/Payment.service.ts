@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import { EPaymentStatus, Payment as TPayment } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
+import { TPagination } from '../../../util/server/serveResponse';
+import { TList } from '../query/Query.interface';
 
 export const PaymentServices = {
   async create(paymentData: TPayment) {
@@ -38,5 +40,28 @@ export const PaymentServices = {
       where: { id: paymentId },
       data: { status },
     });
+  },
+
+  async getAll({ page, limit, ...where }: TList) {
+    const payments = await prisma.payment.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.payment.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+        query: where,
+      },
+      payments,
+    };
   },
 };

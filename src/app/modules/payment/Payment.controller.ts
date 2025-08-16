@@ -41,4 +41,27 @@ export const PaymentControllers = {
       data,
     });
   }),
+
+  getAll: catchAsync(async ({ query, user }, res) => {
+    const { meta, payments } = await PaymentServices.getAll({
+      ...query,
+      influencerId: user.id,
+    });
+
+    serveResponse(res, {
+      message: 'Payments retrieved successfully!',
+      meta,
+      data: payments,
+    });
+  }),
+
+  superGetAll: catchAsync(async ({ query }, res) => {
+    const { meta, payments } = await PaymentServices.getAll(query);
+
+    serveResponse(res, {
+      message: 'Payments retrieved successfully!',
+      meta,
+      data: payments,
+    });
+  }),
 };
