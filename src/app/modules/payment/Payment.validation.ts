@@ -12,4 +12,10 @@ export const PaymentValidations = {
         .pipe(z.nativeEnum(EPaymentMethod).optional()),
     }),
   }),
+
+  changeStatus: z.object({
+    params: z.object({
+      status: z.string().transform(_enum).pipe(z.nativeEnum(EPaymentMethod)),
+    }),
+  }),
 };

@@ -29,4 +29,16 @@ export const PaymentControllers = {
       data,
     });
   }),
+
+  changeStatus: catchAsync(async ({ params }, res) => {
+    const data = await PaymentServices.changeStatus(
+      params.paymentId,
+      params.status,
+    );
+
+    serveResponse(res, {
+      message: `Payment ${data.status.toLocaleLowerCase()} successfully!`,
+      data,
+    });
+  }),
 };

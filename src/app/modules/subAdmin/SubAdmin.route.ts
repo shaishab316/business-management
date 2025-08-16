@@ -4,6 +4,7 @@ import { TaskRoutes } from '../task/Task.route';
 import { UserRoutes } from '../user/User.route';
 import { NotificationRoutes } from '../notification/Notification.route';
 import { CompromiseRoutes } from '../compromise/Compromise.route';
+import { PaymentRoutes } from '../payment/Payment.route';
 
 export default Router().inject([
   {
@@ -25,5 +26,9 @@ export default Router().inject([
   {
     path: '/compromises',
     route: CompromiseRoutes.subAdmin,
+  },
+  {
+    path: '/payments',
+    route: PaymentRoutes.subAdmin,
   },
 ]);

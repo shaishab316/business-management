@@ -22,4 +22,5 @@ enum EPaymentMethod {
 enum EPaymentStatus {
   PENDING
   PAID
+  CANCEL
 }
