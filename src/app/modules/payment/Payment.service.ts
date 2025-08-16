@@ -36,10 +36,23 @@ export const PaymentServices = {
   },
 
   async changeStatus(paymentId: string, status: EPaymentStatus) {
-    return prisma.payment.update({
+    const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
-      data: { status },
+      select: {
+        taskId: true,
+      },
     });
+
+    return prisma.$transaction([
+      prisma.payment.update({
+        where: { id: paymentId },
+        data: { status },
+      }),
+      prisma.task.update({
+        where: { id: payment?.taskId },
+        data: { paymentStatus: status },
+      }),
+    ]);
   },
 
   async getAll({ page, limit, ...where }: TList) {
