@@ -1,0 +1,25 @@
+model Payment {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  taskId       String         @unique @db.ObjectId
+  task         Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  influencerId String         @db.ObjectId
+  influencer   User           @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  amount       Int
+  method       EPaymentMethod
+  invoices     String[]       @default([])
+  status       EPaymentStatus @default(PENDING)
+
+  @@map("payments")
+}
+
+enum EPaymentMethod {
+  CASH
+  INVOICE
+}
+
+enum EPaymentStatus {
+  PENDING
+  PAID
+}

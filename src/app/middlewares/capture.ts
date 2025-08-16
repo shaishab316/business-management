@@ -36,9 +36,8 @@ const capture = (fields: {
             ({ filename }) => `/images/${filename}`,
           );
 
-          req.body[field] = Array.isArray(fields[field].default)
-            ? images
-            : images[0];
+          req.body[field] =
+            (fields[field]?.maxCount || 1) > 1 ? images : images[0];
 
           //! for cleanup
           req.tempFiles.push(...images);

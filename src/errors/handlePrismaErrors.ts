@@ -18,8 +18,10 @@ export const handlePrismaRequestError = (
 
     return {
       statusCode: StatusCodes.CONFLICT,
-      message: `${fields} must be unique`,
-      errorMessages: createErrorMessage(`${fields} already exists`),
+      message: `${fields.replace(/^[^_]+_|_[^_]+$/g, '')} must be unique`,
+      errorMessages: createErrorMessage(
+        `${fields.replace(/^[^_]+_|_[^_]+$/g, '')} already exists`,
+      ),
     };
   }
 

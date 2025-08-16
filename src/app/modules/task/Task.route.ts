@@ -4,6 +4,8 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import { TaskValidations } from './Task.validation';
 import capture from '../../middlewares/capture';
+import { PaymentControllers } from '../payment/Payment.controller';
+import { PaymentValidations } from '../payment/Payment.validation';
 
 const influencer = Router();
 {
@@ -43,6 +45,15 @@ const influencer = Router();
     capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
     purifyRequest(TaskValidations.uploadMatrix),
     TaskControllers.uploadMatrix,
+  );
+
+  influencer.post(
+    '/:taskId/request-for-payment',
+    purifyRequest(PaymentValidations.create),
+    capture({
+      invoices: { maxCount: 10, size: 5 * 1024 * 1024 },
+    }),
+    PaymentControllers.create,
   );
 }
 
