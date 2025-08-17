@@ -21,7 +21,7 @@ const admin = Router();
   admin.get(
     '/',
     purifyRequest(QueryValidations.list, UserValidations.getAllUser),
-    UserControllers.getAllUser,
+    UserControllers.superGetAllUser,
   );
 
   admin.post(

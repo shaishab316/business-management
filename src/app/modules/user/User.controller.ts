@@ -86,6 +86,20 @@ export const UserControllers = {
     });
   }),
 
+  superGetAllUser: catchAsync(async ({ query }, res) => {
+    const { meta, users } = await UserServices.getAllUser(query);
+
+    Object.assign(meta, {
+      users: await UserServices.getUsersCount(),
+    });
+
+    serveResponse(res, {
+      message: 'Users retrieved successfully!',
+      meta,
+      data: users,
+    });
+  }),
+
   profile: catchAsync(({ user }, res) => {
     serveResponse(res, {
       message: 'Profile retrieved successfully!',

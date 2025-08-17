@@ -58,7 +58,7 @@ router.post(
   OtpControllers.resetPasswordOtpVerify,
 );
 
-router.post(
+router.get(
   '/account-verify-otp-send',
   otpLimiter,
   auth.guest(),

@@ -67,6 +67,19 @@ export const UserServices = {
     };
   },
 
+  async getUsersCount() {
+    const counts = await prisma.user.groupBy({
+      by: ['role'],
+      _count: {
+        _all: true,
+      },
+    });
+
+    return Object.fromEntries(
+      counts.map(({ role, _count }) => [role, _count._all]),
+    );
+  },
+
   async delete(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
