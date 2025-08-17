@@ -16,7 +16,7 @@ export const PaymentValidations = {
 
   changeStatus: z.object({
     params: z.object({
-      status: z.string().transform(_enum).pipe(z.nativeEnum(EPaymentMethod)),
+      status: z.string().transform(_enum).pipe(z.nativeEnum(EPaymentStatus)),
     }),
   }),
 

@@ -31,7 +31,7 @@ export const PaymentControllers = {
   }),
 
   changeStatus: catchAsync(async ({ params }, res) => {
-    const data = await PaymentServices.changeStatus(
+    const [data] = await PaymentServices.changeStatus(
       params.paymentId,
       params.status,
     );

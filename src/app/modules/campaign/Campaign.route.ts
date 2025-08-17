@@ -42,6 +42,18 @@ const influencer = Router();
 
 const subAdmin = Router();
 {
+  subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    CampaignControllers.getAll,
+  );
+
+  subAdmin.get(
+    '/:campaignId',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    CampaignControllers.getById,
+  );
+
   subAdmin.post(
     '/create',
     bannerCapture,

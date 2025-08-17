@@ -13,7 +13,7 @@ const subAdmin = Router();
   );
 
   subAdmin.post(
-    '/:taskId/:status',
+    '/:paymentId/:status',
     purifyRequest(PaymentValidations.changeStatus),
     PaymentControllers.changeStatus,
   );

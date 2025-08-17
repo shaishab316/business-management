@@ -7,6 +7,18 @@ import { TList } from '../query/Query.interface';
 
 export const PaymentServices = {
   async create(paymentData: TPayment) {
+    const existingPayment = await prisma.payment.findUnique({
+      where: {
+        taskId: paymentData.taskId,
+      },
+    });
+
+    if (existingPayment)
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        `Already requested payment for this task.`,
+      );
+
     const task = await prisma.task.findUnique({
       where: { id: paymentData.taskId },
       select: {
