@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
 import { date } from '../../../util/transform/date';
 import { NotificationTemplateValidations } from '../notificationTemplate/NotificationTemplate.validation';
-import { _enum } from '../../../util/transform/enum';
+import { enum_encode } from '../../../util/transform/enum';
 import { ENotificationStatus } from '../../../../prisma';
 
 export const NotificationValidations = {
@@ -33,7 +33,7 @@ export const NotificationValidations = {
       status: z
         .string()
         .optional()
-        .transform(_enum)
+        .transform(enum_encode)
         .pipe(z.nativeEnum(ENotificationStatus).optional()),
     }),
   }),

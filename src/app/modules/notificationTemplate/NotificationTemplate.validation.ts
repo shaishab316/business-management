@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { _enum } from '../../../util/transform/enum';
+import { enum_encode } from '../../../util/transform/enum';
 import { ENotificationType } from '../../../../prisma';
 
 const type = z
   .string()
-  .transform(_enum)
+  .transform(enum_encode)
   .optional()
   .pipe(z.nativeEnum(ENotificationType).optional());
 

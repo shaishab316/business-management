@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { _enum } from '../../../util/transform/enum';
+import { enum_encode } from '../../../util/transform/enum';
 import { EPaymentMethod, EPaymentStatus } from '../../../../prisma';
 import { exists } from '../../../util/db/exists';
 
@@ -8,7 +8,7 @@ export const PaymentValidations = {
     query: z.object({
       method: z
         .string()
-        .transform(_enum)
+        .transform(enum_encode)
         .optional()
         .pipe(z.nativeEnum(EPaymentMethod).optional()),
     }),
@@ -16,7 +16,10 @@ export const PaymentValidations = {
 
   changeStatus: z.object({
     params: z.object({
-      status: z.string().transform(_enum).pipe(z.nativeEnum(EPaymentStatus)),
+      status: z
+        .string()
+        .transform(enum_encode)
+        .pipe(z.nativeEnum(EPaymentStatus)),
     }),
   }),
 
@@ -24,12 +27,12 @@ export const PaymentValidations = {
     query: z.object({
       method: z
         .string()
-        .transform(_enum)
+        .transform(enum_encode)
         .optional()
         .pipe(z.nativeEnum(EPaymentMethod).optional()),
       status: z
         .string()
-        .transform(_enum)
+        .transform(enum_encode)
         .optional()
         .pipe(z.nativeEnum(EPaymentStatus).optional()),
       influencerId: z

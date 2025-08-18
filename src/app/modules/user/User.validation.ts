@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { EUserRole } from '../../../../prisma';
-import { _enum } from '../../../util/transform/enum';
+import { enum_encode } from '../../../util/transform/enum';
 
 export const UserValidations = {
   create: z.object({
@@ -50,7 +50,7 @@ export const UserValidations = {
       role: z
         .string()
         .optional()
-        .transform(_enum)
+        .transform(enum_encode)
         .pipe(z.nativeEnum(EUserRole).optional()),
     }),
   }),

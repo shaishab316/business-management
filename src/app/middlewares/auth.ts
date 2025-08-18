@@ -4,6 +4,7 @@ import { decodeToken, superRoles, TToken } from '../modules/auth/Auth.utils';
 import catchAsync from './catchAsync';
 import { EUserRole } from '../../../prisma';
 import prisma from '../../util/prisma';
+import { enum_decode } from '../../util/transform/enum';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles
@@ -33,10 +34,8 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
           ? 'Your account is not verified yet. Please verify your account.'
           : `Permission denied. You are not a ${roles
               .concat(EUserRole.ADMIN)
-              .map(role => role.toLocaleLowerCase().replace(/_/g, ' '))
-              .join(
-                ' or ',
-              )}! You are a ${req.user.role.toLocaleLowerCase().replace(/_/g, ' ')}!`,
+              .map(enum_decode)
+              .join(' or ')}! You are a ${enum_decode(req.user.role)}!`,
       );
 
     next();
