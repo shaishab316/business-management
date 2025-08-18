@@ -10,14 +10,15 @@ import prisma from '../../util/prisma';
  *
  * @param roles - The roles that are allowed to access the resource
  */
-const auth = (roles: EUserRole[] = [], tokenType: TToken = 'access_token') =>
+const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
   catchAsync(async (req, _, next) => {
     const token =
-      req.cookies[tokenType] ||
-      req.headers.authorization?.split(/Bearer /i)?.[1];
+      req.cookies[token_type] ||
+      req.headers.authorization?.split(/Bearer /i)?.[1] ||
+      req.query[token_type];
 
     req.user = (await prisma.user.findUnique({
-      where: { id: decodeToken(token, tokenType).userId },
+      where: { id: decodeToken(token, token_type).userId },
     }))!;
 
     if (

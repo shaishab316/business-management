@@ -8,7 +8,7 @@ export const OtpControllers = {
     const otp = await OtpServices.send(user, 'resetPassword');
 
     serveResponse(res, {
-      message: 'OTP sent successfully!',
+      message: `OTP sent to ${user?.email} successfully!`,
       data: { expiredAt: otp?.exp?.toLocaleTimeString() },
     });
   }),
@@ -30,7 +30,7 @@ export const OtpControllers = {
     const otp = await OtpServices.send(user, 'accountVerify');
 
     serveResponse(res, {
-      message: 'OTP sent successfully!',
+      message: `OTP sent to ${user?.email} successfully!`,
       data: { expiredAt: otp?.exp?.toLocaleTimeString() },
     });
   }),
