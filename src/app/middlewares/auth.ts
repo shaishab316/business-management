@@ -15,18 +15,23 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
   catchAsync(async (req, _, next) => {
     const token =
       req.cookies[token_type] ||
-      req.headers.authorization?.split(/Bearer /i)?.[1] ||
+      req.headers.authorization?.match(/[\w-]+\.[\w-]+\.[\w-]+/)?.[0] ||
       req.query[token_type];
 
     req.user = (await prisma.user.findUnique({
       where: { id: decodeToken(token, token_type).userId },
     }))!;
 
+    if (!req.user)
+      throw new ServerError(
+        StatusCodes.UNAUTHORIZED,
+        'Maybe your account has been deleted. Register again.',
+      );
+
     if (
-      !req.user ||
-      (roles[0] &&
-        !superRoles.includes(req.user.role) &&
-        !roles.includes(req.user.role))
+      roles[0] &&
+      !superRoles.includes(req.user.role) &&
+      !roles.includes(req.user.role)
     )
       throw new ServerError(
         StatusCodes.FORBIDDEN,
@@ -35,7 +40,7 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
           : `Permission denied. You are not a ${roles
               .concat(EUserRole.ADMIN)
               .map(enum_decode)
-              .join(' or ')}! You are a ${enum_decode(req.user.role)}!`,
+              .join(' or ')}! You are a ${enum_decode(req.user?.role)}!`,
       );
 
     next();
