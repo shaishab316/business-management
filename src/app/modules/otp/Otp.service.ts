@@ -54,8 +54,8 @@ export const OtpServices = {
 
     if (!validOtp)
       throw new ServerError(
-        StatusCodes.UNAUTHORIZED,
-        'Your credentials are incorrect.',
+        StatusCodes.BAD_REQUEST,
+        'Invalid OTP. Please request a new one.',
       );
 
     return prisma.otp.delete({ where: { id: validOtp.id } });

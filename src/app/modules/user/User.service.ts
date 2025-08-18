@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { TList } from '../query/Query.interface';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
