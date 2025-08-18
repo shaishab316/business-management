@@ -9,27 +9,17 @@ import { User as TUser } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 
 export const OtpServices = {
-  async send(user: TUser, type: 'resetPassword' | 'accountVerify') {
+  async send(user: TUser, template: keyof typeof OtpTemplates) {
     const otp = otpGenerator(config.otp.length);
 
-    if (type === 'resetPassword')
-      sendEmail({
-        to: user.email,
-        subject: `Your ${config.server.name} password reset OTP is ⚡ ${otp} ⚡.`,
-        html: OtpTemplates.reset({
-          userName: user?.name ?? 'Mr. ' + user.role,
-          otp,
-        }),
-      });
-    else if (type === 'accountVerify')
-      sendEmail({
-        to: user.email,
-        subject: `Your ${config.server.name} account verification OTP is ⚡ ${otp} ⚡.`,
-        html: OtpTemplates.welcome({
-          userName: user?.name ?? 'Mr. ' + user.role,
-          otp,
-        }),
-      });
+    sendEmail({
+      to: user.email,
+      subject: `Your ${config.server.name} ${template} OTP is ⚡ ${otp} ⚡.`,
+      html: OtpTemplates[template]({
+        userName: user?.name ?? 'Mr. ' + user.role,
+        otp,
+      }),
+    });
 
     return prisma.otp.upsert({
       where: { userId: user.id },

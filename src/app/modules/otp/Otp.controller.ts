@@ -5,7 +5,7 @@ import { AuthServices } from '../auth/Auth.service';
 
 export const OtpControllers = {
   resetPasswordOtpSend: catchAsync(async ({ user }, res) => {
-    const otp = await OtpServices.send(user, 'resetPassword');
+    const otp = await OtpServices.send(user, 'reset password');
 
     serveResponse(res, {
       message: `OTP sent to ${user?.email} successfully!`,
@@ -27,7 +27,7 @@ export const OtpControllers = {
   }),
 
   accountVerifyOtpSend: catchAsync(async ({ user }, res) => {
-    const otp = await OtpServices.send(user, 'accountVerify');
+    const otp = await OtpServices.send(user, 'account verify');
 
     serveResponse(res, {
       message: `OTP sent to ${user?.email} successfully!`,
