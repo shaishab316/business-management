@@ -28,7 +28,7 @@ export const AuthControllers = {
   }),
 
   logout: catchAsync(async ({ cookies }, res) => {
-    AuthServices.destroyTokens(res, Object.keys(cookies) as TToken[]);
+    AuthServices.destroyTokens(res, ...(Object.keys(cookies) as TToken[]));
 
     serveResponse(res, {
       message: 'Logged out successfully!',
@@ -44,7 +44,7 @@ export const AuthControllers = {
       'refresh_token',
     );
 
-    AuthServices.destroyTokens(res, ['reset_token']);
+    AuthServices.destroyTokens(res, 'reset_token');
     AuthServices.setTokens(res, { access_token, refresh_token });
 
     serveResponse(res, {

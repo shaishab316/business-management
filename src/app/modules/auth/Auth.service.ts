@@ -33,9 +33,9 @@ export const AuthServices = {
     );
   },
 
-  destroyTokens(res: Response, cookies: TToken[]) {
+  destroyTokens<T extends readonly TToken[]>(res: Response, ...cookies: T) {
     for (const cookie of cookies)
-      res.clearCookie(cookie as TToken, {
+      res.clearCookie(cookie, {
         httpOnly: true,
         secure: !config.server.isDevelopment,
         maxAge: 0, // expire immediately
