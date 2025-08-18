@@ -6,6 +6,7 @@ import config from '../../../config';
 import { Response } from 'express';
 import ms from 'ms';
 import prisma from '../../../util/prisma';
+import { Prisma } from '../../../../prisma';
 
 export const AuthServices = {
   async getAuth(userId: string, password: string) {
@@ -41,13 +42,6 @@ export const AuthServices = {
       });
   },
 
-  async resetPassword(userId: string, password: string) {
-    return prisma.auth.update({
-      where: { userId },
-      data: { password: await password?.hash() },
-    });
-  },
-
   /** this function returns an object of tokens
    * e.g. retrieveToken(userId, 'access_token', 'refresh_token');
    * returns { access_token, refresh_token }
@@ -61,9 +55,9 @@ export const AuthServices = {
     ) as Record<T[number], string>;
   },
 
-  async changePassword(authId: string, password: string) {
+  async modifyPassword(where: Prisma.AuthWhereUniqueInput, password: string) {
     return prisma.auth.update({
-      where: { id: authId },
+      where,
       data: { password: await password?.hash() },
     });
   },

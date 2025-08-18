@@ -36,7 +36,7 @@ export const AuthControllers = {
   }),
 
   resetPassword: catchAsync(async ({ body, user }, res) => {
-    await AuthServices.resetPassword(user.id, body.password);
+    await AuthServices.modifyPassword({ userId: user.id }, body.password);
 
     const { access_token, refresh_token } = AuthServices.retrieveToken(
       user.id,
@@ -68,9 +68,9 @@ export const AuthControllers = {
   }),
 
   changePassword: catchAsync(async ({ user, body }, res) => {
-    const auth = await AuthServices.getAuth(user.id, body.oldPassword);
+    const { id } = await AuthServices.getAuth(user.id, body.oldPassword);
 
-    await AuthServices.changePassword(auth?.id, body.newPassword);
+    await AuthServices.modifyPassword({ id }, body.newPassword);
 
     serveResponse(res, {
       message: 'Password changed successfully!',
