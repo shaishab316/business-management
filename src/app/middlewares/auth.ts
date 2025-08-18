@@ -15,11 +15,11 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
   catchAsync(async (req, _, next) => {
     const token =
       req.cookies[token_type] ||
-      req.headers.authorization?.match(/[\w-]+\.[\w-]+\.[\w-]+/)?.[0] ||
+      req.headers.authorization ||
       req.query[token_type];
 
     req.user = (await prisma.user.findUnique({
-      where: { id: decodeToken(token, token_type).userId },
+      where: { id: decodeToken(token, token_type).uid },
     }))!;
 
     if (!req.user)

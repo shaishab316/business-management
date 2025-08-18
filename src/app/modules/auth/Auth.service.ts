@@ -52,14 +52,11 @@ export const AuthServices = {
    * e.g. retrieveToken(userId, 'access_token', 'refresh_token');
    * returns { access_token, refresh_token }
    */
-  retrieveToken<T extends readonly TToken[]>(
-    userId: string,
-    ...token_types: T
-  ) {
+  retrieveToken<T extends readonly TToken[]>(uid: string, ...token_types: T) {
     return Object.fromEntries(
       token_types.map(token_type => [
         token_type,
-        encodeToken({ userId }, token_type),
+        encodeToken({ uid }, token_type),
       ]),
     ) as Record<T[number], string>;
   },
