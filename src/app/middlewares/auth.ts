@@ -18,30 +18,28 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
       req.headers.authorization ||
       req.query[token_type];
 
-    req.user = (await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: decodeToken(token, token_type).uid },
-    }))!;
+    });
 
-    if (!req.user)
+    if (!user)
       throw new ServerError(
         StatusCodes.UNAUTHORIZED,
         'Maybe your account has been deleted. Register again.',
       );
 
-    if (
-      roles[0] &&
-      !superRoles.includes(req.user.role) &&
-      !roles.includes(req.user.role)
-    )
+    if (roles.length && !superRoles.concat(roles).includes(user.role))
       throw new ServerError(
         StatusCodes.FORBIDDEN,
-        req.user.role === EUserRole.GUEST
+        user.role === EUserRole.GUEST
           ? 'Your account is not verified yet. Please verify your account.'
-          : `Permission denied. You are not a ${roles
-              .concat(EUserRole.ADMIN)
+          : `Permission denied. You are not a ${superRoles
+              .concat(roles)
               .map(enum_decode)
-              .join(' or ')}! You are a ${enum_decode(req.user?.role)}!`,
+              .join(' or ')}! You are a ${enum_decode(user?.role)}!`,
       );
+
+    req.user = user;
 
     next();
   });
