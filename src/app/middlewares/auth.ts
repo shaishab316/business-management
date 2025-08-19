@@ -18,8 +18,16 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
       req.headers.authorization ||
       req.query[token_type];
 
+    const id = decodeToken(token, token_type)?.uid;
+
+    if (!id)
+      throw new ServerError(
+        StatusCodes.UNAUTHORIZED,
+        'Your session has expired. Login again.',
+      );
+
     const user = await prisma.user.findUnique({
-      where: { id: decodeToken(token, token_type).uid },
+      where: { id },
     });
 
     if (!user)
