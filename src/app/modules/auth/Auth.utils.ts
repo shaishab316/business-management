@@ -9,7 +9,9 @@ import { EUserRole } from '../../../../prisma';
 import { enum_decode } from '../../../util/transform/enum';
 
 export type TToken = keyof typeof config.jwt;
-export const superRoles: EUserRole[] = [EUserRole.ADMIN];
+export const superRoles: readonly EUserRole[] & { 0: EUserRole } = [
+  EUserRole.ADMIN,
+];
 
 export type TTokenPayload = {
   uid: string;

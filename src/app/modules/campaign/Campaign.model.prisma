@@ -3,6 +3,7 @@ model Campaign {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   title            String
+  description      String
   brand            String
   banner           String
   campaign_type    String

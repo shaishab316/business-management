@@ -6,6 +6,7 @@ import { AuthRoutes } from '../app/modules/auth/Auth.route';
 import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
 import InfluencerRoutes from '../app/modules/influencer/Influencer.route';
+import { ContextPageRoutes } from '../app/modules/contextPage/ContextPage.route';
 
 const appRouter = Router();
 
@@ -20,6 +21,11 @@ const appRouter = Router();
 );
 
 export default appRouter.inject([
+  {
+    path: '/context-pages',
+    route: ContextPageRoutes.user,
+  },
+
   {
     path: '/auth',
     route: AuthRoutes,

@@ -11,6 +11,12 @@ export const CampaignValidations = {
         })
         .trim()
         .min(1, "Title can't be empty"),
+      description: z
+        .string({
+          required_error: 'Description is missing',
+        })
+        .trim()
+        .min(1, "Description can't be empty"),
       brand: z
         .string({
           required_error: 'Brand is missing',
@@ -82,6 +88,7 @@ export const CampaignValidations = {
   edit: z.object({
     body: z.object({
       title: z.string().trim().optional(),
+      description: z.string().trim().optional(),
       brand: z.string().trim().optional(),
       banner: z.string().trim().optional(),
       campaign_type: z.string().trim().optional(),
