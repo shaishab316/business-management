@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { ETaskStatus, Task as TTask } from '../../../../prisma';
+import { ETaskStatus, Prisma, Task as TTask } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
@@ -90,18 +90,25 @@ export const TaskServices = {
     });
   },
 
-  async getAll({ page, limit, influencerId }: TList) {
-    const filter: any = {};
+  async getAll({ page, limit, influencerId }: TList, isSuper = false) {
+    const where: Prisma.TaskWhereInput = {};
 
-    if (influencerId) filter.influencerId = influencerId;
+    if (influencerId) where.influencerId = influencerId;
+
+    const include: Prisma.TaskInclude = {
+      campaign: true,
+    };
+
+    if (isSuper) include.influencer = true;
 
     const tasks = await prisma.task.findMany({
-      where: filter,
+      where,
+      include,
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    const total = await prisma.task.count({ where: filter });
+    const total = await prisma.task.count({ where });
 
     return {
       meta: {
