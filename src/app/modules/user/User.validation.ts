@@ -2,6 +2,25 @@ import { z } from 'zod';
 import { EUserRole } from '../../../../prisma';
 import { enum_encode } from '../../../util/transform/enum';
 
+const socialSchema = z.object({
+  platform: z
+    .string({
+      required_error: 'Platform is missing',
+    })
+    .trim()
+    .min(1, "Platform can't be empty"),
+  link: z
+    .string({
+      required_error: 'Link is missing',
+    })
+    .url({
+      message: 'Give a valid link',
+    }),
+  followers: z.coerce.number({
+    required_error: 'Followers is missing',
+  }),
+});
+
 export const UserValidations = {
   create: z.object({
     body: z.object({
@@ -24,6 +43,8 @@ export const UserValidations = {
       avatar: z.string().optional(),
       phone: z.string().optional(),
       fcmToken: z.string().optional(),
+      address: z.string().optional(),
+      socials: z.array(socialSchema).optional(),
     }),
   }),
 
@@ -64,22 +85,7 @@ export const UserValidations = {
         })
         .trim()
         .min(1, "Address can't be empty"),
-      platform: z
-        .string({
-          required_error: 'Platform is missing',
-        })
-        .trim()
-        .min(1, "Platform can't be empty"),
-      link: z
-        .string({
-          required_error: 'Link is missing',
-        })
-        .url({
-          message: 'Give a valid link',
-        }),
-      followers: z.coerce.number({
-        required_error: 'Followers is missing',
-      }),
+      ...socialSchema.shape,
     }),
   }),
 };

@@ -14,7 +14,7 @@ export const UserControllers = {
     let otp = null;
 
     try {
-      otp = await OtpServices.send(user, 'accountVerify');
+      otp = await OtpServices.send(user, 'account verify');
     } catch (error) {
       errorLogger.error(error);
     }
