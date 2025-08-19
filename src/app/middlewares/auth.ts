@@ -36,15 +36,14 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
         'Maybe your account has been deleted. Register again.',
       );
 
-    if (roles.length && !superRoles.concat(roles).includes(user.role))
+    const requiredRoles = Array.from(new Set([...superRoles, ...roles]));
+
+    if (roles.length && !requiredRoles.includes(user.role))
       throw new ServerError(
         StatusCodes.FORBIDDEN,
         user.role === EUserRole.GUEST
-          ? 'Your account is not verified yet. Please verify your account.'
-          : `Permission denied. You are not a ${superRoles
-              .concat(roles)
-              .map(enum_decode)
-              .join(' or ')}! You are a ${enum_decode(user?.role)}!`,
+          ? `Oh ${user.name}, you were not verified yet! Please verify your email.`
+          : `Oh ${user.name}, poor ${enum_decode(user?.role)}! Only the ${requiredRoles.map(enum_decode).join(' or ')} can access ${req.path} route!`,
       );
 
     req.user = user;
