@@ -28,6 +28,7 @@ export const UserValidations = {
         .string({
           required_error: 'Email is missing',
         })
+        .toLowerCase()
         .email('Give a valid email'),
       password: z
         .string({

@@ -6,6 +6,7 @@ export const OtpValidations = {
     body: z.object({
       email: z
         .string({ required_error: 'Email is missing' })
+        .toLowerCase()
         .email('Give a valid email'),
     }),
   }),
