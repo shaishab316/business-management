@@ -1,4 +1,4 @@
-import { Campaign as TCampaign } from '../../../../prisma';
+import { ETaskStatus, Prisma, Campaign as TCampaign } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { deleteImage } from '../../middlewares/capture';
@@ -16,7 +16,7 @@ export const CampaignServices = {
     });
 
     // delete old banner
-    if (campaignData.banner) campaign?.banner?._pipe(deleteImage);
+    if (campaignData.banner) campaign?.banner?.__pipes(deleteImage);
 
     return prisma.campaign.update({
       where: { id: campaignId },
@@ -30,12 +30,12 @@ export const CampaignServices = {
       select: { banner: true },
     });
 
-    campaign?.banner?._pipe(deleteImage); // delete banner
+    campaign?.banner?.__pipes(deleteImage); // delete banner
 
     return prisma.campaign.delete({ where: { id: campaignId } });
   },
 
-  async getAll({ page, limit }: TList) {
+  async superGetAll({ page, limit }: TList) {
     const campaigns = await prisma.campaign.findMany({
       skip: (page - 1) * limit,
       take: limit,
@@ -53,6 +53,46 @@ export const CampaignServices = {
         } as TPagination,
       },
       campaigns,
+    };
+  },
+
+  async getAll({
+    page,
+    limit,
+    influencerId,
+    status,
+  }: TList & { influencerId: string; status?: ETaskStatus }) {
+    const where: Prisma.TaskWhereInput = { influencerId };
+    if (status) where.status = status;
+
+    const tasks = await prisma.task.findMany({
+      where,
+      select: {
+        campaign: true,
+        status: true,
+        paymentStatus: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.task.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+        query: where,
+      },
+      campaigns: tasks.map(task => ({
+        ...task.campaign,
+        status: task.status,
+        paymentStatus: task.paymentStatus,
+      })),
     };
   },
 

@@ -6,6 +6,7 @@ import prisma from '../../../util/prisma';
 import { Request } from 'express';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
+import { enum_encode } from '../../../util/transform/enum';
 
 export const TaskValidations = {
   acceptTask: z.object({
@@ -22,6 +23,16 @@ export const TaskValidations = {
         message: 'Influencer not found with id: ' + influencerId,
         path: ['influencerId'],
       })),
+    }),
+  }),
+
+  getAll: z.object({
+    query: z.object({
+      status: z
+        .string()
+        .transform(enum_encode)
+        .optional()
+        .pipe(z.nativeEnum(ETaskStatus).optional()),
     }),
   }),
 

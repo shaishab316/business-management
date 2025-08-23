@@ -11,7 +11,7 @@ const influencer = Router();
 {
   influencer.get(
     '/',
-    purifyRequest(QueryValidations.list),
+    purifyRequest(QueryValidations.list, TaskValidations.getAll),
     TaskControllers.getAll,
   );
 
@@ -61,7 +61,11 @@ const subAdmin = Router();
 {
   subAdmin.get(
     '/',
-    purifyRequest(QueryValidations.list, TaskValidations.superGetAll),
+    purifyRequest(
+      QueryValidations.list,
+      TaskValidations.getAll,
+      TaskValidations.superGetAll,
+    ),
     TaskControllers.superGetAll,
   );
 

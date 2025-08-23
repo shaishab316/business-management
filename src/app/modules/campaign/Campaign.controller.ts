@@ -31,11 +31,24 @@ export const CampaignControllers = {
     });
   }),
 
-  getAll: catchAsync(async ({ query }, res) => {
-    const { campaigns, meta } = await CampaignServices.getAll(query);
+  superGetAll: catchAsync(async ({ query }, res) => {
+    const { campaigns, meta } = await CampaignServices.superGetAll(query);
 
     serveResponse(res, {
       message: 'Campaigns fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
+
+  getAll: catchAsync(async ({ query, user }, res) => {
+    const { campaigns, meta } = await CampaignServices.getAll({
+      ...query,
+      influencerId: user.id,
+    });
+
+    serveResponse(res, {
+      message: 'Influencer Campaigns fetched successfully!',
       meta,
       data: campaigns,
     });

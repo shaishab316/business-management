@@ -90,10 +90,14 @@ export const TaskServices = {
     });
   },
 
-  async getAll({ page, limit, influencerId }: TList, isSuper = false) {
+  async getAll(
+    { page, limit, influencerId, status }: TList & { status?: ETaskStatus },
+    isSuper = false,
+  ) {
     const where: Prisma.TaskWhereInput = {};
 
     if (influencerId) where.influencerId = influencerId;
+    if (status) where.status = status;
 
     const include: Prisma.TaskInclude = {
       campaign: true,
@@ -118,6 +122,7 @@ export const TaskServices = {
           total,
           totalPages: Math.ceil(total / limit),
         } as TPagination,
+        query: where,
       },
       tasks,
     };
@@ -143,7 +148,7 @@ export const TaskServices = {
       select: { matrix: true },
     });
 
-    task?.matrix?.screenshot?._pipe(deleteImage);
+    task?.matrix?.screenshot?.__pipes(deleteImage);
 
     return prisma.task.update({
       where: { id: taskId },

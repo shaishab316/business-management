@@ -34,23 +34,25 @@ export const TaskControllers = {
   }),
 
   getAll: catchAsync(async ({ query, user }, res) => {
-    const data = await TaskServices.getAll({
+    const { meta, tasks } = await TaskServices.getAll({
       ...query,
       influencerId: user.id,
     });
 
     serveResponse(res, {
       message: 'Tasks retrieved successfully!',
-      data,
+      meta,
+      data: tasks,
     });
   }),
 
   superGetAll: catchAsync(async ({ query }, res) => {
-    const data = await TaskServices.getAll(query, true);
+    const { meta, tasks } = await TaskServices.getAll(query, true);
 
     serveResponse(res, {
       message: 'Tasks retrieved successfully!',
-      data,
+      meta,
+      data: tasks,
     });
   }),
 

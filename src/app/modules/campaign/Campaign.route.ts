@@ -20,7 +20,7 @@ const influencer = Router();
 {
   influencer.get(
     '/',
-    purifyRequest(QueryValidations.list),
+    purifyRequest(QueryValidations.list, TaskValidations.getAll),
     CampaignControllers.getAll,
   );
 
@@ -45,7 +45,7 @@ const subAdmin = Router();
   subAdmin.get(
     '/',
     purifyRequest(QueryValidations.list),
-    CampaignControllers.getAll,
+    CampaignControllers.superGetAll,
   );
 
   subAdmin.get(

@@ -29,6 +29,7 @@ export const NotificationServices = {
     }
 
     const recipientSet = new Set<string>(influencerIds);
+    const failedRecipientSet = new Set<string>();
 
     if (campaignIds.length) {
       const tasks = await prisma.task.findMany({
@@ -41,8 +42,30 @@ export const NotificationServices = {
       tasks.forEach(({ influencerId }) => recipientSet.add(influencerId));
     }
 
+    const compromises = await prisma.compromise.findMany({
+      where: {
+        influencerId: { in: Array.from(recipientSet) },
+        date: { gte: new Date() },
+      },
+      select: {
+        influencerId: true,
+      },
+    });
+
+    for (const { influencerId } of compromises)
+      influencerId?.__pipes(recipientSet.delete, failedRecipientSet.add);
+
     if (!recipientSet.size)
-      throw new ServerError(StatusCodes.BAD_REQUEST, 'No recipients found');
+      if (failedRecipientSet.size)
+        throw new ServerError(
+          StatusCodes.BAD_REQUEST,
+          'Influencer has compromises.',
+        );
+      else
+        throw new ServerError(
+          StatusCodes.NOT_FOUND,
+          'Pleases select influencer or campaign.',
+        );
 
     if (!scheduledAt) {
       const done = await sendUserPostNotification({
@@ -64,6 +87,11 @@ export const NotificationServices = {
         recipientIds: Array.from(recipientSet),
       },
     });
+
+    return {
+      successRecipients: Array.from(recipientSet),
+      failedRecipients: Array.from(failedRecipientSet),
+    };
   },
 
   async getAll({ page, limit, ...where }: TList) {

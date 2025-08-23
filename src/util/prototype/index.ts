@@ -6,14 +6,18 @@ import './array';
 
 declare global {
   interface Object {
-    _pipe<T, R>(f: (value: T) => R): R;
+    /**
+     * This is also known as a method call chain
+     * Also known as .pipe();
+     */
+    __pipes<T>(...fs: ((value: T) => any)[]): T;
   }
 }
 
-// pipe create some issus, so i use _pipe
-Object.defineProperty(Object.prototype, '_pipe', {
-  value<T, R>(f: (value: T) => R) {
-    return f(this.valueOf() as T);
+Object.defineProperty(Object.prototype, '__pipes', {
+  async value<T>(...fs: ((value: T) => any)[]) {
+    for (const f of fs) await f(this);
+    return this;
   },
   enumerable: false,
   configurable: true,
