@@ -87,8 +87,8 @@ export const TaskValidations = {
         ...Object.fromEntries(
           Object.entries(task.campaign.expected_metrics ?? {}).map(([key]) => [
             key,
-            z
-              .string({
+            z.coerce
+              .number({
                 required_error: `${key} is missing`,
               })
               .min(1, `${key} can't be empty`),

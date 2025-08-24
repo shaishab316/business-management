@@ -10,14 +10,13 @@ declare global {
      * This is also known as a method call chain
      * Also known as .pipe();
      */
-    __pipes<T>(...fs: ((value: T) => any)[]): T;
+    __pipes<T>(this: T, ...fs: ((value: T) => any)[]): Promise<T>;
   }
 }
 
 Object.defineProperty(Object.prototype, '__pipes', {
-  async value<T>(...fs: ((value: T) => any)[]) {
-    for (const f of fs) await f(this);
-    return this;
+  async value<T>(this: T, ...fs: ((value: T) => any)[]) {
+    return Promise.all(fs.map(f => f(this)));
   },
   enumerable: false,
   configurable: true,

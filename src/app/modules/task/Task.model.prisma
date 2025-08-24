@@ -10,6 +10,7 @@ model Task {
   influencer               User           @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   influencerAgreementProof String?
   postLink                 String?
+  screenshot               String?
   matrix                   Json?
   paymentStatus            EPaymentStatus @default(PENDING)
   Payment                  Payment[]

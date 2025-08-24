@@ -42,6 +42,7 @@ const influencer = Router();
 
   influencer.post(
     '/:taskId/upload-matrix',
+    purifyRequest(QueryValidations.exists('taskId', 'task')),
     capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
     purifyRequest(TaskValidations.uploadMatrix),
     TaskControllers.uploadMatrix,

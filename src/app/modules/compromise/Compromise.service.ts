@@ -37,19 +37,9 @@ export const CompromiseServices = {
       skip: (page - 1) * limit,
       take: limit,
       include: {
-        influencer: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        notification: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
+        influencer: true,
+        notification: true,
+        
       },
       orderBy: { date: 'desc' },
     });

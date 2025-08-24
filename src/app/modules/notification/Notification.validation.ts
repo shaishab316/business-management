@@ -24,7 +24,15 @@ export const NotificationValidations = {
           })),
         )
         .default([]),
-      scheduledAt: z.string().optional().transform(date),
+      scheduledAt: z
+        .string()
+        .optional()
+        .transform(date)
+        .refine(scheduledAt => scheduledAt! > new Date(), {
+          message: 'Scheduled date must be in the future',
+          path: ['scheduledAt'],
+        })
+        .optional(),
     }),
   }),
 

@@ -15,11 +15,8 @@ export const TaskServices = {
         status: ETaskStatus.PENDING,
       },
       include: {
-        influencer: {
-          select: {
-            name: true,
-          },
-        },
+        influencer: true,
+        campaign: true,
       },
     });
 
@@ -39,20 +36,8 @@ export const TaskServices = {
     return prisma.task.create({
       data: taskData as any,
       include: {
-        campaign: {
-          select: {
-            title: true,
-            duration: true,
-            banner: true,
-          },
-        },
-        influencer: {
-          select: {
-            name: true,
-            avatar: true,
-            socials: true,
-          },
-        },
+        campaign: true,
+        influencer: true,
       },
     });
   },
@@ -61,11 +46,8 @@ export const TaskServices = {
     const task = await prisma.task.findUnique({
       where: { id },
       include: {
-        influencer: {
-          select: {
-            name: true,
-          },
-        },
+        influencer: true,
+        campaign: true,
       },
     });
 
@@ -90,24 +72,23 @@ export const TaskServices = {
     });
   },
 
-  async getAll(
-    { page, limit, influencerId, status }: TList & { status?: ETaskStatus },
-    isSuper = false,
-  ) {
+  async getAll({
+    page,
+    limit,
+    influencerId,
+    status,
+  }: TList & { status?: ETaskStatus }) {
     const where: Prisma.TaskWhereInput = {};
 
     if (influencerId) where.influencerId = influencerId;
     if (status) where.status = status;
 
-    const include: Prisma.TaskInclude = {
-      campaign: true,
-    };
-
-    if (isSuper) include.influencer = true;
-
     const tasks = await prisma.task.findMany({
       where,
-      include,
+      include: {
+        campaign: true,
+        influencer: true,
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -142,7 +123,10 @@ export const TaskServices = {
     });
   },
 
-  async uploadMatrix(taskId: string, matrix: Record<string, string>) {
+  async uploadMatrix(
+    taskId: string,
+    { screenshot, ...matrix }: Record<string, string>,
+  ) {
     const task: any = await prisma.task.findUnique({
       where: { id: taskId },
       select: { matrix: true },
@@ -152,7 +136,7 @@ export const TaskServices = {
 
     return prisma.task.update({
       where: { id: taskId },
-      data: { matrix },
+      data: { matrix, screenshot },
     });
   },
 };

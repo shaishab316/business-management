@@ -1,3 +1,5 @@
+'use strict';
+
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
@@ -16,17 +18,9 @@ export const NotificationServices = {
     title,
     body,
   }: TNotificationSend) {
-    let status: ENotificationStatus = ENotificationStatus.UNREAD;
-
-    if (scheduledAt) {
-      if (scheduledAt <= new Date())
-        throw new ServerError(
-          StatusCodes.BAD_REQUEST,
-          'Scheduled date must be in the future',
-        );
-
-      status = ENotificationStatus.PENDING;
-    }
+    let status: ENotificationStatus = scheduledAt
+      ? ENotificationStatus.PENDING
+      : ENotificationStatus.UNREAD;
 
     const recipientSet = new Set<string>(influencerIds);
     const failedRecipientSet = new Set<string>();
@@ -53,7 +47,10 @@ export const NotificationServices = {
     });
 
     for (const { influencerId } of compromises)
-      influencerId?.__pipes(recipientSet.delete, failedRecipientSet.add);
+      influencerId?.__pipes(
+        id => recipientSet.delete(id),
+        id => failedRecipientSet.add(id),
+      );
 
     if (!recipientSet.size)
       if (failedRecipientSet.size)

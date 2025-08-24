@@ -5,27 +5,6 @@ import prisma from '../../../util/prisma';
 import { TList } from '../query/Query.interface';
 import { TPagination } from '../../../util/server/serveResponse';
 
-const select = (isInfluencer: any) =>
-  isInfluencer
-    ? {
-        influencer: {
-          select: {
-            name: true,
-            avatar: true,
-            socials: true,
-          },
-        },
-      }
-    : {
-        campaign: {
-          select: {
-            title: true,
-            banner: true,
-            duration: true,
-          },
-        },
-      };
-
 export const ReviewServices = {
   async giveReview(reviewData: TReview) {
     const reviews = Object.values(reviewData.details!);
@@ -50,13 +29,19 @@ export const ReviewServices = {
       return prisma.review.update({
         where: { id: existing.id },
         data: reviewData,
-        select: select(reviewData.influencerId),
+        select: {
+          campaign: true,
+          influencer: true,
+        },
       });
     }
 
     return prisma.review.create({
       data: reviewData,
-      select: select(reviewData.influencerId),
+      select: {
+        campaign: true,
+        influencer: true,
+      },
     });
   },
 
@@ -64,11 +49,7 @@ export const ReviewServices = {
     const review = await prisma.review.findUnique({
       where: { id: reviewId },
       include: {
-        user: {
-          select: {
-            name: true,
-          },
-        },
+        user: true,
       },
     });
 
@@ -92,7 +73,10 @@ export const ReviewServices = {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      include: select(influencerId),
+      include: {
+        campaign: true,
+        influencer: true,
+      },
     });
 
     const total = await prisma.review.count({ where });

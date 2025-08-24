@@ -47,7 +47,7 @@ export const TaskControllers = {
   }),
 
   superGetAll: catchAsync(async ({ query }, res) => {
-    const { meta, tasks } = await TaskServices.getAll(query, true);
+    const { meta, tasks } = await TaskServices.getAll(query);
 
     serveResponse(res, {
       message: 'Tasks retrieved successfully!',
