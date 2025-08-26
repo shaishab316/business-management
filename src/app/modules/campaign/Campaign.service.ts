@@ -156,4 +156,8 @@ export const CampaignServices = {
       campaigns,
     };
   },
+
+  async superGetCampaignById(campaignId: string) {
+    return prisma.campaign.findUnique({ where: { id: campaignId } });
+  },
 };

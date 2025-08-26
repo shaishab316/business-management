@@ -110,4 +110,13 @@ export const CampaignControllers = {
       data: campaigns,
     });
   }),
+
+  superGetCampaignById: catchAsync(async ({ params }, res) => {
+    const data = await CampaignServices.superGetCampaignById(params.campaignId);
+
+    serveResponse(res, {
+      message: 'Campaign fetched successfully!',
+      data,
+    });
+  }),
 };

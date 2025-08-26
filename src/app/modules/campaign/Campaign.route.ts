@@ -87,18 +87,6 @@ const influencer = Router();
 
 const subAdmin = Router();
 {
-  // subAdmin.get(
-  //   '/',
-  //   purifyRequest(QueryValidations.list),
-  //   CampaignControllers.superGetAll,
-  // );
-
-  // subAdmin.get(
-  //   '/:campaignId',
-  //   purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
-  //   CampaignControllers.getById,
-  // );
-
   subAdmin.get(
     '/active',
     purifyRequest(QueryValidations.list),
@@ -109,6 +97,12 @@ const subAdmin = Router();
     '/completed',
     purifyRequest(QueryValidations.list),
     CampaignControllers.completedCampaigns,
+  );
+
+  subAdmin.get(
+    '/:campaignId',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    CampaignControllers.superGetCampaignById,
   );
 
   subAdmin.post(
