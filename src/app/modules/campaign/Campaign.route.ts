@@ -50,11 +50,11 @@ const influencer = Router();
     TaskControllers.acceptTask,
   );
 
-  // influencer.post(
-  //   '/:taskId/cancel',
-  //   purifyRequest(QueryValidations.exists('taskId', 'task')),
-  //   TaskControllers.cancelTask,
-  // );
+  influencer.post(
+    '/:campaignId/cancel',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    TaskControllers.cancelTask,
+  );
 
   // influencer.post(
   //   '/:taskId/submit-post-link',

@@ -8,7 +8,7 @@ import { deleteImage } from '../../middlewares/capture';
 
 export const TaskServices = {
   async getTask(
-    where: Pick<Prisma.TaskWhereUniqueInput, 'influencerId' | 'campaignId'>,
+    where: Pick<Prisma.TaskWhereInput, 'influencerId' | 'campaignId'>,
   ) {
     const task = await prisma.task.findFirst({
       where,
@@ -73,7 +73,7 @@ export const TaskServices = {
     if (task?.status !== ETaskStatus.PENDING)
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
-        `Task already ${task?.status?.toLocaleLowerCase()}.`,
+        `Campaign Task already ${task?.status?.toLocaleLowerCase()}.`,
       );
 
     return prisma.task.update({

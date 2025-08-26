@@ -5,6 +5,7 @@ import { TaskServices } from './Task.service';
 import { ETaskStatus } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 import ServerError from '../../../errors/ServerError';
+import { CampaignServices } from '../campaign/Campaign.service';
 
 export const TaskControllers = {
   createTask: catchAsync(async ({ body, params }, res) => {
@@ -24,7 +25,7 @@ export const TaskControllers = {
     const campaignId = params.campaignId,
       influencerId = user.id;
 
-    const data = await TaskServices.acceptTask({
+    await TaskServices.acceptTask({
       ...body,
       id: (
         await TaskServices.getTask({
@@ -35,8 +36,13 @@ export const TaskControllers = {
       influencerId,
     });
 
+    const data = await CampaignServices.getById({
+      influencerId: user.id,
+      campaignId: params.campaignId,
+    });
+
     serveResponse(res, {
-      message: 'Task accepted successfully!',
+      message: 'Campaign accepted successfully!',
       data,
     });
   }),
@@ -74,21 +80,38 @@ export const TaskControllers = {
   }),
 
   cancelTask: catchAsync(async ({ params, user }, res) => {
-    const task = await prisma.task.findUnique({
-      where: { id: params.taskId },
+    const campaignId = params.campaignId,
+      influencerId = user.id;
+
+    const task = await prisma.task.findFirst({
+      where: {
+        campaignId,
+        influencerId,
+      },
       include: { influencer: true },
     });
 
-    if (task?.influencerId !== user.id)
+    if (task?.influencerId !== influencerId)
       throw new ServerError(
         StatusCodes.FORBIDDEN,
         `You cannot cancel ${task?.influencer?.name}'s task.`,
       );
 
-    const data = await TaskServices.updateStatus(task?.id, ETaskStatus.CANCEL);
+    if (task?.status === ETaskStatus.CANCEL)
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        `Campaign Task already ${task?.status?.toLocaleLowerCase()}.`,
+      );
+
+    await TaskServices.updateStatus(task?.id, ETaskStatus.CANCEL);
+
+    const data = await CampaignServices.getById({
+      influencerId: influencerId,
+      campaignId: params.campaignId,
+    });
 
     serveResponse(res, {
-      message: `Task ${data.status.toLocaleLowerCase()} successfully!`,
+      message: `Campaign Task ${data.status.toLocaleLowerCase()} successfully!`,
       data,
     });
   }),
