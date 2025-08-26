@@ -76,4 +76,38 @@ export const CampaignControllers = {
       data: campaigns,
     });
   }),
+
+  activeCampaigns: catchAsync(async ({ query }, res) => {
+    const { campaigns, meta } = await CampaignServices.superGetCampaigns({
+      ...query,
+      where: {
+        duration: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    serveResponse(res, {
+      message: 'Active Campaigns fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
+
+  completedCampaigns: catchAsync(async ({ query }, res) => {
+    const { campaigns, meta } = await CampaignServices.superGetCampaigns({
+      ...query,
+      where: {
+        duration: {
+          lt: new Date(),
+        },
+      },
+    });
+
+    serveResponse(res, {
+      message: 'Completed Campaigns fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
 };

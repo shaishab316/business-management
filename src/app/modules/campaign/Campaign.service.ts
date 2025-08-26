@@ -134,4 +134,26 @@ export const CampaignServices = {
       review_count: _count.rating ?? 0,
     };
   },
+
+  async superGetCampaigns({
+    page,
+    limit,
+    where,
+  }: TList & { where: Prisma.CampaignWhereInput }) {
+    const campaigns = await prisma.campaign.findMany({ where });
+
+    const total = await prisma.campaign.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+      },
+      campaigns,
+    };
+  },
 };
