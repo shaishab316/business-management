@@ -160,4 +160,18 @@ export const CampaignServices = {
   async superGetCampaignById(campaignId: string) {
     return prisma.campaign.findUnique({ where: { id: campaignId } });
   },
+
+  async getCampaignInfluencers(campaignId: string) {
+    const tasks = await prisma.task.findMany({
+      where: { campaignId },
+      include: {
+        influencer: true,
+      },
+    });
+
+    return tasks.map(({ influencer, ...task }) => ({
+      ...task,
+      ...influencer,
+    }));
+  },
 };

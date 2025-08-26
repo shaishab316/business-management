@@ -105,6 +105,12 @@ const subAdmin = Router();
     CampaignControllers.superGetCampaignById,
   );
 
+  subAdmin.get(
+    '/:campaignId/influencers',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    CampaignControllers.getCampaignInfluencers,
+  );
+
   subAdmin.post(
     '/create',
     bannerCapture,

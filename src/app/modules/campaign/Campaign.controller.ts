@@ -119,4 +119,15 @@ export const CampaignControllers = {
       data,
     });
   }),
+
+  getCampaignInfluencers: catchAsync(async ({ params }, res) => {
+    const data = await CampaignServices.getCampaignInfluencers(
+      params.campaignId,
+    );
+
+    serveResponse(res, {
+      message: 'Campaign influencers fetched successfully!',
+      data,
+    });
+  }),
 };
