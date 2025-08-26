@@ -2,13 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../middlewares/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { PaymentServices } from './Payment.service';
-import {
-  EPaymentMethod,
-  ETaskStatus,
-  Payment as TPayment,
-} from '../../../../prisma';
+import { EPaymentMethod, Payment as TPayment } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
-import { CampaignServices } from '../campaign/Campaign.service';
 import { TaskServices } from '../task/Task.service';
 
 export const PaymentControllers = {
@@ -79,10 +74,10 @@ export const PaymentControllers = {
   }),
 
   pendingPayment: catchAsync(async ({ query, user }, res) => {
-    const { campaigns, meta } = await CampaignServices.getAll({
+    const { campaigns, meta } = await PaymentServices.getPayments({
       ...query,
-      status: ETaskStatus.PENDING_PAYMENT,
       influencerId: user.id,
+      isPaymentDone: false,
     });
 
     serveResponse(res, {
@@ -93,16 +88,25 @@ export const PaymentControllers = {
   }),
 
   paidPayment: catchAsync(async ({ query, user }, res) => {
-    const { campaigns, meta } = await CampaignServices.getAll({
+    const { campaigns, meta } = await PaymentServices.getPayments({
       ...query,
-      status: ETaskStatus.COMPLETED,
       influencerId: user.id,
+      isPaymentDone: true,
     });
 
     serveResponse(res, {
       message: 'Paid Payment successfully!',
       meta,
       data: campaigns,
+    });
+  }),
+
+  getEarnings: catchAsync(async ({ user }, res) => {
+    const data = await PaymentServices.getEarnings(user.id);
+
+    serveResponse(res, {
+      message: 'Earnings retrieved successfully!',
+      data,
     });
   }),
 };

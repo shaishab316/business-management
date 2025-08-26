@@ -69,16 +69,7 @@ export const CampaignServices = {
 
     const tasks = await prisma.task.findMany({
       where,
-      select: {
-        id: true,
-        matrix: true,
-        screenshot: true,
-        postLink: true,
-        duration: true,
-        campaign: true,
-        status: true,
-        paymentStatus: true,
-      },
+      include: { campaign: true },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -95,15 +86,10 @@ export const CampaignServices = {
         } as TPagination,
         query: where,
       },
-      campaigns: tasks.map(task => ({
-        ...task.campaign,
-        status: task.status,
-        paymentStatus: task.paymentStatus,
-        taskId: task.id,
-        screenshot: task.screenshot,
-        postLink: task.postLink,
-        duration: task.duration,
-        matrix: task.matrix,
+      campaigns: tasks.map(({ campaign, duration, ...task }) => ({
+        ...task,
+        ...campaign,
+        duration,
       })),
     };
   },
@@ -113,30 +99,18 @@ export const CampaignServices = {
   ) {
     const task = await prisma.task.findFirst({
       where,
-      select: {
-        id: true,
-        matrix: true,
-        screenshot: true,
-        postLink: true,
-        duration: true,
-        campaign: true,
-        status: true,
-        paymentStatus: true,
-      },
+      include: { campaign: true },
     });
 
     if (!task)
       throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
 
+    const { campaign, duration, ...taskData } = task;
+
     return {
-      ...task.campaign,
-      status: task.status,
-      paymentStatus: task.paymentStatus,
-      taskId: task.id,
-      screenshot: task.screenshot,
-      postLink: task.postLink,
-      duration: task.duration,
-      matrix: task.matrix,
+      ...taskData,
+      ...campaign,
+      duration,
     };
   },
 

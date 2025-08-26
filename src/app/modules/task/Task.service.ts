@@ -41,10 +41,11 @@ export const TaskServices = {
 
     const campaign = (await prisma.campaign.findUnique({
       where: { id: taskData.campaignId },
-      select: { duration: true },
+      select: { duration: true, budget: true },
     }))!;
 
     taskData.duration = campaign.duration;
+    taskData.budget = campaign.budget;
 
     return prisma.task.create({
       data: taskData as any,
@@ -152,7 +153,10 @@ export const TaskServices = {
 
     return prisma.task.update({
       where: { id: task.id },
-      data: { matrix, screenshot },
+      data: {
+        matrix,
+        screenshot,
+      },
     });
   },
 

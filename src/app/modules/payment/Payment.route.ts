@@ -22,12 +22,6 @@ const subAdmin = Router();
 const influencer = Router();
 {
   influencer.get(
-    '/',
-    purifyRequest(QueryValidations.list, PaymentValidations.getAll),
-    PaymentControllers.getAll,
-  );
-
-  influencer.get(
     '/pending-payment',
     purifyRequest(QueryValidations.list),
     PaymentControllers.pendingPayment,
@@ -38,6 +32,8 @@ const influencer = Router();
     purifyRequest(QueryValidations.list),
     PaymentControllers.paidPayment,
   );
+
+  influencer.get('/get-earnings', PaymentControllers.getEarnings);
 }
 
 export const PaymentRoutes = { subAdmin, influencer };

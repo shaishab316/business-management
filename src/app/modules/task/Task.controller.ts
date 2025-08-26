@@ -9,9 +9,14 @@ import { CampaignServices } from '../campaign/Campaign.service';
 
 export const TaskControllers = {
   createTask: catchAsync(async ({ body, params }, res) => {
-    const data = await TaskServices.createTask({
+    const { campaignId } = await TaskServices.createTask({
       ...body,
       campaignId: params.campaignId,
+    });
+
+    const data = await CampaignServices.getById({
+      influencerId: body.influencerId,
+      campaignId,
     });
 
     serveResponse(res, {

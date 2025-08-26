@@ -1,5 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
-import { EPaymentStatus, Payment as TPayment } from '../../../../prisma';
+import {
+  EPaymentStatus,
+  ETaskStatus,
+  Payment as TPayment,
+} from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
@@ -88,5 +92,72 @@ export const PaymentServices = {
       },
       payments,
     };
+  },
+
+  async getPayments({
+    page,
+    limit,
+    influencerId,
+    isPaymentDone,
+  }: TList & { influencerId: string; isPaymentDone?: boolean }) {
+    const where = {
+      influencerId,
+      isPaymentDone,
+      status: ETaskStatus.COMPLETED,
+    };
+
+    const tasks = await prisma.task.findMany({
+      where,
+      include: { campaign: true },
+    });
+
+    const total = await prisma.task.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+      },
+      campaigns: tasks.map(({ campaign, duration, ...task }) => ({
+        ...task,
+        ...campaign,
+        duration,
+      })),
+    };
+  },
+
+  async getEarnings(influencerId: string) {
+    const [pendingEarnings, paidEarnings] = await Promise.all([
+      prisma.task.aggregate({
+        _sum: {
+          budget: true,
+        },
+        where: {
+          influencerId,
+          status: 'COMPLETED',
+          isPaymentDone: false,
+        },
+      }),
+
+      prisma.task.aggregate({
+        _sum: {
+          budget: true,
+        },
+        where: {
+          influencerId,
+          status: 'COMPLETED',
+          isPaymentDone: true,
+        },
+      }),
+    ]);
+
+    const pending = pendingEarnings?._sum?.budget ?? 0;
+    const paid = paidEarnings?._sum?.budget ?? 0;
+
+    return { pending, paid, total: pending + paid };
   },
 };

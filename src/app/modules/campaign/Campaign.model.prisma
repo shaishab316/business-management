@@ -7,7 +7,7 @@ model Campaign {
   brand            String
   banner           String
   campaign_type    String
-  budget           Int
+  budget           Float
   duration         DateTime
   content_type     String
   payout_deadline  String
