@@ -55,8 +55,11 @@ export const CampaignControllers = {
     });
   }),
 
-  getById: catchAsync(async ({ params }, res) => {
-    const data = await CampaignServices.getById(params.campaignId);
+  getById: catchAsync(async ({ params, user }, res) => {
+    const data = await CampaignServices.getById({
+      influencerId: user.id,
+      campaignId: params.campaignId,
+    });
 
     serveResponse(res, {
       message: 'Campaign fetched successfully!',

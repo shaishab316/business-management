@@ -7,6 +7,19 @@ import { TList } from '../query/Query.interface';
 import { deleteImage } from '../../middlewares/capture';
 
 export const TaskServices = {
+  async getTask(
+    where: Pick<Prisma.TaskWhereUniqueInput, 'influencerId' | 'campaignId'>,
+  ) {
+    const task = await prisma.task.findFirst({
+      where,
+    });
+
+    if (!task)
+      throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
+
+    return task;
+  },
+
   async createTask(taskData: TTask) {
     const existsTask = await prisma.task.findFirst({
       where: {

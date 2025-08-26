@@ -38,6 +38,49 @@ const influencer = Router();
     ),
     ReviewControllers.giveReview,
   );
+
+  /** Task routes */
+  influencer.post(
+    '/:campaignId/accept',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    capture({
+      influencerAgreementProof: { maxCount: 1, size: 5 * 1024 * 1024 },
+    }),
+    purifyRequest(TaskValidations.acceptTask),
+    TaskControllers.acceptTask,
+  );
+
+  // influencer.post(
+  //   '/:taskId/cancel',
+  //   purifyRequest(QueryValidations.exists('taskId', 'task')),
+  //   TaskControllers.cancelTask,
+  // );
+
+  // influencer.post(
+  //   '/:taskId/submit-post-link',
+  //   purifyRequest(
+  //     QueryValidations.exists('taskId', 'task'),
+  //     TaskValidations.submitPostLink,
+  //   ),
+  //   TaskControllers.submitPostLink,
+  // );
+
+  // influencer.post(
+  //   '/:taskId/upload-matrix',
+  //   purifyRequest(QueryValidations.exists('taskId', 'task')),
+  //   capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+  //   purifyRequest(TaskValidations.uploadMatrix),
+  //   TaskControllers.uploadMatrix,
+  // );
+
+  // influencer.post(
+  //   '/:taskId/request-for-payment',
+  //   purifyRequest(PaymentValidations.create),
+  //   capture({
+  //     invoices: { maxCount: 10, size: 5 * 1024 * 1024 },
+  //   }),
+  //   PaymentControllers.create,
+  // );
 }
 
 const subAdmin = Router();

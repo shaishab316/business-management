@@ -1,4 +1,6 @@
+import { StatusCodes } from 'http-status-codes';
 import { ETaskStatus, Prisma, Campaign as TCampaign } from '../../../../prisma';
+import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { deleteImage } from '../../middlewares/capture';
@@ -106,8 +108,36 @@ export const CampaignServices = {
     };
   },
 
-  async getById(campaignId: string) {
-    return prisma.campaign.findUnique({ where: { id: campaignId } });
+  async getById(
+    where: Pick<Prisma.TaskWhereInput, 'influencerId' | 'campaignId'>,
+  ) {
+    const task = await prisma.task.findFirst({
+      where,
+      select: {
+        id: true,
+        matrix: true,
+        screenshot: true,
+        postLink: true,
+        duration: true,
+        campaign: true,
+        status: true,
+        paymentStatus: true,
+      },
+    });
+
+    if (!task)
+      throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
+
+    return {
+      ...task.campaign,
+      status: task.status,
+      paymentStatus: task.paymentStatus,
+      taskId: task.id,
+      screenshot: task.screenshot,
+      postLink: task.postLink,
+      duration: task.duration,
+      matrix: task.matrix,
+    };
   },
 
   async updateRating(campaignId: string) {

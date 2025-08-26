@@ -21,10 +21,18 @@ export const TaskControllers = {
   }),
 
   acceptTask: catchAsync(async ({ body, params, user }, res) => {
+    const campaignId = params.campaignId,
+      influencerId = user.id;
+
     const data = await TaskServices.acceptTask({
       ...body,
-      id: params.taskId,
-      influencerId: user.id,
+      id: (
+        await TaskServices.getTask({
+          influencerId,
+          campaignId,
+        })
+      ).id,
+      influencerId,
     });
 
     serveResponse(res, {
