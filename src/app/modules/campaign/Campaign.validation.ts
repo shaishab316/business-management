@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { json } from '../../../util/transform/json';
 import { date } from '../../../util/transform/date';
+import { enum_encode } from '../../../util/transform/enum';
+import { ETaskStatus } from '../../../../prisma';
 
 export const CampaignValidations = {
   create: z.object({
@@ -124,6 +126,16 @@ export const CampaignValidations = {
             )
             .optional(),
         ),
+    }),
+  }),
+
+  analytics: z.object({
+    query: z.object({
+      status: z
+        .string()
+        .transform(enum_encode)
+        .pipe(z.nativeEnum(ETaskStatus).optional())
+        .optional(),
     }),
   }),
 };

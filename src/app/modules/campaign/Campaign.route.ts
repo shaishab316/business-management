@@ -84,4 +84,13 @@ const subAdmin = Router();
   );
 }
 
-export const CampaignRoutes = { subAdmin, influencer };
+const admin = Router();
+{
+  admin.get(
+    '/analytics',
+    purifyRequest(QueryValidations.list, CampaignValidations.analytics),
+    CampaignControllers.analytics,
+  );
+}
+
+export const CampaignRoutes = { subAdmin, influencer, admin };

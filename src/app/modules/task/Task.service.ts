@@ -139,4 +139,80 @@ export const TaskServices = {
       data: { matrix, screenshot },
     });
   },
+
+  async analytics({
+    page = 1,
+    limit = 10,
+    status,
+  }: TList & { status: ETaskStatus }) {
+    const pipeline = [
+      { $match: { status } },
+      { $project: { campaignId: 1, matrix: { $objectToArray: '$matrix' } } },
+      { $unwind: '$matrix' },
+      {
+        $group: {
+          _id: { campaignId: '$campaignId', key: '$matrix.k' },
+          total: { $sum: { $ifNull: ['$matrix.v', 0] } },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.campaignId',
+          metrics: { $push: { k: '$_id.key', v: '$total' } },
+        },
+      },
+      { $addFields: { metrics: { $arrayToObject: '$metrics' } } },
+      {
+        $lookup: {
+          from: 'campaigns',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      { $unwind: '$campaign' },
+      {
+        $addFields: {
+          campaignId: { $toString: '$_id' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          campaignId: 1,
+          campaignName: '$campaign.title',
+          campaignBanner: '$campaign.banner',
+          tasks: { total: '$metrics' },
+        },
+      },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ];
+
+    const [campaigns, [totalData]] = await Promise.all([
+      prisma.task.aggregateRaw({ pipeline }),
+      prisma.task.aggregateRaw({
+        pipeline: [
+          { $match: { status } },
+          { $group: { _id: '$campaignId' } },
+          { $count: 'total' },
+        ],
+      }) as any,
+    ]);
+
+    const total = totalData?.[0]?.total ?? 0;
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } as TPagination,
+        query: { status: status ?? null },
+      },
+      campaigns,
+    };
+  },
 };

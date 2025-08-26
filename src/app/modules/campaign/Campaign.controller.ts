@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import serveResponse from '../../../util/server/serveResponse';
 import { CampaignServices } from './Campaign.service';
 import catchAsync from '../../middlewares/catchAsync';
+import { TaskServices } from '../task/Task.service';
 
 export const CampaignControllers = {
   create: catchAsync(async (req, res) => {
@@ -60,6 +61,16 @@ export const CampaignControllers = {
     serveResponse(res, {
       message: 'Campaign fetched successfully!',
       data,
+    });
+  }),
+
+  analytics: catchAsync(async ({ query }, res) => {
+    const { campaigns, meta } = await TaskServices.analytics(query);
+
+    serveResponse(res, {
+      message: 'Campaign analytics fetched successfully!',
+      meta,
+      data: campaigns,
     });
   }),
 };
