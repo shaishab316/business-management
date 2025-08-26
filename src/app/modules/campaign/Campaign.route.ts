@@ -56,14 +56,14 @@ const influencer = Router();
     TaskControllers.cancelTask,
   );
 
-  // influencer.post(
-  //   '/:taskId/submit-post-link',
-  //   purifyRequest(
-  //     QueryValidations.exists('taskId', 'task'),
-  //     TaskValidations.submitPostLink,
-  //   ),
-  //   TaskControllers.submitPostLink,
-  // );
+  influencer.post(
+    '/:campaignId/submit-post-link',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      TaskValidations.submitPostLink,
+    ),
+    TaskControllers.submitPostLink,
+  );
 
   // influencer.post(
   //   '/:taskId/upload-matrix',

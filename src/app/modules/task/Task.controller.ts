@@ -37,8 +37,8 @@ export const TaskControllers = {
     });
 
     const data = await CampaignServices.getById({
-      influencerId: user.id,
-      campaignId: params.campaignId,
+      influencerId,
+      campaignId,
     });
 
     serveResponse(res, {
@@ -106,8 +106,8 @@ export const TaskControllers = {
     await TaskServices.updateStatus(task?.id, ETaskStatus.CANCEL);
 
     const data = await CampaignServices.getById({
-      influencerId: influencerId,
-      campaignId: params.campaignId,
+      influencerId,
+      campaignId,
     });
 
     serveResponse(res, {
@@ -116,11 +116,19 @@ export const TaskControllers = {
     });
   }),
 
-  submitPostLink: catchAsync(async ({ params, body }, res) => {
-    const data = await TaskServices.submitPostLink(
-      params.taskId,
+  submitPostLink: catchAsync(async ({ params, body, user }, res) => {
+    const campaignId = params.campaignId,
+      influencerId = user.id;
+
+    await TaskServices.submitPostLink(
+      (await TaskServices.getTask({ influencerId, campaignId })).id,
       body.postLink,
     );
+
+    const data = await CampaignServices.getById({
+      influencerId,
+      campaignId,
+    });
 
     serveResponse(res, {
       message: 'Post link submitted successfully!',
