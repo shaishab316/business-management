@@ -8,6 +8,8 @@ import { TaskControllers } from '../task/Task.controller';
 import { ReviewValidations } from '../review/Review.validation';
 import { ReviewControllers } from '../review/Review.controller';
 import { TaskValidations } from '../task/Task.validation';
+import { PaymentValidations } from '../payment/Payment.validation';
+import { PaymentControllers } from '../payment/Payment.controller';
 
 const bannerCapture = capture({
   banner: {
@@ -73,14 +75,14 @@ const influencer = Router();
     TaskControllers.uploadMatrix,
   );
 
-  // influencer.post(
-  //   '/:taskId/request-for-payment',
-  //   purifyRequest(PaymentValidations.create),
-  //   capture({
-  //     invoices: { maxCount: 10, size: 5 * 1024 * 1024 },
-  //   }),
-  //   PaymentControllers.create,
-  // );
+  influencer.post(
+    '/:campaignId/request-for-payment',
+    purifyRequest(PaymentValidations.create),
+    capture({
+      invoices: { maxCount: 10, size: 5 * 1024 * 1024 },
+    }),
+    PaymentControllers.create,
+  );
 }
 
 const subAdmin = Router();

@@ -9,12 +9,20 @@ import {
 } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import { CampaignServices } from '../campaign/Campaign.service';
+import { TaskServices } from '../task/Task.service';
 
 export const PaymentControllers = {
   create: catchAsync(async ({ params, user, query, body }, res) => {
+    const influencerId = user.id;
+
     const paymentData: Partial<TPayment> = {
-      influencerId: user.id,
-      taskId: params.taskId,
+      influencerId,
+      taskId: (
+        await TaskServices.getTask({
+          campaignId: params.campaignId,
+          influencerId,
+        })
+      ).id,
       method: query.method,
     };
 
