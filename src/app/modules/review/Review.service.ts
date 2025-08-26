@@ -29,19 +29,11 @@ export const ReviewServices = {
       return prisma.review.update({
         where: { id: existing.id },
         data: reviewData,
-        select: {
-          campaign: true,
-          influencer: true,
-        },
       });
     }
 
     return prisma.review.create({
       data: reviewData,
-      select: {
-        campaign: true,
-        influencer: true,
-      },
     });
   },
 

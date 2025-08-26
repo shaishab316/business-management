@@ -3,6 +3,7 @@ import serveResponse from '../../../util/server/serveResponse';
 import { ReviewServices } from './Review.service';
 import { CampaignServices } from '../campaign/Campaign.service';
 import { UserServices } from '../user/User.service';
+import prisma from '../../../util/prisma';
 
 export const ReviewControllers = {
   getAll: catchAsync(async ({ query }, res) => {
@@ -16,21 +17,32 @@ export const ReviewControllers = {
   }),
 
   giveReview: catchAsync(async ({ body, user, params }, res) => {
-    const data: any = await ReviewServices.giveReview({
+    const { campaignId, influencerId } = params;
+
+    await ReviewServices.giveReview({
       ...params,
       userId: user.id,
       details: body,
     });
 
-    if (params.campaignId)
-      data.updatedCampaign = await CampaignServices.updateRating(
-        params.campaignId,
-      );
+    let data: any = null;
 
-    if (params.influencerId)
-      data.updatedInfluencer = await UserServices.updateRating(
-        params.influencerId,
-      );
+    if (campaignId) {
+      await CampaignServices.updateRating(campaignId);
+      data = await CampaignServices.getById({
+        influencerId: user.id,
+        campaignId,
+      });
+    }
+
+    if (influencerId) {
+      await UserServices.updateRating(influencerId);
+      data = await prisma.user.findFirst({
+        where: {
+          id: influencerId,
+        },
+      });
+    }
 
     serveResponse(res, {
       message: 'Reviewed successfully!',
