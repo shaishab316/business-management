@@ -86,6 +86,19 @@ export const UserControllers = {
     });
   }),
 
+  getInfluencer: catchAsync(async ({ query }, res) => {
+    const { meta, users } = await UserServices.getAllUser({
+      ...query,
+      role: EUserRole.INFLUENCER,
+    });
+
+    serveResponse(res, {
+      message: 'Users retrieved successfully!',
+      meta,
+      data: users,
+    });
+  }),
+
   superGetAllUser: catchAsync(async ({ query }, res) => {
     const { meta, users } = await UserServices.getAllUser(query);
 
