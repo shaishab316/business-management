@@ -111,6 +111,24 @@ const subAdmin = Router();
     CampaignControllers.getCampaignInfluencers,
   );
 
+  subAdmin.get(
+    '/:campaignId/:influencerId/approve-metrics',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      QueryValidations.exists('influencerId', 'user'),
+    ),
+    CampaignControllers.approveMetrics,
+  );
+
+  subAdmin.get(
+    '/:campaignId/:influencerId/request-revision',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      QueryValidations.exists('influencerId', 'user'),
+    ),
+    CampaignControllers.requestRevision,
+  );
+
   subAdmin.post(
     '/create',
     bannerCapture,

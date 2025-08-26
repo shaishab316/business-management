@@ -130,4 +130,22 @@ export const CampaignControllers = {
       data,
     });
   }),
+
+  approveMetrics: catchAsync(async ({ params }, res) => {
+    const data = await CampaignServices.approveMetrics(params);
+
+    serveResponse(res, {
+      message: 'Metrics approved successfully!',
+      data,
+    });
+  }),
+
+  requestRevision: catchAsync(async ({ params }, res) => {
+    const data = await CampaignServices.requestRevision(params);
+
+    serveResponse(res, {
+      message: 'Revision requested successfully!',
+      data,
+    });
+  }),
 };

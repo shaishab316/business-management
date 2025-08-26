@@ -5,6 +5,7 @@ import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { deleteImage } from '../../middlewares/capture';
 import { TList } from '../query/Query.interface';
+import { TaskServices } from '../task/Task.service';
 
 export const CampaignServices = {
   async create(campaignData: TCampaign) {
@@ -173,5 +174,38 @@ export const CampaignServices = {
       ...task,
       ...influencer,
     }));
+  },
+
+  async approveMetrics({
+    influencerId,
+    campaignId,
+  }: {
+    influencerId: string;
+    campaignId: string;
+  }) {
+    const task = await TaskServices.getTask({ influencerId, campaignId });
+
+    if (task.status === ETaskStatus.COMPLETED)
+      throw new ServerError(StatusCodes.BAD_REQUEST, 'Task already approved.');
+
+    return prisma.task.update({
+      where: { id: task.id },
+      data: { status: ETaskStatus.COMPLETED },
+    });
+  },
+
+  async requestRevision({
+    influencerId,
+    campaignId,
+  }: {
+    influencerId: string;
+    campaignId: string;
+  }) {
+    const task = await TaskServices.getTask({ influencerId, campaignId });
+
+    return prisma.task.update({
+      where: { id: task.id },
+      data: { status: ETaskStatus.ACTIVE, matrix: null },
+    });
   },
 };
