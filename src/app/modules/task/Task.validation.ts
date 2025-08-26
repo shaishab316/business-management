@@ -65,18 +65,17 @@ export const TaskValidations = {
   }),
 
   uploadMatrix: async ({ params }: Request) => {
-    const task = await prisma.task.findUnique({
-      where: { id: params.taskId },
+    const campaign = await prisma.campaign.findUnique({
+      where: {
+        id: params.campaignId,
+      },
       select: {
-        campaign: {
-          select: {
-            expected_metrics: true,
-          },
-        },
+        expected_metrics: true,
       },
     });
 
-    if (!task) throw new ServerError(StatusCodes.NOT_FOUND, 'Task not found');
+    if (!campaign)
+      throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found');
 
     return z.object({
       body: z.object({
@@ -85,13 +84,20 @@ export const TaskValidations = {
         }),
 
         ...Object.fromEntries(
-          Object.entries(task.campaign.expected_metrics ?? {}).map(([key]) => [
+          Object.entries(campaign.expected_metrics ?? {}).map(([key]) => [
             key,
-            z.coerce
-              .number({
+            z
+              .string({
                 required_error: `${key} is missing`,
               })
-              .min(1, `${key} can't be empty`),
+              .transform(v => parseInt(v))
+              .pipe(
+                z
+                  .number({
+                    required_error: `${key} is missing`,
+                  })
+                  .min(1, `${key} can't be empty`),
+              ),
           ]),
         ),
       }),

@@ -137,18 +137,21 @@ export const TaskServices = {
   },
 
   async uploadMatrix(
-    taskId: string,
+    where: Pick<Prisma.TaskWhereInput, 'influencerId' | 'campaignId'>,
     { screenshot, ...matrix }: Record<string, string>,
   ) {
-    const task: any = await prisma.task.findUnique({
-      where: { id: taskId },
-      select: { matrix: true },
+    const task = await prisma.task.findFirst({
+      where,
+      select: { id: true, screenshot: true },
     });
 
-    task?.matrix?.screenshot?.__pipes(deleteImage);
+    if (!task)
+      throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
+
+    task.screenshot?.__pipes(deleteImage);
 
     return prisma.task.update({
-      where: { id: taskId },
+      where: { id: task.id },
       data: { matrix, screenshot },
     });
   },

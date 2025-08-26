@@ -136,8 +136,22 @@ export const TaskControllers = {
     });
   }),
 
-  uploadMatrix: catchAsync(async ({ params, body }, res) => {
-    const data = await TaskServices.uploadMatrix(params.taskId, body);
+  uploadMatrix: catchAsync(async ({ params, body, user }, res) => {
+    const campaignId = params.campaignId,
+      influencerId = user.id;
+
+    await TaskServices.uploadMatrix(
+      {
+        campaignId,
+        influencerId,
+      },
+      body,
+    );
+
+    const data = await CampaignServices.getById({
+      influencerId,
+      campaignId,
+    });
 
     serveResponse(res, {
       message: 'Matrix uploaded successfully!',

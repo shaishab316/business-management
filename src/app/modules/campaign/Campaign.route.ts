@@ -65,13 +65,13 @@ const influencer = Router();
     TaskControllers.submitPostLink,
   );
 
-  // influencer.post(
-  //   '/:taskId/upload-matrix',
-  //   purifyRequest(QueryValidations.exists('taskId', 'task')),
-  //   capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
-  //   purifyRequest(TaskValidations.uploadMatrix),
-  //   TaskControllers.uploadMatrix,
-  // );
+  influencer.post(
+    '/:campaignId/upload-matrix',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    purifyRequest(TaskValidations.uploadMatrix),
+    TaskControllers.uploadMatrix,
+  );
 
   // influencer.post(
   //   '/:taskId/request-for-payment',
