@@ -26,6 +26,18 @@ const influencer = Router();
     purifyRequest(QueryValidations.list, PaymentValidations.getAll),
     PaymentControllers.getAll,
   );
+
+  influencer.get(
+    '/pending-payment',
+    purifyRequest(QueryValidations.list),
+    PaymentControllers.pendingPayment,
+  );
+
+  influencer.get(
+    '/paid-payment',
+    purifyRequest(QueryValidations.list),
+    PaymentControllers.paidPayment,
+  );
 }
 
-export const PaymentRoutes = { subAdmin };
+export const PaymentRoutes = { subAdmin, influencer };

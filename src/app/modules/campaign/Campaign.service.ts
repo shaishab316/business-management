@@ -68,6 +68,11 @@ export const CampaignServices = {
     const tasks = await prisma.task.findMany({
       where,
       select: {
+        id: true,
+        matrix: true,
+        screenshot: true,
+        postLink: true,
+        duration: true,
         campaign: true,
         status: true,
         paymentStatus: true,
@@ -92,6 +97,11 @@ export const CampaignServices = {
         ...task.campaign,
         status: task.status,
         paymentStatus: task.paymentStatus,
+        taskId: task.id,
+        screenshot: task.screenshot,
+        postLink: task.postLink,
+        duration: task.duration,
+        matrix: task.matrix,
       })),
     };
   },
