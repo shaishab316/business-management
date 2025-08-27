@@ -26,4 +26,13 @@ const subAdmin = Router();
   );
 }
 
-export const TaskRoutes = { subAdmin };
+const influencer = Router();
+{
+  influencer.get(
+    '/pending',
+    purifyRequest(QueryValidations.list, TaskValidations.getAll),
+    TaskControllers.pendingTask,
+  );
+}
+
+export const TaskRoutes = { subAdmin, influencer };

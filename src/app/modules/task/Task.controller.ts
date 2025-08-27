@@ -163,4 +163,18 @@ export const TaskControllers = {
       data,
     });
   }),
+
+  pendingTask: catchAsync(async ({ query, user }, res) => {
+    const { campaigns, meta } = await CampaignServices.getAll({
+      ...query,
+      influencerId: user.id,
+      status: ETaskStatus.PENDING,
+    });
+
+    serveResponse(res, {
+      message: 'Influencer Campaigns fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
 };
