@@ -5,6 +5,7 @@ import { UserRoutes } from '../user/User.route';
 import { NotificationRoutes } from '../notification/Notification.route';
 import { CompromiseRoutes } from '../compromise/Compromise.route';
 import { PaymentRoutes } from '../payment/Payment.route';
+import { IssueRoutes } from '../issue/Issue.route';
 
 export default Router().inject([
   {
@@ -30,5 +31,9 @@ export default Router().inject([
   {
     path: '/payments',
     route: PaymentRoutes.subAdmin,
+  },
+  {
+    path: '/issues',
+    route: IssueRoutes.subAdmin,
   },
 ]);

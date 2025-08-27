@@ -10,6 +10,8 @@ import { ReviewControllers } from '../review/Review.controller';
 import { TaskValidations } from '../task/Task.validation';
 import { PaymentValidations } from '../payment/Payment.validation';
 import { PaymentControllers } from '../payment/Payment.controller';
+import { IssueControllers } from '../issue/Issue.controller';
+import { IssueValidations } from '../issue/Issue.validation';
 
 const bannerCapture = capture({
   banner: {
@@ -30,6 +32,15 @@ const influencer = Router();
     '/:campaignId',
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
     CampaignControllers.getById,
+  );
+
+  influencer.post(
+    '/:campaignId/report-issue',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      IssueValidations.create,
+    ),
+    IssueControllers.create,
   );
 
   influencer.post(

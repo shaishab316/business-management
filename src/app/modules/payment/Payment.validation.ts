@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { enum_encode } from '../../../util/transform/enum';
 import { EPaymentMethod, EPaymentStatus } from '../../../../prisma';
-import { exists } from '../../../util/db/exists';
 
 export const PaymentValidations = {
   create: z.object({
@@ -25,23 +24,11 @@ export const PaymentValidations = {
 
   getAll: z.object({
     query: z.object({
-      method: z
-        .string()
-        .transform(enum_encode)
-        .optional()
-        .pipe(z.nativeEnum(EPaymentMethod).optional()),
       status: z
         .string()
         .transform(enum_encode)
         .optional()
         .pipe(z.nativeEnum(EPaymentStatus).optional()),
-      influencerId: z
-        .string()
-        .refine(exists('user'), id => ({
-          message: 'Influencer not found with id: ' + id,
-          path: ['influencerId'],
-        }))
-        .optional(),
     }),
   }),
 };

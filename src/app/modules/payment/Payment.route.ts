@@ -9,7 +9,7 @@ const subAdmin = Router();
   subAdmin.get(
     '/',
     purifyRequest(QueryValidations.list, PaymentValidations.getAll),
-    PaymentControllers.superGetAll,
+    PaymentControllers.getAll,
   );
 
   subAdmin.post(

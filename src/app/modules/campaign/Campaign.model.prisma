@@ -16,6 +16,7 @@ model Campaign {
   rating           Float    @default(0)
   tasks            Task[]
   Review           Review[]
+  Issue            Issue[]
 
   @@map("campaigns")
 }

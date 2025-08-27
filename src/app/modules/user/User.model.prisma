@@ -18,6 +18,7 @@ model User {
   reviewsReceived Review[]     @relation("ReviewForInfluencer")
   Compromise      Compromise[]
   Payment         Payment[]
+  Issue           Issue[]
 
   @@map("users")
 }

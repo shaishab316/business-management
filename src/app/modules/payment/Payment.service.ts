@@ -74,6 +74,24 @@ export const PaymentServices = {
   async getAll({ page, limit, ...where }: TList) {
     const payments = await prisma.payment.findMany({
       where,
+      include: {
+        task: {
+          select: {
+            influencer: {
+              select: {
+                name: true,
+                rating: true,
+                avatar: true,
+              },
+            },
+            campaign: {
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -90,7 +108,15 @@ export const PaymentServices = {
         } as TPagination,
         query: where,
       },
-      payments,
+      payments: payments.map(
+        ({ task: { influencer, campaign }, ...payment }) => ({
+          influencerName: influencer.name,
+          influencerRating: influencer.rating,
+          influencerAvatar: influencer.avatar,
+          campaignName: campaign.title,
+          ...payment,
+        }),
+      ),
     };
   },
 

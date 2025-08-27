@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TNotificationSend } from './Notification.validation';
-import { ENotificationStatus } from '../../../../prisma';
+import { ENotificationStatus, ENotificationType } from '../../../../prisma';
 import { TList } from '../query/Query.interface';
 import { TPagination } from '../../../util/server/serveResponse';
 import { sendUserPostNotification } from './Notification.utils';
@@ -138,6 +138,7 @@ export const NotificationServices = {
     await prisma.notification.updateMany({
       where: {
         recipientIds: { has: influencerId },
+        type: ENotificationType.SOFT,
         status: ENotificationStatus.UNREAD,
       },
       data: { status: ENotificationStatus.READ },
