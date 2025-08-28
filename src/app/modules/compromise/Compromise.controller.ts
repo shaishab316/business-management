@@ -37,7 +37,14 @@ export const CompromiseControllers = {
     serveResponse(res, {
       message: 'Compromises retrieved successfully!',
       meta,
-      data: compromises,
+      data: compromises.map(({ influencer, notification, date, id }) => ({
+        id,
+        date,
+        influencerName: influencer.name,
+        influencerAvatar: influencer.avatar,
+        influencerRating: influencer.rating,
+        notificationTitle: notification.title,
+      })),
     });
   }),
 };

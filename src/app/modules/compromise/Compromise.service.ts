@@ -1,4 +1,4 @@
-import { Compromise as TCompromise } from '../../../../prisma';
+import { Prisma, Compromise as TCompromise } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
@@ -31,7 +31,7 @@ export const CompromiseServices = {
     });
   },
 
-  async getAll({ page, limit, ...where }: TList) {
+  async getAll({ page, limit, ...where }: TList & Prisma.CompromiseWhereInput) {
     const compromises = await prisma.compromise.findMany({
       where,
       skip: (page - 1) * limit,
@@ -39,7 +39,6 @@ export const CompromiseServices = {
       include: {
         influencer: true,
         notification: true,
-        
       },
       orderBy: { date: 'desc' },
     });
