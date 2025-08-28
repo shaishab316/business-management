@@ -23,4 +23,17 @@ export const IssueControllers = {
       message: 'Issue marked as read successfully!',
     });
   }),
+
+  getIssuesByCampaignId: catchAsync(async ({ params, query }, res) => {
+    const { meta, issues } = await IssueServices.getIssuesByCampaignId({
+      ...query,
+      campaignId: params.campaignId,
+    });
+
+    serveResponse(res, {
+      message: 'Issues fetched successfully!',
+      meta,
+      data: issues,
+    });
+  }),
 };

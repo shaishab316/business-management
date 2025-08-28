@@ -159,7 +159,27 @@ export const CampaignServices = {
   },
 
   async superGetCampaignById(campaignId: string) {
-    return prisma.campaign.findUnique({ where: { id: campaignId } });
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: campaignId },
+    });
+
+    const unreadIssueCount = await prisma.issue.count({
+      where: {
+        campaignId,
+        unread: true,
+      },
+    });
+
+    const readIssueCount = await prisma.issue.count({
+      where: {
+        campaignId,
+        unread: false,
+      },
+    });
+
+    Object.assign(campaign ?? {}, { unreadIssueCount, readIssueCount });
+
+    return campaign;
   },
 
   async getCampaignInfluencers(campaignId: string) {
