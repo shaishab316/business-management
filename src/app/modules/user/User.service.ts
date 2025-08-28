@@ -2,7 +2,7 @@ import { TList } from '../query/Query.interface';
 import { userSearchableFields as searchFields } from './User.constant';
 import { deleteImage } from '../../middlewares/capture';
 import prisma from '../../../util/prisma';
-import { EUserRole, Auth as TAuth, User as TUser } from '../../../../prisma';
+import { Prisma, Auth as TAuth, User as TUser } from '../../../../prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 
 export const UserServices = {
@@ -34,7 +34,13 @@ export const UserServices = {
     });
   },
 
-  async getAllUser({ page, limit, search, ...where }: TUser & TList) {
+  async getAllUser({
+    page,
+    limit,
+    search,
+    omit,
+    ...where
+  }: Prisma.UserWhereInput & TList & { omit: Prisma.UserOmit }) {
     where ??= {} as any;
 
     if (search)
@@ -47,6 +53,7 @@ export const UserServices = {
 
     const users = await prisma.user.findMany({
       where,
+      omit,
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -64,6 +71,19 @@ export const UserServices = {
       },
       users,
     };
+  },
+
+  async getUserById({
+    userId,
+    omit = undefined,
+  }: {
+    userId: string;
+    omit?: Prisma.UserOmit;
+  }) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      omit,
+    });
   },
 
   async getUsersCount() {
@@ -108,34 +128,34 @@ export const UserServices = {
     };
   },
 
-  async getPendingInfluencers({ page, limit }: TList) {
-    const where = {
-      role: EUserRole.USER,
-      socials: {
-        some: {},
-      },
-    };
+  // async getPendingInfluencers({ page, limit }: TList) {
+  //   const where = {
+  //     role: EUserRole.USER,
+  //     socials: {
+  //       some: {},
+  //     },
+  //   };
 
-    const influencers = await prisma.user.findMany({
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  //   const influencers = await prisma.user.findMany({
+  //     where,
+  //     skip: (page - 1) * limit,
+  //     take: limit,
+  //   });
 
-    const total = await prisma.user.count({
-      where,
-    });
+  //   const total = await prisma.user.count({
+  //     where,
+  //   });
 
-    return {
-      meta: {
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        } as TPagination,
-      },
-      influencers,
-    };
-  },
+  //   return {
+  //     meta: {
+  //       pagination: {
+  //         page,
+  //         limit,
+  //         total,
+  //         totalPages: Math.ceil(total / limit),
+  //       } as TPagination,
+  //     },
+  //     influencers,
+  //   };
+  // },
 };

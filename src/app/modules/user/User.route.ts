@@ -78,7 +78,13 @@ const subAdmin = Router();
   subAdmin.get(
     '/',
     purifyRequest(QueryValidations.list, UserValidations.getInfluencer),
-    UserControllers.getInfluencer,
+    UserControllers.getInfluencers,
+  );
+
+  subAdmin.get(
+    '/:influencerId',
+    purifyRequest(QueryValidations.exists('influencerId', 'user')),
+    UserControllers.getInfluencerDetails,
   );
 
   subAdmin.get(

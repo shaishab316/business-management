@@ -86,16 +86,35 @@ export const UserControllers = {
     });
   }),
 
-  getInfluencer: catchAsync(async ({ query }, res) => {
+  getInfluencers: catchAsync(async ({ query }, res) => {
     const { meta, users } = await UserServices.getAllUser({
       ...query,
       role: EUserRole.INFLUENCER,
+      omit: {
+        role: true,
+        fcmToken: true,
+      },
     });
 
     serveResponse(res, {
       message: 'Users retrieved successfully!',
       meta,
       data: users,
+    });
+  }),
+
+  getInfluencerDetails: catchAsync(async ({ params }, res) => {
+    const influencer = await UserServices.getUserById({
+      userId: params.influencerId,
+      omit: {
+        role: true,
+        fcmToken: true,
+      },
+    });
+
+    serveResponse(res, {
+      message: 'Users retrieved successfully!',
+      data: influencer,
     });
   }),
 
@@ -153,13 +172,22 @@ export const UserControllers = {
   }),
 
   getPendingInfluencers: catchAsync(async ({ query }, res) => {
-    const { meta, influencers } =
-      await UserServices.getPendingInfluencers(query);
+    const { meta, users } = await UserServices.getAllUser({
+      ...query,
+      omit: {
+        role: true,
+        fcmToken: true,
+      },
+      role: EUserRole.USER,
+      socials: {
+        some: {},
+      },
+    });
 
     serveResponse(res, {
       message: 'Influencers retrieved successfully!',
       meta,
-      data: influencers,
+      data: users,
     });
   }),
 
