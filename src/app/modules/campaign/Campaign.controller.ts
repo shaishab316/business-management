@@ -131,6 +131,15 @@ export const CampaignControllers = {
     });
   }),
 
+  getCampaignInfluencerDetails: catchAsync(async ({ params }, res) => {
+    const data = await CampaignServices.getCampaignInfluencerDetails(params);
+
+    serveResponse(res, {
+      message: 'Campaign influencer successfully!',
+      data,
+    });
+  }),
+
   approveMetrics: catchAsync(async ({ params }, res) => {
     const data = await CampaignServices.approveMetrics(params);
 

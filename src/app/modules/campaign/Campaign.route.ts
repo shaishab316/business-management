@@ -123,6 +123,15 @@ const subAdmin = Router();
   );
 
   subAdmin.get(
+    '/:campaignId/influencers/:influencerId',
+    purifyRequest(
+      QueryValidations.exists('campaignId', 'campaign'),
+      QueryValidations.exists('influencerId', 'user'),
+    ),
+    CampaignControllers.getCampaignInfluencerDetails,
+  );
+
+  subAdmin.get(
     '/:campaignId/issues',
     purifyRequest(
       QueryValidations.exists('campaignId', 'campaign'),

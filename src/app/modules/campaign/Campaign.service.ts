@@ -184,16 +184,75 @@ export const CampaignServices = {
 
   async getCampaignInfluencers(campaignId: string) {
     const tasks = await prisma.task.findMany({
-      where: { campaignId },
-      include: {
-        influencer: true,
+      where: {
+        campaignId,
+        status: {
+          not: ETaskStatus.PENDING,
+        },
+      },
+      select: {
+        campaignId: true,
+        influencerId: true,
+        influencer: {
+          select: {
+            avatar: true,
+            name: true,
+            rating: true,
+            socials: true,
+          },
+        },
+        status: true,
+        matrix: true,
       },
     });
 
-    return tasks.map(({ influencer, ...task }) => ({
+    return tasks.map(({ matrix, ...task }) => ({
       ...task,
-      ...influencer,
+      isMatrixUploaded: !!matrix,
     }));
+  },
+
+  async getCampaignInfluencerDetails({
+    campaignId,
+    influencerId,
+  }: {
+    campaignId: string;
+    influencerId: string;
+  }) {
+    const task = await prisma.task.findFirst({
+      where: { campaignId, influencerId },
+      select: {
+        influencer: {
+          select: {
+            name: true,
+            avatar: true,
+            rating: true,
+            socials: true,
+          },
+        },
+        id: true,
+        matrix: true,
+        screenshot: true,
+        status: true,
+        postLink: true,
+        campaign: {
+          select: {
+            expected_metrics: true,
+          },
+        },
+      },
+    });
+
+    if (!task)
+      throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
+
+    const { campaign, influencer, ...taskData } = task;
+
+    return {
+      ...taskData,
+      ...campaign,
+      influencer,
+    };
   },
 
   async approveMetrics({
