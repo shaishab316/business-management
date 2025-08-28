@@ -6,3 +6,4 @@ winston
 uploads
 dist
 prisma
+tmp

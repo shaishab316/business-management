@@ -66,7 +66,10 @@ export const PaymentServices = {
       }),
       prisma.task.update({
         where: { id: payment?.taskId },
-        data: { paymentStatus: status },
+        data: {
+          paymentStatus: status,
+          isPaymentDone: status === EPaymentStatus.PAID,
+        },
       }),
     ]);
   },
@@ -192,7 +195,7 @@ export const PaymentServices = {
 
     const tasks = await prisma.task.findMany({
       where,
-      include: { campaign: true },
+      include: { campaign: true, Payment: true },
     });
 
     const total = await prisma.task.count({ where });
@@ -206,10 +209,11 @@ export const PaymentServices = {
           totalPages: Math.ceil(total / limit),
         } as TPagination,
       },
-      campaigns: tasks.map(({ campaign, duration, ...task }) => ({
+      campaigns: tasks.map(({ campaign, duration, Payment, ...task }) => ({
         ...task,
         ...campaign,
         duration,
+        isPaymentRequested: !!Payment?.length,
       })),
     };
   },
