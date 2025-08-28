@@ -206,8 +206,12 @@ export const CampaignServices = {
       },
     });
 
-    return tasks.map(({ matrix, ...task }) => ({
+    return tasks.map(({ matrix, influencer, ...task }) => ({
       ...task,
+      influencerName: influencer.name,
+      influencerAvatar: influencer.avatar,
+      influencerRating: influencer.rating,
+      influencerSocials: influencer.socials,
       isMatrixUploaded: !!matrix,
     }));
   },
@@ -246,12 +250,28 @@ export const CampaignServices = {
     if (!task)
       throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
 
-    const { campaign, influencer, ...taskData } = task;
+    const {
+      campaign: { expected_metrics },
+      influencer,
+      matrix,
+      ...taskData
+    } = task;
 
     return {
       ...taskData,
-      ...campaign,
-      influencer,
+      matrix: Object.fromEntries(
+        Object.entries(expected_metrics ?? {}).map(([key, goal]) => [
+          key,
+          {
+            value: (matrix as Record<string, string>)?.[key] ?? 0,
+            goal,
+          },
+        ]),
+      ),
+      influencerName: influencer.name,
+      influencerAvatar: influencer.avatar,
+      influencerRating: influencer.rating,
+      influencerSocials: influencer.socials,
     };
   },
 
