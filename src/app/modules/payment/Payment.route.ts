@@ -12,6 +12,12 @@ const subAdmin = Router();
     PaymentControllers.getAll,
   );
 
+  subAdmin.get(
+    '/:paymentId',
+    purifyRequest(QueryValidations.exists('paymentId', 'payment')),
+    PaymentControllers.getDetails,
+  );
+
   subAdmin.post(
     '/:paymentId/:status',
     purifyRequest(PaymentValidations.changeStatus),

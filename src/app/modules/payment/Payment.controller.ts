@@ -60,6 +60,15 @@ export const PaymentControllers = {
     });
   }),
 
+  getDetails: catchAsync(async ({ params }, res) => {
+    const payment = await PaymentServices.getDetails(params.paymentId);
+
+    serveResponse(res, {
+      message: 'Payment details retrieved successfully!',
+      data: payment,
+    });
+  }),
+
   pendingPayment: catchAsync(async ({ query, user }, res) => {
     const { campaigns, meta } = await PaymentServices.getPayments({
       ...query,

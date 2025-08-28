@@ -120,6 +120,64 @@ export const PaymentServices = {
     };
   },
 
+  async getDetails(paymentId: string) {
+    const payment = await prisma.payment.findUnique({
+      where: {
+        id: paymentId,
+      },
+      include: {
+        task: {
+          select: {
+            influencer: {
+              select: {
+                name: true,
+                avatar: true,
+                rating: true,
+              },
+            },
+            screenshot: true,
+            postLink: true,
+            matrix: true,
+            campaign: {
+              select: {
+                title: true,
+                expected_metrics: true,
+              },
+            },
+          },
+        },
+      },
+      omit: {
+        influencerId: true,
+        taskId: true,
+      },
+    });
+
+    const {
+      task: { campaign, influencer, postLink, screenshot, matrix },
+      ...paymentData
+    } = payment!;
+
+    return {
+      ...paymentData,
+      campaignName: campaign.title,
+      influencerName: influencer.name,
+      influencerAvatar: influencer.avatar,
+      influencerRating: influencer.rating,
+      matrix: Object.fromEntries(
+        Object.entries(campaign?.expected_metrics ?? {}).map(([key, goal]) => [
+          key,
+          {
+            value: (matrix as Record<string, string>)?.[key] ?? 0,
+            goal,
+          },
+        ]),
+      ),
+      postLink,
+      screenshot,
+    };
+  },
+
   async getPayments({
     page,
     limit,

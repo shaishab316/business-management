@@ -82,15 +82,15 @@ const subAdmin = Router();
   );
 
   subAdmin.get(
-    '/:influencerId',
-    purifyRequest(QueryValidations.exists('influencerId', 'user')),
-    UserControllers.getInfluencerDetails,
-  );
-
-  subAdmin.get(
     '/pending-influencers',
     purifyRequest(QueryValidations.list),
     UserControllers.getPendingInfluencers,
+  );
+
+  subAdmin.get(
+    '/:influencerId',
+    purifyRequest(QueryValidations.exists('influencerId', 'user')),
+    UserControllers.getInfluencerDetails,
   );
 
   subAdmin.post(
