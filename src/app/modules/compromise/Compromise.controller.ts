@@ -39,11 +39,12 @@ export const CompromiseControllers = {
       meta,
       data: compromises.map(({ influencer, notification, date, id }) => ({
         id,
-        date,
+        compromiseDate: date,
         influencerName: influencer.name,
         influencerAvatar: influencer.avatar,
         influencerRating: influencer.rating,
         notificationTitle: notification.title,
+        sentDate: notification.updatedAt,
       })),
     });
   }),
