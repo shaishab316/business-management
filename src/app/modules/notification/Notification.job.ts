@@ -28,7 +28,7 @@ export const NotificationJobs = {
 
         for (const notification of notifications) {
           const done = await sendUserPostNotification({
-            userIds: notification.recipientIds,
+            userId: notification.recipientId,
             title: notification.title,
             body: notification.body,
           });

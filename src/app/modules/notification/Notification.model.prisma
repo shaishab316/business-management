@@ -1,14 +1,15 @@
 model Notification {
-  id           String              @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  title        String
-  body         String
-  recipientIds String[]            @default([]) @db.ObjectId
-  type         ENotificationType   @default(SOFT)
-  status       ENotificationStatus @default(UNREAD)
-  scheduledAt  DateTime?
-  Compromise   Compromise[]
+  id          String              @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  title       String
+  body        String
+  recipientId String              @db.ObjectId
+  recipient   User                @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  type        ENotificationType   @default(SOFT)
+  status      ENotificationStatus @default(UNREAD)
+  scheduledAt DateTime?
+  Compromise  Compromise[]
 
   @@map("notifications")
 }

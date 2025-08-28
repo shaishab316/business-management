@@ -1,20 +1,21 @@
-'use strict';
-
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TNotificationSend } from './Notification.validation';
-import { ENotificationStatus, ENotificationType } from '../../../../prisma';
+import {
+  ENotificationStatus,
+  ENotificationType,
+  Prisma,
+} from '../../../../prisma';
 import { TList } from '../query/Query.interface';
 import { TPagination } from '../../../util/server/serveResponse';
 import { sendUserPostNotification } from './Notification.utils';
 
 export const NotificationServices = {
   async send({
-    influencerIds,
-    campaignIds,
-    type,
+    influencerId,
     scheduledAt,
+    type,
     title,
     body,
   }: TNotificationSend) {
@@ -22,51 +23,25 @@ export const NotificationServices = {
       ? ENotificationStatus.PENDING
       : ENotificationStatus.UNREAD;
 
-    const recipientSet = new Set<string>(influencerIds);
-    const failedRecipientSet = new Set<string>();
-
-    if (campaignIds.length) {
-      const tasks = await prisma.task.findMany({
-        where: {
-          campaignId: { in: campaignIds },
-        },
-        select: { influencerId: true },
-      });
-
-      tasks.forEach(({ influencerId }) => recipientSet.add(influencerId));
-    }
-
-    const compromises = await prisma.compromise.findMany({
+    const compromises = await prisma.compromise.findFirst({
       where: {
-        influencerId: { in: Array.from(recipientSet) },
+        influencerId,
         date: { gte: new Date() },
       },
       select: {
-        influencerId: true,
+        id: true,
       },
     });
 
-    for (const { influencerId } of compromises)
-      influencerId?.__pipes(
-        id => recipientSet.delete(id),
-        id => failedRecipientSet.add(id),
+    if (compromises)
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        'Influencer has compromises.',
       );
-
-    if (!recipientSet.size)
-      if (failedRecipientSet.size)
-        throw new ServerError(
-          StatusCodes.BAD_REQUEST,
-          'Influencer has compromises.',
-        );
-      else
-        throw new ServerError(
-          StatusCodes.NOT_FOUND,
-          'Pleases select influencer or campaign.',
-        );
 
     if (!scheduledAt) {
       const done = await sendUserPostNotification({
-        userIds: Array.from(recipientSet),
+        userId: influencerId,
         title,
         body,
       });
@@ -74,30 +49,29 @@ export const NotificationServices = {
       if (done) status = ENotificationStatus.PUSHED;
     }
 
-    await prisma.notification.create({
+    return prisma.notification.create({
       data: {
         title,
         body,
         scheduledAt,
         type,
         status,
-        recipientIds: Array.from(recipientSet),
+        recipientId: influencerId,
       },
     });
-
-    return {
-      successRecipients: Array.from(recipientSet),
-      failedRecipients: Array.from(failedRecipientSet),
-    };
   },
 
-  async getAll({ page, limit, ...where }: TList) {
-    where.status = {
-      not: ENotificationStatus.PENDING,
-    };
-
+  async getAll({
+    page,
+    limit,
+    include,
+    ...where
+  }: TList & {
+    include?: Prisma.NotificationInclude;
+  } & Prisma.NotificationWhereInput) {
     const notifications = await prisma.notification.findMany({
       where,
+      include,
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -134,10 +108,10 @@ export const NotificationServices = {
     });
   },
 
-  async readAllNotifications(influencerId: string) {
-    await prisma.notification.updateMany({
+  async readAllNotifications(recipientId: string) {
+    return prisma.notification.updateMany({
       where: {
-        recipientIds: { has: influencerId },
+        recipientId,
         type: ENotificationType.SOFT,
         status: ENotificationStatus.UNREAD,
       },

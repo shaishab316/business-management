@@ -43,18 +43,18 @@ export const sendPushNotification = async ({
 };
 
 export const sendUserPostNotification = async ({
-  userIds,
+  userId,
   title,
   body,
 }: {
-  userIds: string[];
+  userId: string;
   title: string;
   body: string;
 }): Promise<boolean> => {
   const fcmTokens = (
     await prisma.user.findMany({
       where: {
-        id: { in: userIds },
+        id: userId,
         fcmToken: { not: null },
       },
       select: { fcmToken: true },

@@ -1,24 +1,25 @@
 model User {
-  id              String       @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   fcmToken        String?
-  role            EUserRole    @default(GUEST)
+  role            EUserRole      @default(GUEST)
   name            String?
-  email           String       @unique
+  email           String         @unique
   phone           String?
   avatar          String?
   address         String?
-  rating          Float        @default(0)
+  rating          Float          @default(0)
   socials         TSocial[]
   Auth            Auth?
   Otp             Otp?
   Task            Task[]
-  reviewsGiven    Review[]     @relation("ReviewByUser")
-  reviewsReceived Review[]     @relation("ReviewForInfluencer")
+  reviewsGiven    Review[]       @relation("ReviewByUser")
+  reviewsReceived Review[]       @relation("ReviewForInfluencer")
   Compromise      Compromise[]
   Payment         Payment[]
   Issue           Issue[]
+  Notification    Notification[]
 
   @@map("users")
 }
