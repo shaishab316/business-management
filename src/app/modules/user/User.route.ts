@@ -77,7 +77,7 @@ const subAdmin = Router();
 {
   subAdmin.get(
     '/',
-    purifyRequest(QueryValidations.list, UserValidations.getInfluencer),
+    purifyRequest(QueryValidations.list),
     UserControllers.getInfluencers,
   );
 

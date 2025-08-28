@@ -77,12 +77,6 @@ export const UserValidations = {
     }),
   }),
 
-  getInfluencer: z.object({
-    query: z.object({
-      search: z.string().trim().optional(),
-    }),
-  }),
-
   requestForInfluencer: z.object({
     body: z.object({
       avatar: z.string().optional(),

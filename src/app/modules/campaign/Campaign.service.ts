@@ -6,6 +6,7 @@ import { TPagination } from '../../../util/server/serveResponse';
 import { deleteImage } from '../../middlewares/capture';
 import { TList } from '../query/Query.interface';
 import { TaskServices } from '../task/Task.service';
+import { campaignSearchableFields as searchableFields } from './Campaign.constant';
 
 export const CampaignServices = {
   async create(campaignData: TCampaign) {
@@ -139,8 +140,17 @@ export const CampaignServices = {
   async superGetCampaigns({
     page,
     limit,
+    search,
     where,
   }: TList & { where: Prisma.CampaignWhereInput }) {
+    if (search)
+      where.OR = searchableFields.map(field => ({
+        [field]: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      }));
+
     const campaigns = await prisma.campaign.findMany({ where });
 
     const total = await prisma.campaign.count({ where });
@@ -153,6 +163,9 @@ export const CampaignServices = {
           total,
           totalPages: Math.ceil(total / limit),
         } as TPagination,
+        query: {
+          search,
+        },
       },
       campaigns,
     };
