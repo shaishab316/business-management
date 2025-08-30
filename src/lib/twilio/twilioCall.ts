@@ -20,6 +20,8 @@ export async function twilioCall({
   try {
     const voiceResponse = new VoiceResponse();
     voiceResponse.say(message);
+    voiceResponse.say('Thank you for using our service. Have a nice day.');
+    voiceResponse.hangup(); // end the call immediately
 
     const call = await client.calls.create({
       twiml: voiceResponse.toString(),
