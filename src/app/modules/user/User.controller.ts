@@ -91,7 +91,6 @@ export const UserControllers = {
       ...query,
       role: EUserRole.INFLUENCER,
       omit: {
-        role: true,
         fcmToken: true,
       },
     });

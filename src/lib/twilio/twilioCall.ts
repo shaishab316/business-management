@@ -11,9 +11,11 @@ const client = new Twilio(account_sid, auth_token);
 export async function twilioCall({
   to,
   message,
+  userId = undefined,
 }: {
   to: string;
   message: string;
+  userId?: string;
 }) {
   try {
     const voiceResponse = new VoiceResponse();
@@ -25,7 +27,12 @@ export async function twilioCall({
       from: number,
     });
 
-    logger.log(colors.green('✅ twilioCall success'), call.sid);
+    logger.log(
+      colors.green(
+        `✅ twilioCall success ${userId ? ` TO USER_ID: ${userId}` : ''}`,
+      ),
+      call.sid,
+    );
   } catch (error) {
     errorLogger.error(colors.red('❌ twilioCall failed'), error);
   }

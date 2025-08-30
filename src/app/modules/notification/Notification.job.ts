@@ -5,19 +5,22 @@ import prisma from '../../../util/prisma';
 import { ENotificationStatus } from '../../../../prisma';
 import colors from 'colors';
 import { sendUserPostNotification } from './Notification.utils';
+import { twilioCall } from '../../../lib/twilio/twilioCall';
 
-const time = ms(config.notification_interval);
+const notificationIntervalTime = ms(config.notification_interval);
+const fiveDays = ms('5d');
+const twelveHours = ms('12h');
 
 export const NotificationJobs = {
-  publishing() {
+  init() {
     console.log(
       colors.yellow(
         'Notification publishing job started. Interval: ' +
-          ms(time, { long: true }),
+          ms(notificationIntervalTime, { long: true }),
       ),
     );
 
-    (async function publish() {
+    (async function publishing() {
       try {
         const notifications = await prisma.notification.findMany({
           where: {
@@ -26,31 +29,76 @@ export const NotificationJobs = {
           },
         });
 
-        for (const notification of notifications) {
-          const done = await sendUserPostNotification({
-            userId: notification.recipientId,
-            title: notification.title,
-            body: notification.body,
-          });
-
-          if (done) {
-            await prisma.notification.update({
-              where: { id: notification.id },
-              data: {
-                status: done
-                  ? ENotificationStatus.PUSHED
-                  : ENotificationStatus.UNREAD,
-                scheduledAt: null,
-              },
+        await Promise.allSettled(
+          notifications.map(async notification => {
+            const done = await sendUserPostNotification({
+              userId: notification.recipientId,
+              title: notification.title,
+              body: notification.body,
             });
-          }
-        }
+
+            if (done) {
+              await prisma.notification.update({
+                where: { id: notification.id },
+                data: {
+                  status: done
+                    ? ENotificationStatus.PUSHED
+                    : ENotificationStatus.UNREAD,
+                  scheduledAt: null,
+                },
+              });
+            }
+          }),
+        );
 
         console.log(`Published ${notifications.length} notifications`);
       } catch (error) {
         console.error('Failed to publish notifications:', error);
       } finally {
-        setTimeout(publish, time);
+        setTimeout(publishing, notificationIntervalTime);
+      }
+    })();
+
+    console.log(
+      colors.yellow(
+        'Call reminder job started. Interval: ' +
+          ms(twelveHours, { long: true }),
+      ),
+    );
+
+    (async function callReminder() {
+      try {
+        const notifications = await prisma.notification.findMany({
+          where: {
+            status: ENotificationStatus.PENDING,
+            scheduledAt: { lt: new Date(Date.now() - fiveDays) },
+          },
+          select: {
+            title: true,
+            body: true,
+            recipient: {
+              select: {
+                name: true,
+                phone: true,
+                id: true,
+              },
+            },
+          },
+        });
+
+        for (const { title, body, recipient } of notifications) {
+          if (recipient.phone) {
+            await twilioCall({
+              to: recipient.phone,
+              message: `Hello ${recipient.name}, ${title} ${body}`,
+              userId: recipient.id,
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to publish notifications:', error);
+      } finally {
+        setTimeout(callReminder, twelveHours);
       }
     })();
   },
