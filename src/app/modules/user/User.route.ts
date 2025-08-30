@@ -93,13 +93,13 @@ const subAdmin = Router();
     UserControllers.getInfluencerDetails,
   );
 
-  subAdmin.post(
+  subAdmin.get(
     '/:influencerId/approve',
     purifyRequest(QueryValidations.exists('influencerId', 'user')),
     UserControllers.approveInfluencer,
   );
 
-  subAdmin.post(
+  subAdmin.get(
     '/:influencerId/decline',
     purifyRequest(QueryValidations.exists('influencerId', 'user')),
     UserControllers.declineInfluencer,
