@@ -75,6 +75,7 @@
     "multer-gridfs-storage": "meme8383/multer-gridfs-storage#f82252c",
     "nodemailer": "^6.9.16",
     "stripe": "^17.2.1",
+    "twilio": "^5.8.2",
     "winston": "^3.13.0",
     "winston-mongodb": "^6.0.0",
     "zod": "^3.23.8"

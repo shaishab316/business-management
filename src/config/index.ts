@@ -235,6 +235,20 @@ const config = {
       down: 'Firebase credentials - end',
     }),
   },
+
+  twilio: {
+    account_sid: env('twilio account sid', '', {
+      up: 'Twilio credentials - start',
+      regex: '^.{10,}$',
+    }),
+    auth_token: env('twilio auth token', '', {
+      regex: '^.{10,}$',
+    }),
+    number: env('twilio number', '', {
+      regex: '^\\+?\\d{10,13}$',
+      down: 'Twilio credentials - end',
+    }),
+  },
 };
 
 export default config;
