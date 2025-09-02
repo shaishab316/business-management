@@ -56,34 +56,54 @@ export const CampaignValidations = {
         })
         .trim()
         .min(1, "Payout deadline can't be empty"),
-      expected_metrics: z
-        .string()
-        .optional()
-        .transform(json)
-        .pipe(
-          z
-            .record(
-              z.string(),
-              z.string({
-                required_error: 'Metric is missing',
-              }),
-            )
-            .optional(),
-        ),
-      other_fields: z
-        .string()
-        .optional()
-        .transform(json)
-        .pipe(
-          z
-            .record(
-              z.string(),
-              z.string({
-                required_error: 'Field is missing',
-              }),
-            )
-            .optional(),
-        ),
+      expected_metrics: z.union([
+        z
+          .record(
+            z.string(),
+            z.string({
+              required_error: 'Metric is missing',
+            }),
+          )
+          .optional(),
+        z
+          .string()
+          .optional()
+          .transform(json)
+          .pipe(
+            z
+              .record(
+                z.string(),
+                z.string({
+                  required_error: 'Metric is missing',
+                }),
+              )
+              .optional(),
+          ),
+      ]),
+      other_fields: z.union([
+        z
+          .record(
+            z.string(),
+            z.string({
+              required_error: 'Field is missing',
+            }),
+          )
+          .optional(),
+        z
+          .string()
+          .optional()
+          .transform(json)
+          .pipe(
+            z
+              .record(
+                z.string(),
+                z.string({
+                  required_error: 'Field is missing',
+                }),
+              )
+              .optional(),
+          ),
+      ]),
     }),
   }),
 

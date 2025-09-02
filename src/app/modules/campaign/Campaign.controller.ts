@@ -6,7 +6,10 @@ import { TaskServices } from '../task/Task.service';
 
 export const CampaignControllers = {
   create: catchAsync(async (req, res) => {
-    const data = await CampaignServices.create(req.body);
+    const data: any = await CampaignServices.create(req.body);
+
+    data.unreadIssueCount = 0;
+    data.readIssueCount = 0;
 
     serveResponse(res, {
       statusCode: StatusCodes.CREATED,

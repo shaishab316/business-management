@@ -91,7 +91,6 @@ export const UserControllers = {
       ...query,
       role: EUserRole.INFLUENCER,
       omit: {
-        role: true,
         fcmToken: true,
       },
     });
@@ -175,7 +174,6 @@ export const UserControllers = {
     const { meta, users } = await UserServices.getAllUser({
       ...query,
       omit: {
-        role: true,
         fcmToken: true,
       },
       role: EUserRole.USER,

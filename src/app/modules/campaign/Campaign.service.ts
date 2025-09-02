@@ -10,7 +10,10 @@ import { campaignSearchableFields as searchableFields } from './Campaign.constan
 
 export const CampaignServices = {
   async create(campaignData: TCampaign) {
-    return prisma.campaign.create({ data: campaignData });
+    return prisma.campaign.create({
+      data: campaignData,
+      include: { Issue: true },
+    });
   },
 
   async edit(campaignId: string, campaignData: TCampaign) {
@@ -143,17 +146,60 @@ export const CampaignServices = {
     search,
     where,
   }: TList & { where: Prisma.CampaignWhereInput }) {
-    if (search)
+    if (search) {
       where.OR = searchableFields.map(field => ({
-        [field]: {
-          contains: search,
-          mode: 'insensitive',
-        },
+        [field]: { contains: search, mode: 'insensitive' },
       }));
+    }
 
-    const campaigns = await prisma.campaign.findMany({ where });
+    // Fetch campaigns with pagination
+    const campaigns = await prisma.campaign.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
     const total = await prisma.campaign.count({ where });
+
+    if (campaigns.length === 0) {
+      return {
+        meta: {
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+          },
+          query: { search },
+        },
+        campaigns: [],
+      };
+    }
+
+    // Get unread/read issue counts per campaign using groupBy
+    const issueCounts = await prisma.issue.groupBy({
+      by: ['campaignId', 'unread'],
+      where: {
+        campaignId: { in: campaigns.map(c => c.id) },
+      },
+      _count: { _all: true },
+    });
+
+    // Map counts to campaigns
+    const countMap: Record<string, { unread: number; read: number }> = {};
+    issueCounts.forEach(item => {
+      if (!countMap[item.campaignId])
+        countMap[item.campaignId] = { unread: 0, read: 0 };
+      if (item.unread) countMap[item.campaignId].unread = item._count._all;
+      else countMap[item.campaignId].read = item._count._all;
+    });
+
+    // Attach counts to campaigns
+    const result = campaigns.map(c => ({
+      ...c,
+      unreadIssueCount: countMap[c.id]?.unread || 0,
+      readIssueCount: countMap[c.id]?.read || 0,
+    }));
 
     return {
       meta: {
@@ -162,12 +208,10 @@ export const CampaignServices = {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-        } as TPagination,
-        query: {
-          search,
         },
+        query: { search },
       },
-      campaigns,
+      campaigns: result,
     };
   },
 
