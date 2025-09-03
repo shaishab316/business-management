@@ -118,34 +118,54 @@ export const CampaignValidations = {
       duration: z.string().trim().optional().transform(date).pipe(z.date()),
       content_type: z.string().trim().optional(),
       payout_deadline: z.string().trim().optional(),
-      expected_metrics: z
-        .string()
-        .optional()
-        .transform(json)
-        .pipe(
-          z
-            .record(
-              z.string(),
-              z.string({
-                required_error: 'Metric is missing',
-              }),
-            )
-            .optional(),
-        ),
-      other_fields: z
-        .string()
-        .optional()
-        .transform(json)
-        .pipe(
-          z
-            .record(
-              z.string(),
-              z.string({
-                required_error: 'Field is missing',
-              }),
-            )
-            .optional(),
-        ),
+      expected_metrics: z.union([
+        z
+          .record(
+            z.string(),
+            z.string({
+              required_error: 'Metric is missing',
+            }),
+          )
+          .optional(),
+        z
+          .string()
+          .optional()
+          .transform(json)
+          .pipe(
+            z
+              .record(
+                z.string(),
+                z.string({
+                  required_error: 'Metric is missing',
+                }),
+              )
+              .optional(),
+          ),
+      ]),
+      other_fields: z.union([
+        z
+          .record(
+            z.string(),
+            z.string({
+              required_error: 'Field is missing',
+            }),
+          )
+          .optional(),
+        z
+          .string()
+          .optional()
+          .transform(json)
+          .pipe(
+            z
+              .record(
+                z.string(),
+                z.string({
+                  required_error: 'Field is missing',
+                }),
+              )
+              .optional(),
+          ),
+      ]),
     }),
   }),
 
