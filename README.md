@@ -1,5 +1,13 @@
 # Business Management System
 
+[![Template](https://img.shields.io/badge/🗂️%20express--it-blue?style=for-the-badge&logoColor=white)](https://github.com/shaishab316/express-it)
+![Node.js](https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![MongoDB](https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Stripe](https://img.shields.io/badge/stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)
+
 Welcome to the Business Management System! This project is designed to help businesses manage their operations efficiently by providing tools and features for streamlined management processes.
 
 ## Features
