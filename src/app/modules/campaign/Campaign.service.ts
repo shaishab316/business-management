@@ -249,13 +249,15 @@ export const CampaignServices = {
       },
       select: {
         campaignId: true,
+        campaign: {
+          select: {
+            expected_metrics: true,
+          },
+        },
         influencerId: true,
         influencer: {
-          select: {
-            avatar: true,
-            name: true,
-            rating: true,
-            socials: true,
+          omit: {
+            fcmToken: true,
           },
         },
         status: true,
@@ -263,13 +265,17 @@ export const CampaignServices = {
       },
     });
 
-    return tasks.map(({ matrix, influencer, ...task }) => ({
+    return tasks.map(({ matrix, campaign: { expected_metrics }, ...task }) => ({
       ...task,
-      influencerName: influencer.name,
-      influencerAvatar: influencer.avatar,
-      influencerRating: influencer.rating,
-      influencerSocials: influencer.socials,
-      isMatrixUploaded: !!matrix,
+      matrix: Object.fromEntries(
+        Object.entries(expected_metrics ?? {}).map(([key, goal]) => [
+          key,
+          {
+            value: (matrix as Record<string, string>)?.[key] ?? 0,
+            goal,
+          },
+        ]),
+      ),
     }));
   },
 
