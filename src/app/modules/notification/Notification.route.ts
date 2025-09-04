@@ -11,6 +11,26 @@ import { QueryValidations } from '../query/Query.validation';
 const subAdmin = Router();
 {
   subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list, NotificationValidations.getAll),
+    NotificationControllers.getAll,
+  );
+
+  subAdmin.post('/read-all', NotificationControllers.readAllNotifications);
+
+  subAdmin.post(
+    '/:notificationId/read',
+    purifyRequest(QueryValidations.exists('notificationId', 'notification')),
+    NotificationControllers.readNotification,
+  );
+
+  subAdmin.post(
+    '/:notificationId/compromise',
+    purifyRequest(CompromiseValidations.compromise),
+    CompromiseControllers.compromise,
+  );
+
+  subAdmin.get(
     '/scheduled',
     purifyRequest(QueryValidations.list, NotificationValidations.getAll),
     NotificationControllers.getScheduled,
