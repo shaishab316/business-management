@@ -35,6 +35,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.5",
+    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -52,6 +57,7 @@
     "prettier": "^3.4.2",
     "prettier-eslint": "^16.3.0",
     "prisma": "^6.13.0",
+    "semantic-release": "^24.2.7",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4"
   },
