@@ -1,12 +1,12 @@
 import { ENotificationType, ETaskStatus, Prisma } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
-import { TList } from '../query/Query.interface';
 import { userSearchableFields } from '../user/User.constant';
 import {
   TConnectInfluencerArgs,
   TConnectManagerArgs,
   TDisconnectManagerInfluencerArgs,
+  TGetInfluencersInfoArgs,
 } from './ManagerInfluencer.interface';
 
 export const ManagerInfluencerServices = {
@@ -161,7 +161,7 @@ export const ManagerInfluencerServices = {
     limit,
     search,
     managerId,
-  }: TList & { managerId: string }) {
+  }: TGetInfluencersInfoArgs) {
     const where: Prisma.ManagerInfluencerWhereInput = {
       managerId,
       isConnected: true,

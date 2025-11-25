@@ -104,7 +104,7 @@ export const UserValidations = {
         .string({ message: 'Phone is missing' })
         .trim()
         .min(1, "Phone can't be empty"),
-      role: z.literal(EUserRole.MANAGER).default(EUserRole.MANAGER),
+      nextRole: z.literal(EUserRole.MANAGER).default(EUserRole.MANAGER),
     }),
   }),
 };

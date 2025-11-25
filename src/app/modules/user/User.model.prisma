@@ -23,6 +23,8 @@ model User {
   manager_influencers ManagerInfluencer[] @relation("ManagerToManagerInfluencer")
   influencer_managers ManagerInfluencer[] @relation("InfluencerToManagerInfluencer")
 
+  nextRole EUserRole?
+
   @@map("users")
 }
 

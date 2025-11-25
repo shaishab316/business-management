@@ -1,6 +1,7 @@
 import z from 'zod';
 import { ManagerInfluencerValidations } from './ManagerInfluencer.validation';
 import { User as TUser } from '../../../../prisma';
+import { TList } from '../query/Query.interface';
 
 export type TConnectManagerArgs = z.infer<
   typeof ManagerInfluencerValidations.connectManager
@@ -18,3 +19,5 @@ export type TDisconnectManagerInfluencerArgs = z.infer<
   typeof ManagerInfluencerValidations.disconnectInfluencer
 >['body'] &
   z.infer<typeof ManagerInfluencerValidations.disconnectManager>['body'];
+
+export type TGetInfluencersInfoArgs = TList & { managerId: string };

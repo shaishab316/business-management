@@ -14,9 +14,9 @@ import { enum_decode } from '../../util/transform/enum';
 const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
   catchAsync(async (req, _, next) => {
     const token =
-      req.cookies[token_type] ||
-      req.headers.authorization ||
-      req.query[token_type];
+      // req.cookies[token_type] ||
+      req.headers.authorization;
+    //|| req.query[token_type];
 
     const id = decodeToken(token, token_type)?.uid;
 
@@ -54,6 +54,7 @@ const auth = (roles: EUserRole[] = [], token_type: TToken = 'access_token') =>
 auth.admin = () => auth([EUserRole.ADMIN]);
 auth.subAdmin = () => auth([EUserRole.SUB_ADMIN]);
 auth.influencer = () => auth([EUserRole.INFLUENCER]);
+auth.manager = () => auth([EUserRole.MANAGER]);
 auth.user = () => auth([EUserRole.USER]);
 auth.notGuest = () => auth(Object.values(EUserRole).excludes(EUserRole.GUEST));
 auth.guest = () => auth([EUserRole.GUEST]);

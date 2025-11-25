@@ -83,7 +83,8 @@ export const AuthControllers = {
     user = await prisma.user.update({
       where: { id: user.id },
       data: {
-        role: EUserRole.USER,
+        role: user.nextRole ?? EUserRole.USER,
+        nextRole: null,
       },
     });
 
