@@ -99,6 +99,12 @@ const influencer = Router();
 const subAdmin = Router();
 {
   subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list, TaskValidations.getAll),
+    CampaignControllers.superGetAll,
+  );
+
+  subAdmin.get(
     '/active',
     purifyRequest(QueryValidations.list),
     CampaignControllers.activeCampaigns,
