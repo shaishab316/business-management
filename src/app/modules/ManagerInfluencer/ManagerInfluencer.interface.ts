@@ -20,4 +20,6 @@ export type TDisconnectManagerInfluencerArgs = z.infer<
 >['body'] &
   z.infer<typeof ManagerInfluencerValidations.disconnectManager>['body'];
 
-export type TGetInfluencersInfoArgs = TList & { managerId: string };
+export type TGetInfluencersInfoArgs = TList & { managerId: string } & z.infer<
+    typeof ManagerInfluencerValidations.getInfluencersInfo
+  >['query'];

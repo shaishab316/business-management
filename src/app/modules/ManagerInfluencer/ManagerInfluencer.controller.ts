@@ -61,11 +61,15 @@ export const ManagerInfluencerControllers = {
   }),
 
   getInfluencersInfo: catchAsync(async ({ user: manager, query }, res) => {
-    const { influencers, meta } =
-      await ManagerInfluencerServices.getInfluencersInfo({
-        ...query,
-        managerId: manager.id,
-      });
+    const { influencers, meta } = await ManagerInfluencerServices[
+      query.tab == 'connected'
+        ? //? If tab is "connected", then get connected influencers else get all available influencers
+          'getInfluencersInfo'
+        : 'getAvailableInfluencers'
+    ]({
+      ...query,
+      managerId: manager.id,
+    });
 
     serveResponse(res, {
       message: 'Influencers info fetched successfully!',

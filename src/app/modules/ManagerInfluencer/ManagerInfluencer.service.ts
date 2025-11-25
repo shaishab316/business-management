@@ -235,4 +235,82 @@ export const ManagerInfluencerServices = {
       influencers,
     };
   },
+
+  async getAvailableInfluencers({
+    page,
+    limit,
+    search,
+    managerId,
+  }: TGetInfluencersInfoArgs) {
+    const whereUser: Prisma.UserWhereInput = {
+      role: 'INFLUENCER',
+      NOT: {
+        influencer_managers: {
+          some: {
+            managerId,
+          },
+        },
+      },
+    };
+
+    if (search) {
+      whereUser.OR = userSearchableFields.map(field => ({
+        [field]: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      }));
+    }
+
+    const influencers = await prisma.user.findMany({
+      where: whereUser,
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        rating: true,
+        socials: true,
+        Task: {
+          where: {
+            status: {
+              in: [ETaskStatus.ACTIVE, ETaskStatus.COMPLETED],
+            },
+          },
+          select: {
+            status: true,
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.user.count({
+      where: whereUser,
+    });
+
+    const formattedInfluencers = influencers.map(({ Task, ...influencer }) => {
+      const activeCampaigns = Task.filter(
+        task => task.status === ETaskStatus.ACTIVE,
+      ).length;
+
+      return {
+        ...influencer,
+        activeCampaigns,
+        completedCampaigns: Task.length - activeCampaigns,
+      };
+    });
+
+    return {
+      meta: {
+        pagination: {
+          total,
+          limit,
+          page,
+          totalPages: Math.ceil(total / limit),
+        } satisfies TPagination,
+      },
+      influencers: formattedInfluencers,
+    };
+  },
 };

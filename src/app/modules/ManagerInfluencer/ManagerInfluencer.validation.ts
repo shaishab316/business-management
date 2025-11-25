@@ -37,4 +37,10 @@ export const ManagerInfluencerValidations = {
       })),
     }),
   }),
+
+  getInfluencersInfo: z.object({
+    query: z.object({
+      tab: z.enum(['connected', 'all']).default('all'),
+    }),
+  }),
 };
