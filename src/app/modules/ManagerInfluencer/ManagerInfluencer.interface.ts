@@ -1,16 +1,17 @@
 import z from 'zod';
 import { ManagerInfluencerValidations } from './ManagerInfluencer.validation';
+import { User as TUser } from '../../../../prisma';
 
 export type TConnectManagerArgs = z.infer<
   typeof ManagerInfluencerValidations.connectManager
 >['body'] & {
-  influencerId: string;
+  influencer: TUser;
 };
 
 export type TConnectInfluencerArgs = z.infer<
   typeof ManagerInfluencerValidations.connectInfluencer
 >['body'] & {
-  managerId: string;
+  manager: TUser;
 };
 
 export type TDisconnectManagerInfluencerArgs = z.infer<

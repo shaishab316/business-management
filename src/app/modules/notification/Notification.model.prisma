@@ -1,9 +1,16 @@
 model Notification {
-  id          String              @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  title       String
-  body        String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  body      String
+
+  //! for CONNECTION_REQUEST
+  icon                 String?
+  userId               String?  @db.ObjectId
+  isConnectionApproved Boolean?
+  //! end
+
   recipientId String              @db.ObjectId
   recipient   User                @relation(fields: [recipientId], references: [id], onDelete: Cascade)
   type        ENotificationType   @default(SOFT)
@@ -17,6 +24,7 @@ model Notification {
 enum ENotificationType {
   HARD
   SOFT
+  CONNECTION_REQUEST
 }
 
 enum ENotificationStatus {

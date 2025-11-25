@@ -1,4 +1,4 @@
-import { ETaskStatus, Prisma } from '../../../../prisma';
+import { ENotificationType, ETaskStatus, Prisma } from '../../../../prisma';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
@@ -11,11 +11,11 @@ import {
 
 export const ManagerInfluencerServices = {
   //? connect a manager to an influencer
-  async connectManager({ managerId, influencerId }: TConnectManagerArgs) {
+  async connectManager({ managerId, influencer }: TConnectManagerArgs) {
     const relation = await prisma.managerInfluencer.findFirst({
       where: {
         managerId,
-        influencerId,
+        influencerId: influencer.id,
       },
     });
 
@@ -41,20 +41,33 @@ export const ManagerInfluencerServices = {
       }
     }
 
+    //? Create notification for the manager
+    await prisma.notification.create({
+      data: {
+        title: 'New Influencer Connection Request',
+        body: `${influencer.name} has requested to connect with you as your influencer.`,
+        recipientId: managerId,
+        type: ENotificationType.CONNECTION_REQUEST,
+        userId: influencer.id,
+        icon: influencer.avatar,
+        isConnectionApproved: false,
+      },
+    });
+
     return prisma.managerInfluencer.create({
       data: {
         managerId,
-        influencerId,
+        influencerId: influencer.id,
         isInfluencerApproved: true,
       },
     });
   },
 
   //? connect an influencer to a manager
-  async connectInfluencer({ influencerId, managerId }: TConnectInfluencerArgs) {
+  async connectInfluencer({ influencerId, manager }: TConnectInfluencerArgs) {
     const relation = await prisma.managerInfluencer.findFirst({
       where: {
-        managerId,
+        managerId: manager.id,
         influencerId,
       },
     });
@@ -81,9 +94,22 @@ export const ManagerInfluencerServices = {
       }
     }
 
+    //? Create notification for the influencer
+    await prisma.notification.create({
+      data: {
+        title: 'New Manager Connection Request',
+        body: `${manager.name} has requested to connect with you as your manager.`,
+        recipientId: influencerId,
+        type: ENotificationType.CONNECTION_REQUEST,
+        userId: manager.id,
+        icon: manager.avatar,
+        isConnectionApproved: false,
+      },
+    });
+
     return prisma.managerInfluencer.create({
       data: {
-        managerId,
+        managerId: manager.id,
         influencerId,
         isManagerApproved: true,
       },

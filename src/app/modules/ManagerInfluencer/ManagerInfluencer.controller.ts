@@ -8,7 +8,7 @@ export const ManagerInfluencerControllers = {
   connectManager: catchAsync(async ({ body, user: influencer }, res) => {
     const relation = await ManagerInfluencerServices.connectManager({
       ...body,
-      influencerId: influencer.id,
+      influencer,
     });
 
     serveResponse(res, {
@@ -20,7 +20,7 @@ export const ManagerInfluencerControllers = {
   connectInfluencer: catchAsync(async ({ body, user: manager }, res) => {
     const relation = await ManagerInfluencerServices.connectInfluencer({
       ...body,
-      managerId: manager.id,
+      manager,
     });
 
     serveResponse(res, {
