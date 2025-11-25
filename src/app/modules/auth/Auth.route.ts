@@ -21,6 +21,12 @@ router.post(
 );
 
 router.post(
+  '/register-manager',
+  purifyRequest(UserValidations.registerManager),
+  UserControllers.createUser,
+);
+
+router.post(
   '/login',
   purifyRequest(AuthValidations.login),
   UserMiddlewares.useUser(),

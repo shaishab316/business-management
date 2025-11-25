@@ -74,7 +74,8 @@ export const PaymentServices = {
     ]);
   },
 
-  async getAll({ page, limit, ...where }: TList) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  async getAll({ page, limit, search, ...where }: TList) {
     const payments = await prisma.payment.findMany({
       where,
       include: {
