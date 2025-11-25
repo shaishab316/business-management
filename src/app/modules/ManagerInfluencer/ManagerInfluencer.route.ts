@@ -2,17 +2,27 @@ import { Router } from 'express';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { ManagerInfluencerValidations } from './ManagerInfluencer.validation';
 import { ManagerInfluencerControllers } from './ManagerInfluencer.controller';
+import { QueryValidations } from '../query/Query.validation';
 
 const influencer = Router();
 {
-  influencer.post(
-    '/invite-manager',
-    purifyRequest(ManagerInfluencerValidations.inviteManager),
-    ManagerInfluencerControllers.inviteManager,
+  //? Get manager info
+  influencer.get(
+    '/',
+    purifyRequest(QueryValidations.list),
+    ManagerInfluencerControllers.getManagerInfo,
   );
 
+  //? Connect to manager
   influencer.post(
-    '/disconnect',
+    '/',
+    purifyRequest(ManagerInfluencerValidations.connectManager),
+    ManagerInfluencerControllers.connectManager,
+  );
+
+  //? Disconnect to manager
+  influencer.delete(
+    '/',
     purifyRequest(ManagerInfluencerValidations.disconnectManager),
     ManagerInfluencerControllers.disconnect,
   );

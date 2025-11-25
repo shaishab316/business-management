@@ -1,14 +1,14 @@
 import z from 'zod';
 import { ManagerInfluencerValidations } from './ManagerInfluencer.validation';
 
-export type TInviteManagerArgs = z.infer<
-  typeof ManagerInfluencerValidations.inviteManager
+export type TConnectManagerArgs = z.infer<
+  typeof ManagerInfluencerValidations.connectManager
 >['body'] & {
   influencerId: string;
 };
 
-export type TInviteInfluencerArgs = z.infer<
-  typeof ManagerInfluencerValidations.inviteInfluencer
+export type TConnectInfluencerArgs = z.infer<
+  typeof ManagerInfluencerValidations.connectInfluencer
 >['body'] & {
   managerId: string;
 };

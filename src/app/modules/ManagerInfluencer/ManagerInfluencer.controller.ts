@@ -5,26 +5,26 @@ import { TDisconnectManagerInfluencerArgs } from './ManagerInfluencer.interface'
 import { ManagerInfluencerServices } from './ManagerInfluencer.service';
 
 export const ManagerInfluencerControllers = {
-  inviteManager: catchAsync(async ({ body, user: influencer }, res) => {
-    const relation = await ManagerInfluencerServices.inviteManager({
+  connectManager: catchAsync(async ({ body, user: influencer }, res) => {
+    const relation = await ManagerInfluencerServices.connectManager({
       ...body,
       influencerId: influencer.id,
     });
 
     serveResponse(res, {
-      message: 'Manager invited successfully!',
+      message: 'Manager connected successfully!',
       data: relation,
     });
   }),
 
-  inviteInfluencer: catchAsync(async ({ body, user: manager }, res) => {
-    const relation = await ManagerInfluencerServices.inviteInfluencer({
+  connectInfluencer: catchAsync(async ({ body, user: manager }, res) => {
+    const relation = await ManagerInfluencerServices.connectInfluencer({
       ...body,
       managerId: manager.id,
     });
 
     serveResponse(res, {
-      message: 'Influencer invited successfully!',
+      message: 'Influencer connected successfully!',
       data: relation,
     });
   }),
@@ -46,6 +46,31 @@ export const ManagerInfluencerControllers = {
     serveResponse(res, {
       message: 'Disconnected successfully!',
       data: relation,
+    });
+  }),
+
+  getManagerInfo: catchAsync(async ({ user: influencer }, res) => {
+    const manager = await ManagerInfluencerServices.getManagerInfo(
+      influencer.id,
+    );
+
+    serveResponse(res, {
+      message: 'Manager info fetched successfully!',
+      data: manager,
+    });
+  }),
+
+  getInfluencersInfo: catchAsync(async ({ user: manager, query }, res) => {
+    const { influencers, meta } =
+      await ManagerInfluencerServices.getInfluencersInfo({
+        ...query,
+        managerId: manager.id,
+      });
+
+    serveResponse(res, {
+      message: 'Influencers info fetched successfully!',
+      meta,
+      data: influencers,
     });
   }),
 };

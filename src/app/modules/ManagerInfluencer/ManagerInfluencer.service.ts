@@ -1,12 +1,17 @@
+import { ETaskStatus, Prisma } from '../../../../prisma';
 import prisma from '../../../util/prisma';
+import { TPagination } from '../../../util/server/serveResponse';
+import { TList } from '../query/Query.interface';
+import { userSearchableFields } from '../user/User.constant';
 import {
+  TConnectInfluencerArgs,
+  TConnectManagerArgs,
   TDisconnectManagerInfluencerArgs,
-  TInviteInfluencerArgs,
-  TInviteManagerArgs,
 } from './ManagerInfluencer.interface';
 
 export const ManagerInfluencerServices = {
-  async inviteManager({ managerId, influencerId }: TInviteManagerArgs) {
+  //? connect a manager to an influencer
+  async connectManager({ managerId, influencerId }: TConnectManagerArgs) {
     const relation = await prisma.managerInfluencer.findFirst({
       where: {
         managerId,
@@ -45,7 +50,8 @@ export const ManagerInfluencerServices = {
     });
   },
 
-  async inviteInfluencer({ influencerId, managerId }: TInviteInfluencerArgs) {
+  //? connect an influencer to a manager
+  async connectInfluencer({ influencerId, managerId }: TConnectInfluencerArgs) {
     const relation = await prisma.managerInfluencer.findFirst({
       where: {
         managerId,
@@ -84,35 +90,20 @@ export const ManagerInfluencerServices = {
     });
   },
 
+  //? disconnect manager and influencer
   async disconnect({
     influencerId,
     managerId,
   }: TDisconnectManagerInfluencerArgs) {
-    const relation = await prisma.managerInfluencer.findFirst({
+    return prisma.managerInfluencer.deleteMany({
       where: {
-        managerId,
         influencerId,
-        isConnected: true,
-      },
-    });
-
-    if (!relation) {
-      throw new Error(
-        'No active connection found between the influencer and manager.',
-      );
-    }
-
-    return prisma.managerInfluencer.update({
-      where: {
-        id: relation.id,
-      },
-      data: {
-        isConnected: false,
-        disconnectedAt: new Date(),
+        managerId,
       },
     });
   },
 
+  //? get influencer's manager info
   async getManagerInfo(influencerId: string) {
     const relation = await prisma.managerInfluencer.findFirst({
       where: {
@@ -128,10 +119,94 @@ export const ManagerInfluencerServices = {
           },
         },
       },
+      orderBy: {
+        connectedAt: 'desc',
+      },
     });
 
     if (relation) {
       return relation.manager;
     }
+  },
+
+  //? get manager's influencers info
+  async getInfluencersInfo({
+    page,
+    limit,
+    search,
+    managerId,
+  }: TList & { managerId: string }) {
+    const where: Prisma.ManagerInfluencerWhereInput = {
+      managerId,
+      isConnected: true,
+    };
+
+    if (search) {
+      where.influencer = {
+        OR: userSearchableFields.map(field => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+    }
+
+    const relations = await prisma.managerInfluencer.findMany({
+      where,
+      select: {
+        influencer: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            rating: true,
+            socials: true,
+            Task: {
+              where: {
+                status: {
+                  in: [ETaskStatus.ACTIVE, ETaskStatus.COMPLETED],
+                },
+              },
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const total = await prisma.managerInfluencer.count({
+      where,
+    });
+
+    const influencers = relations.map(
+      ({ influencer: { Task, ...influencer } }) => {
+        const activeCampaigns = Task.filter(
+          task => task.status === ETaskStatus.ACTIVE,
+        ).length;
+
+        return {
+          ...influencer,
+          activeCampaigns,
+          completedCampaigns: Task.length - activeCampaigns,
+        };
+      },
+    );
+
+    return {
+      meta: {
+        pagination: {
+          total,
+          limit,
+          page,
+          totalPages: Math.ceil(total / limit),
+        } satisfies TPagination,
+      },
+      influencers,
+    };
   },
 };

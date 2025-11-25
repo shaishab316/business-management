@@ -1,19 +1,18 @@
 model ManagerInfluencer {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  managerId    String? @db.ObjectId
-  influencerId String? @db.ObjectId
+  managerId    String @db.ObjectId
+  influencerId String @db.ObjectId
 
   isManagerApproved    Boolean @default(false)
   isInfluencerApproved Boolean @default(false)
   isConnected          Boolean @default(false)
 
-  requestedAt    DateTime  @default(now())
-  connectedAt    DateTime?
-  disconnectedAt DateTime?
+  requestedAt DateTime  @default(now())
+  connectedAt DateTime?
 
-  manager    User? @relation("ManagerToManagerInfluencer", fields: [managerId], references: [id])
-  influencer User? @relation("InfluencerToManagerInfluencer", fields: [influencerId], references: [id])
+  manager    User @relation("ManagerToManagerInfluencer", fields: [managerId], references: [id])
+  influencer User @relation("InfluencerToManagerInfluencer", fields: [influencerId], references: [id])
 
   @@map("managers_influencers")
 }

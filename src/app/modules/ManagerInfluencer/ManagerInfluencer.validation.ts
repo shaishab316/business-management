@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
 
 export const ManagerInfluencerValidations = {
-  inviteManager: z.object({
+  connectManager: z.object({
     body: z.object({
       managerId: z.string().refine(exists('user'), managerId => ({
         message: 'Manager not found with id: ' + managerId,
@@ -11,7 +11,7 @@ export const ManagerInfluencerValidations = {
     }),
   }),
 
-  inviteInfluencer: z.object({
+  connectInfluencer: z.object({
     body: z.object({
       influencerId: z.string().refine(exists('user'), influencerId => ({
         message: 'Influencer not found with id: ' + influencerId,

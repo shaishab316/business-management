@@ -5,7 +5,7 @@ import { ReviewRoutes } from '../review/Review.route';
 import { CompromiseRoutes } from '../compromise/Compromise.route';
 import { PaymentRoutes } from '../payment/Payment.route';
 import { TaskRoutes } from '../task/Task.route';
-import { ManagerInfluencerRoutes } from '../ManagerInfluencer/ManagerInfluencer.route';
+import { ManagerInfluencerRoutes } from '../managerInfluencer/ManagerInfluencer.route';
 
 export default Router().inject([
   {
