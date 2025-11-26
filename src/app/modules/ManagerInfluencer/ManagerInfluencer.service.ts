@@ -144,6 +144,15 @@ export const ManagerInfluencerServices = {
             id: true,
           },
         },
+        influencer: {
+          select: {
+            Task: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         connectedAt: 'desc',
@@ -151,7 +160,15 @@ export const ManagerInfluencerServices = {
     });
 
     if (relation) {
-      return relation.manager;
+      const activeCampaigns = relation.influencer.Task.filter(
+        task => task.status === ETaskStatus.ACTIVE,
+      ).length;
+
+      return {
+        ...relation.manager,
+        activeCampaigns,
+        completedCampaigns: relation.influencer.Task.length - activeCampaigns,
+      };
     }
   },
 

@@ -7,13 +7,14 @@ model User {
   name                String?
   email               String              @unique
   phone               String?
-  avatar              String?
+  avatar              String              @default("/images/placeholder.png")
   address             String?
   rating              Float               @default(0)
   socials             TSocial[]
   Auth                Auth?
   Otp                 Otp?
-  Task                Task[]
+  Task                Task[]              @relation("InfluencerTasks")
+  TaskAsManager       Task[]              @relation("ManagerTasks")
   reviewsGiven        Review[]            @relation("ReviewByUser")
   reviewsReceived     Review[]            @relation("ReviewForInfluencer")
   Compromise          Compromise[]
