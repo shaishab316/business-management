@@ -3,6 +3,7 @@ import { ManagerInfluencerRoutes } from '../managerInfluencer/ManagerInfluencer.
 import { ManagerControllers } from './Manager.controller';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
+import { ManagerValidations } from './Manager.validation';
 
 const manager = Router().inject([
   {
@@ -15,6 +16,12 @@ const manager = Router().inject([
     '/pending-tasks',
     purifyRequest(QueryValidations.list),
     ManagerControllers.pendingTask,
+  );
+
+  manager.post(
+    '/submit-post-link',
+    purifyRequest(ManagerValidations.submitPostLink),
+    ManagerControllers.submitPostLink,
   );
 }
 

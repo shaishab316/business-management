@@ -15,4 +15,15 @@ export const ManagerControllers = {
       data: campaigns,
     });
   }),
+
+  submitPostLink: catchAsync(async ({ body, user: manager }, res) => {
+    await ManagerServices.submitPostLink({
+      ...body,
+      managerId: manager.id,
+    });
+
+    serveResponse(res, {
+      message: 'Post link submitted successfully!',
+    });
+  }),
 };
