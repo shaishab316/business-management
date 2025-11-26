@@ -1,4 +1,6 @@
+import { StatusCodes } from 'http-status-codes';
 import { ENotificationType, ETaskStatus, Prisma } from '../../../../prisma';
+import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { userSearchableFields } from '../user/User.constant';
@@ -21,7 +23,10 @@ export const ManagerInfluencerServices = {
 
     if (relation) {
       if (relation.isConnected) {
-        throw new Error('This manager is already connected to the influencer.');
+        throw new ServerError(
+          StatusCodes.BAD_REQUEST,
+          'This manager is already connected to the influencer.',
+        );
       }
 
       if (relation.isManagerApproved) {
@@ -38,6 +43,11 @@ export const ManagerInfluencerServices = {
             },
           });
         }
+      } else {
+        throw new ServerError(
+          StatusCodes.BAD_REQUEST,
+          'Connection request already sent.',
+        );
       }
     }
 
@@ -74,7 +84,10 @@ export const ManagerInfluencerServices = {
 
     if (relation) {
       if (relation.isConnected) {
-        throw new Error('This influencer is already connected to the manager.');
+        throw new ServerError(
+          StatusCodes.BAD_REQUEST,
+          'You are already connected to this manager.',
+        );
       }
 
       if (relation.isInfluencerApproved) {
@@ -91,6 +104,11 @@ export const ManagerInfluencerServices = {
             },
           });
         }
+      } else {
+        throw new ServerError(
+          StatusCodes.BAD_REQUEST,
+          'Connection request already sent.',
+        );
       }
     }
 

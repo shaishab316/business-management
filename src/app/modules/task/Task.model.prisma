@@ -7,7 +7,7 @@ model Task {
   campaign                 Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   duration                 DateTime
   influencerId             String      @db.ObjectId
-  influencer               User        @relation( "InfluencerTasks", fields: [influencerId], references: [id], onDelete: Cascade)
+  influencer               User        @relation("InfluencerTasks", fields: [influencerId], references: [id], onDelete: Cascade)
   influencerAgreementProof String?
   postLink                 String?
   screenshot               String?
@@ -16,13 +16,15 @@ model Task {
   isPaymentDone            Boolean     @default(false)
   isTimeout                Boolean     @default(false)
   isRevision               Boolean     @default(false)
-  isManagerApproved        Boolean     @default(false)
-  managerId                String      @db.ObjectId
-  manager                  User        @relation("ManagerTasks", fields: [managerId], references: [id], onDelete: Cascade)
+  isCompletedByManager     Boolean     @default(false)
+  managerId                String?     @db.ObjectId
+  manager                  User?       @relation("ManagerTasks", fields: [managerId], references: [id], onDelete: Cascade)
 
   paymentStatus EPaymentStatus @default(PENDING)
   Payment       Payment[]
 
+  @@index([influencerId, status])
+  @@index([status, createdAt])
   @@map("tasks")
 }
 

@@ -14,5 +14,7 @@ model ManagerInfluencer {
   manager    User @relation("ManagerToManagerInfluencer", fields: [managerId], references: [id])
   influencer User @relation("InfluencerToManagerInfluencer", fields: [influencerId], references: [id])
 
+  @@index([managerId, isConnected])
+  @@index([influencerId, isConnected])
   @@map("managers_influencers")
 }
