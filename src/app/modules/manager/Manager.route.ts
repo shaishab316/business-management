@@ -18,6 +18,12 @@ const manager = Router().inject([
     ManagerControllers.pendingTask,
   );
 
+  manager.get(
+    '/campaigns',
+    purifyRequest(QueryValidations.list, ManagerValidations.getCampaigns),
+    ManagerControllers.getCampaigns,
+  );
+
   manager.post(
     '/submit-post-link',
     purifyRequest(ManagerValidations.submitPostLink),

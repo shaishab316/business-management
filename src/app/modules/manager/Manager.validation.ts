@@ -19,4 +19,10 @@ export const ManagerValidations = {
         .trim(),
     }),
   }),
+
+  getCampaigns: z.object({
+    query: z.object({
+      tab: z.enum(['active', 'completed']).default('active'),
+    }),
+  }),
 };

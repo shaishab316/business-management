@@ -4,7 +4,11 @@ import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
-import { TManagerSubmitPostLinkArgs } from './Manager.interface';
+import {
+  TManagerGetCampaignsArgs,
+  TManagerSubmitPostLinkArgs,
+} from './Manager.interface';
+import { campaignSearchableFields } from '../campaign/Campaign.constant';
 
 export const ManagerServices = {
   async pendingTask({ page, limit, managerId }: TList & { managerId: string }) {
@@ -119,6 +123,7 @@ export const ManagerServices = {
         postLink,
         isCompletedByManager: true,
         managerId,
+        statusText: 'submitted',
       },
     });
 
@@ -128,5 +133,99 @@ export const ManagerServices = {
         `No task found for campaign id ${campaignId} and influencer id ${influencerId}.`,
       );
     }
+  },
+
+  async getCampaigns({
+    limit,
+    page,
+    search,
+    tab,
+    managerId,
+  }: TManagerGetCampaignsArgs) {
+    const where: Prisma.TaskWhereInput = {
+      influencer: {
+        influencer_managers: {
+          some: {
+            managerId,
+            isConnected: true,
+          },
+        },
+      },
+    };
+
+    if (tab === 'active') {
+      where.status = ETaskStatus.ACTIVE;
+    } else if (tab === 'completed') {
+      where.status = ETaskStatus.COMPLETED;
+    }
+
+    if (search) {
+      where.campaign = {
+        OR: campaignSearchableFields.map(field => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+    }
+
+    const tasks = await prisma.task.findMany({
+      where,
+      select: {
+        campaign: {
+          select: {
+            id: true,
+            banner: true,
+            title: true,
+            brand: true,
+            description: true,
+            duration: true,
+            expected_metrics: true,
+          },
+        },
+        influencer: {
+          select: { avatar: true, id: true, name: true },
+        },
+        statusText: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        campaign: {
+          duration: 'asc', // Ordering by nearest deadline first
+        },
+      },
+    });
+
+    const total = await prisma.task.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } satisfies TPagination,
+        query: {
+          search,
+          tab,
+        },
+      },
+      campaigns: tasks.map(t => ({
+        campaignId: t.campaign.id,
+        campaignBanner: t.campaign.banner,
+        campaignTitle: t.campaign.title,
+        campaignBrand: t.campaign.brand,
+        campaignDescription: t.campaign.description,
+        campaignDeadline: t.campaign.duration,
+        requiredMetrics: t.campaign.expected_metrics,
+        influencerAvatar: t.influencer.avatar,
+        influencerId: t.influencer.id,
+        influencerName: t.influencer.name,
+        status: t.statusText ?? 'unavailable',
+      })),
+    };
   },
 };

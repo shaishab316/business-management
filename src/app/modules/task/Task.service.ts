@@ -133,7 +133,7 @@ export const TaskServices = {
   async submitPostLink(taskId: string, postLink: string) {
     return prisma.task.update({
       where: { id: taskId },
-      data: { postLink },
+      data: { postLink, statusText: 'submitted' },
     });
   },
 
@@ -149,13 +149,16 @@ export const TaskServices = {
     if (!task)
       throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
 
-    task.screenshot?.__pipes(deleteImage);
+    if (task.screenshot) {
+      await deleteImage(task.screenshot);
+    }
 
     return prisma.task.update({
       where: { id: task.id },
       data: {
         matrix,
         screenshot,
+        statusText: 'submitted',
       },
     });
   },

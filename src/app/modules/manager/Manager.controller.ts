@@ -26,4 +26,17 @@ export const ManagerControllers = {
       message: 'Post link submitted successfully!',
     });
   }),
+
+  getCampaigns: catchAsync(async ({ query, user: manager }, res) => {
+    const { meta, campaigns } = await ManagerServices.getCampaigns({
+      ...query,
+      managerId: manager.id,
+    });
+
+    serveResponse(res, {
+      message: 'Campaigns fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
 };
