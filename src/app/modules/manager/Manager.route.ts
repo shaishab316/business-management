@@ -118,6 +118,15 @@ const manager = Router().inject([
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
     ManagerControllers.getPaymentDetails,
   );
+
+  /**
+   * Getting earnings summary for the manager
+   *
+   * - pending earnings
+   * - paid earnings
+   * - total earnings
+   */
+  manager.get('/earnings', ManagerControllers.getEarnings);
 }
 
 export default manager;

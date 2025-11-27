@@ -433,7 +433,7 @@ export const ManagerServices = {
         campaignDescription: t.campaign.description,
         campaignDeadline: t.campaign.duration,
         campaignPayoutDeadline: t.campaign.payout_deadline,
-        campaignBudget: t.campaign.budget,
+        campaignBudget: (t.campaign.budget * 0.1).toFixed(2), //? assuming manager gets 10% cut
         requiredMetrics: t.campaign.expected_metrics,
         influencerAvatar: t.influencer.avatar,
         influencerId: t.influencer.id,
@@ -477,7 +477,7 @@ export const ManagerServices = {
       campaignBanner: task.campaign.banner,
       campaignTitle: task.campaign.title,
       campaignBrand: task.campaign.brand,
-      campaignBudget: task.campaign.budget,
+      campaignBudget: (task.campaign.budget * 0.1).toFixed(2), //? assuming manager gets 10% cut
       campaignDescription: task.campaign.description,
       performanceMetrics: task.matrix ?? {},
       isPaymentDone: task.Payment[0]?.status === EPaymentStatus.PAID,
@@ -485,6 +485,55 @@ export const ManagerServices = {
         task.Payment[0]?.status === EPaymentStatus.PAID
           ? task.Payment[0]?.updatedAt
           : null,
+    };
+  },
+
+  async getEarnings(managerId: string) {
+    const [pendingEarnings, paidEarnings] = await Promise.all([
+      prisma.task.aggregate({
+        _sum: {
+          budget: true,
+        },
+        where: {
+          influencer: {
+            influencer_managers: {
+              some: {
+                managerId,
+                isConnected: true,
+              },
+            },
+          },
+          status: 'COMPLETED',
+          isPaymentDone: false,
+        },
+      }),
+
+      prisma.task.aggregate({
+        _sum: {
+          budget: true,
+        },
+        where: {
+          influencer: {
+            influencer_managers: {
+              some: {
+                managerId,
+                isConnected: true,
+              },
+            },
+          },
+          status: 'COMPLETED',
+          isPaymentDone: true,
+        },
+      }),
+    ]);
+
+    const pending = pendingEarnings?._sum?.budget ?? 0;
+    const paid = paidEarnings?._sum?.budget ?? 0;
+
+    return {
+      pending: (pending * 0.1).toFixed(2), //? assuming manager gets 10% cut
+      paid: (paid * 0.1).toFixed(2), //? assuming manager gets 10% cut
+      total: ((pending + paid) * 0.1).toFixed(2), //? assuming manager gets 10% cut
     };
   },
 };

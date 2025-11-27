@@ -102,4 +102,13 @@ export const ManagerControllers = {
       data,
     });
   }),
+
+  getEarnings: catchAsync(async ({ user: manager }, res) => {
+    const earnings = await ManagerServices.getEarnings(manager.id);
+
+    serveResponse(res, {
+      message: 'Earnings fetched successfully!',
+      data: earnings,
+    });
+  }),
 };
