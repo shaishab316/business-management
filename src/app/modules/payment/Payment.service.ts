@@ -11,7 +11,7 @@ import { TList } from '../query/Query.interface';
 
 export const PaymentServices = {
   async create(paymentData: TPayment) {
-    const existingPayment = await prisma.payment.findUnique({
+    const existingPayment = await prisma.payment.findFirst({
       where: {
         taskId: paymentData.taskId,
         //? Ensure that only non-cancelled payments are considered

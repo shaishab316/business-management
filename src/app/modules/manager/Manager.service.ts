@@ -1,5 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
-import { EPaymentMethod, ETaskStatus, Prisma } from '../../../../prisma';
+import {
+  EPaymentMethod,
+  EPaymentStatus,
+  ETaskStatus,
+  Prisma,
+} from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
@@ -292,6 +297,21 @@ export const ManagerServices = {
       throw new ServerError(
         StatusCodes.NOT_FOUND,
         `No task found for campaign id ${campaignId} and influencer id ${influencerId}.`,
+      );
+    }
+
+    //? ensure no existing payment request for the same task and influencer
+    const existingPayment = await prisma.payment.findFirst({
+      where: {
+        taskId: task.id,
+        status: { not: EPaymentStatus.CANCEL },
+      },
+    });
+
+    if (existingPayment) {
+      throw new ServerError(
+        StatusCodes.CONFLICT,
+        'Payment request has already been sent for this task.',
       );
     }
 

@@ -84,7 +84,7 @@ export const ManagerValidations = {
         path: ['influencerId'],
       })),
       method: z.nativeEnum(EPaymentMethod),
-      invoices: z.array(z.string()).optional(),
+      invoices: z.array(z.string()).optional().nullable(),
     }),
   }),
 };

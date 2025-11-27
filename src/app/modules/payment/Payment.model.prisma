@@ -2,7 +2,7 @@ model Payment {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  taskId       String         @unique @db.ObjectId
+  taskId       String         @db.ObjectId
   task         Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
   influencerId String         @db.ObjectId
   influencer   User           @relation("InfluencerPayments", fields: [influencerId], references: [id], onDelete: Cascade)

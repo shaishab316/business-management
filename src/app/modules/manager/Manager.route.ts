@@ -89,6 +89,9 @@ const manager = Router().inject([
    */
   manager.post(
     '/send-payment-request',
+    capture({
+      invoices: { maxCount: Infinity, size: Infinity, fileType: 'any' },
+    }),
     purifyRequest(ManagerValidations.sendPaymentRequest),
     ManagerControllers.sendPaymentRequest,
   );

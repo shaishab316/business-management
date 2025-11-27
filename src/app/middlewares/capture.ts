@@ -174,7 +174,9 @@ export const deleteFile = async (filename: string): Promise<boolean> => {
  * Delete multiple files concurrently
  *
  */
-export const deleteFiles = async (filenames: string[]): Promise<boolean[]> => {
+export const deleteFiles = async (
+  filenames: string[] = [],
+): Promise<boolean[]> => {
   return Promise.all(filenames.map(deleteFile));
 };
 
