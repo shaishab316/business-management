@@ -1,3 +1,28 @@
+# [1.1.0](https://github.com/shaishab316/business-management/compare/v1.0.0...v1.1.0) (2025-11-27)
+
+
+### Features
+
+* Add ability to filter influencers by connection status ([4646434](https://github.com/shaishab316/business-management/commit/4646434a80afc09ed047524c337b5122de1c7091))
+* Add campaign counts to manager and update task relations ([480ec2f](https://github.com/shaishab316/business-management/commit/480ec2f3df0678b5353a6eef04f0e24f247d302c))
+* Add endpoint to retrieve campaign details by ID ([ab7cdb5](https://github.com/shaishab316/business-management/commit/ab7cdb5e128db75242c775014b5ef357289830e6))
+* Add endpoint to retrieve campaign payment details ([03c9c64](https://github.com/shaishab316/business-management/commit/03c9c64963795c49a69362188a12c5cf64a8a1ec))
+* Add endpoint to retrieve manager earnings summary ([0a8ba4f](https://github.com/shaishab316/business-management/commit/0a8ba4ffd038824f0506d18ec636155f595fac05))
+* Add invoice upload and prevent duplicate payment requests ([18c93c8](https://github.com/shaishab316/business-management/commit/18c93c86787e6c90baef4a2577fc467a8f1eddff))
+* Add manager campaign retrieval endpoint & update Task model ([64c18d3](https://github.com/shaishab316/business-management/commit/64c18d3af6b5ebf74632153217b6c3686cff150f))
+* Add manager registration route and update getAll in PaymentService ([24b3908](https://github.com/shaishab316/business-management/commit/24b39082130be915936396187500054a9a913703))
+* Add matrix upload to campaign tasks and enhance campaign listings ([2e8908c](https://github.com/shaishab316/business-management/commit/2e8908c782de47e862271466a88377f15a42ec7a))
+* Enable managers to submit task post links and add task metrics ([2cfe379](https://github.com/shaishab316/business-management/commit/2cfe379371ded9a4be2162a8d2419aeed19c5606))
+* Enhance file handling with validation, deletion, and logging ([ecf5635](https://github.com/shaishab316/business-management/commit/ecf56357645c1bea278936865264dadb4561a8b0))
+* Filter influencers & indicate connection request status ([d980172](https://github.com/shaishab316/business-management/commit/d9801729e0784ff6c0ed3d12cf18482965eae534))
+* Implement influencer-manager relations and manager role ([088c594](https://github.com/shaishab316/business-management/commit/088c594a5d5a261cdaf4f5d0b7bb31e115de5f0e))
+* Implement manager payment request listing ([bac376b](https://github.com/shaishab316/business-management/commit/bac376bda73b59f42232062394de18fbaa731acf))
+* Implement manager tasks route and update data models ([5f64792](https://github.com/shaishab316/business-management/commit/5f64792ea41acd9d777910459ab55489cf0c0cd1))
+* Implement manager-influencer connection and retrieval ([e40145f](https://github.com/shaishab316/business-management/commit/e40145fbb5ad28c4cfe5610cb3d01ee21e887eaa))
+* Implement manager-influencer module, campaign route, and cron jobs ([dda61e9](https://github.com/shaishab316/business-management/commit/dda61e91eaf4826776842648b42e2f1e9a17679e))
+* Implement payment requests from managers to admin ([5a0ba5a](https://github.com/shaishab316/business-management/commit/5a0ba5a82e7a8f66929d23a8de77043e40b8f8c1))
+* Pass user object to service and add connection request notification ([533fb61](https://github.com/shaishab316/business-management/commit/533fb6178a96872a8f3a35776f6babddf9e225fc))
+
 # 1.0.0 (2025-09-07)
 
 
