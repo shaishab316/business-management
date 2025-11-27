@@ -39,4 +39,15 @@ export const ManagerControllers = {
       data: campaigns,
     });
   }),
+
+  getCampaignDetails: catchAsync(async ({ params }, res) => {
+    const campaign = await ManagerServices.getCampaignDetails(
+      params.campaignId,
+    );
+
+    serveResponse(res, {
+      message: 'Campaign details fetched successfully!',
+      data: campaign,
+    });
+  }),
 };

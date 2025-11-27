@@ -228,4 +228,41 @@ export const ManagerServices = {
       })),
     };
   },
+
+  async getCampaignDetails(campaignId: string) {
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: campaignId },
+      include: {
+        tasks: {
+          include: {
+            influencer: {
+              select: { id: true, name: true, avatar: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!campaign) {
+      throw new ServerError(
+        StatusCodes.NOT_FOUND,
+        `No campaign found with id ${campaignId}.`,
+      );
+    }
+
+    return {
+      campaignId: campaign.id,
+      campaignBanner: campaign.banner,
+      campaignTitle: campaign.title,
+      campaignBrand: campaign.brand,
+      campaignBudget: campaign.budget,
+      campaignDescription: campaign.description,
+      campaignDeadline: campaign.duration,
+      requiredMetrics: campaign.expected_metrics,
+      otherFields: campaign.other_fields,
+      influencerId: campaign.tasks[0]?.influencer.id || null,
+      influencerName: campaign.tasks[0]?.influencer.name || null,
+      influencerAvatar: campaign.tasks[0]?.influencer.avatar || null,
+    };
+  },
 };

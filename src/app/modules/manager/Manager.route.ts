@@ -24,6 +24,12 @@ const manager = Router().inject([
     ManagerControllers.getCampaigns,
   );
 
+  manager.get(
+    '/campaigns/:campaignId',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    ManagerControllers.getCampaignDetails,
+  );
+
   manager.post(
     '/submit-post-link',
     purifyRequest(ManagerValidations.submitPostLink),
