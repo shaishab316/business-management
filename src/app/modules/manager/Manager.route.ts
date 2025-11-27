@@ -39,7 +39,9 @@ const manager = Router().inject([
 
   manager.post(
     '/upload-matrix',
-    capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    capture({
+      screenshot: { maxCount: 1, size: 5 * 1024 * 1024, fileType: 'images' },
+    }),
     purifyRequest(ManagerValidations.uploadMatrix),
     ManagerControllers.uploadMatrix,
   );

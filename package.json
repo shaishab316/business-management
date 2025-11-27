@@ -82,9 +82,11 @@
     "multer-gridfs-storage": "meme8383/multer-gridfs-storage#f82252c",
     "node-cron": "^4.2.1",
     "nodemailer": "^6.9.16",
+    "ora": "^9.0.0",
     "stripe": "^17.2.1",
     "twilio": "^5.8.2",
     "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "winston-mongodb": "^6.0.0",
     "zod": "^3.23.8"
   },
