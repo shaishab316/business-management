@@ -236,6 +236,14 @@ const config = {
     }),
   },
 
+  app: {
+    manager_share: env('manager share', 10, {
+      up: 'App info - start',
+      regex: '^(\d|[1-9]\d|100)$',
+      down: 'App info - end',
+    }),
+  },
+
   twilio: {
     account_sid: env('twilio account sid', '', {
       up: 'Twilio credentials - start',

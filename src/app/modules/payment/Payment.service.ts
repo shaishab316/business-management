@@ -11,9 +11,11 @@ import { TList } from '../query/Query.interface';
 
 export const PaymentServices = {
   async create(paymentData: TPayment) {
-    const existingPayment = await prisma.payment.findUnique({
+    const existingPayment = await prisma.payment.findFirst({
       where: {
         taskId: paymentData.taskId,
+        //? Ensure that only non-cancelled payments are considered
+        status: { not: EPaymentStatus.CANCEL },
       },
     });
 
@@ -74,7 +76,8 @@ export const PaymentServices = {
     ]);
   },
 
-  async getAll({ page, limit, ...where }: TList) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  async getAll({ page, limit, search, ...where }: TList) {
     const payments = await prisma.payment.findMany({
       where,
       include: {

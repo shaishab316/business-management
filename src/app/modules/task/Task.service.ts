@@ -4,7 +4,7 @@ import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
-import { deleteImage } from '../../middlewares/capture';
+import { deleteFile } from '../../middlewares/capture';
 
 export const TaskServices = {
   async getTask(
@@ -133,7 +133,7 @@ export const TaskServices = {
   async submitPostLink(taskId: string, postLink: string) {
     return prisma.task.update({
       where: { id: taskId },
-      data: { postLink },
+      data: { postLink, statusText: 'submitted' },
     });
   },
 
@@ -149,13 +149,16 @@ export const TaskServices = {
     if (!task)
       throw new ServerError(StatusCodes.NOT_FOUND, 'Campaign not found.');
 
-    task.screenshot?.__pipes(deleteImage);
+    if (task.screenshot) {
+      await deleteFile(task.screenshot);
+    }
 
     return prisma.task.update({
       where: { id: task.id },
       data: {
         matrix,
         screenshot,
+        statusText: 'submitted',
       },
     });
   },

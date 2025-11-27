@@ -6,6 +6,7 @@ import { AuthRoutes } from '../app/modules/auth/Auth.route';
 import { UserRoutes } from '../app/modules/user/User.route';
 import { StatusCodes } from 'http-status-codes';
 import InfluencerRoutes from '../app/modules/influencer/Influencer.route';
+import ManagerRoutes from '../app/modules/manager/Manager.route';
 import { ContextPageRoutes } from '../app/modules/contextPage/ContextPage.route';
 
 const appRouter = Router();
@@ -38,6 +39,11 @@ export default appRouter.inject([
     path: '/influencer',
     middlewares: [auth.influencer()],
     route: InfluencerRoutes,
+  },
+  {
+    path: '/manager',
+    middlewares: [auth.manager()],
+    route: ManagerRoutes,
   },
   {
     path: '/sub-admin',

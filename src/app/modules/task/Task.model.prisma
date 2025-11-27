@@ -1,25 +1,31 @@
 model Task {
-  id                       String      @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt                DateTime    @default(now())
-  updatedAt                DateTime    @updatedAt
-  status                   ETaskStatus @default(PENDING)
-  campaignId               String      @db.ObjectId
-  campaign                 Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  id                       String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+  status                   ETaskStatus      @default(PENDING)
+  statusText               ETaskStatusText? @default(pending_submission)
+  campaignId               String           @db.ObjectId
+  campaign                 Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   duration                 DateTime
-  influencerId             String      @db.ObjectId
-  influencer               User        @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  influencerId             String           @db.ObjectId
+  influencer               User             @relation("InfluencerTasks", fields: [influencerId], references: [id], onDelete: Cascade)
   influencerAgreementProof String?
   postLink                 String?
   screenshot               String?
   matrix                   Json?
   budget                   Float
-  isPaymentDone            Boolean     @default(false)
-  isTimeout                Boolean     @default(false)
-  isRevision               Boolean     @default(false)
+  isPaymentDone            Boolean          @default(false)
+  isTimeout                Boolean          @default(false)
+  isRevision               Boolean          @default(false)
+  isCompletedByManager     Boolean          @default(false)
+  managerId                String?          @db.ObjectId
+  manager                  User?            @relation("ManagerTasks", fields: [managerId], references: [id], onDelete: Cascade)
 
   paymentStatus EPaymentStatus @default(PENDING)
   Payment       Payment[]
 
+  @@index([influencerId, status])
+  @@index([status, createdAt])
   @@map("tasks")
 }
 
@@ -28,4 +34,13 @@ enum ETaskStatus {
   ACTIVE
   COMPLETED
   CANCEL
+}
+
+enum ETaskStatusText {
+  pending_submission
+  submitted
+  pending_payment
+  paid
+  revision
+  canceled
 }

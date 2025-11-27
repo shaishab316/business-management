@@ -89,4 +89,22 @@ export const UserValidations = {
       ...socialSchema.shape,
     }),
   }),
+
+  registerManager: z.object({
+    body: z.object({
+      name: z
+        .string({ message: 'Name is missing' })
+        .trim()
+        .min(1, "Name can't be empty"),
+      email: z.string().email({ message: 'Give a valid email' }),
+      password: z
+        .string({ message: 'Password is missing' })
+        .min(6, 'Password must be at least 6 characters long'),
+      phone: z
+        .string({ message: 'Phone is missing' })
+        .trim()
+        .min(1, "Phone can't be empty"),
+      nextRole: z.literal(EUserRole.MANAGER).default(EUserRole.MANAGER),
+    }),
+  }),
 };

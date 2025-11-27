@@ -17,6 +17,7 @@ const bannerCapture = capture({
   banner: {
     size: 5 * 1024 * 1024,
     maxCount: 1,
+    fileType: 'images',
   },
 });
 
@@ -57,7 +58,11 @@ const influencer = Router();
     '/:campaignId/accept',
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
     capture({
-      influencerAgreementProof: { maxCount: 1, size: 5 * 1024 * 1024 },
+      influencerAgreementProof: {
+        maxCount: 1,
+        size: 5 * 1024 * 1024,
+        fileType: 'images',
+      },
     }),
     purifyRequest(TaskValidations.acceptTask),
     TaskControllers.acceptTask,
@@ -81,7 +86,9 @@ const influencer = Router();
   influencer.post(
     '/:campaignId/upload-matrix',
     purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
-    capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    capture({
+      screenshot: { maxCount: 1, size: 5 * 1024 * 1024, fileType: 'images' },
+    }),
     purifyRequest(TaskValidations.uploadMatrix),
     TaskControllers.uploadMatrix,
   );
@@ -90,7 +97,7 @@ const influencer = Router();
     '/:campaignId/request-for-payment',
     purifyRequest(PaymentValidations.create),
     capture({
-      invoices: { maxCount: 10, size: 5 * 1024 * 1024 },
+      invoices: { maxCount: 10, size: 5 * 1024 * 1024, fileType: 'any' },
     }),
     PaymentControllers.create,
   );
@@ -98,6 +105,12 @@ const influencer = Router();
 
 const subAdmin = Router();
 {
+  subAdmin.get(
+    '/',
+    purifyRequest(QueryValidations.list, TaskValidations.getAll),
+    CampaignControllers.superGetAll,
+  );
+
   subAdmin.get(
     '/active',
     purifyRequest(QueryValidations.list),

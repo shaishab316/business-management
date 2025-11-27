@@ -3,7 +3,7 @@ import { ETaskStatus, Prisma, Campaign as TCampaign } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
-import { deleteImage } from '../../middlewares/capture';
+import { deleteFile } from '../../middlewares/capture';
 import { TList } from '../query/Query.interface';
 import { TaskServices } from '../task/Task.service';
 import { campaignSearchableFields as searchableFields } from './Campaign.constant';
@@ -23,7 +23,9 @@ export const CampaignServices = {
     });
 
     // delete old banner
-    if (campaignData.banner) campaign?.banner?.__pipes(deleteImage);
+    if (campaignData.banner && campaign?.banner) {
+      await deleteFile(campaign.banner);
+    }
 
     return prisma.campaign.update({
       where: { id: campaignId },
@@ -37,7 +39,9 @@ export const CampaignServices = {
       select: { banner: true },
     });
 
-    campaign?.banner?.__pipes(deleteImage); // delete banner
+    if (campaign?.banner) {
+      await deleteFile(campaign.banner);
+    }
 
     return prisma.campaign.delete({ where: { id: campaignId } });
   },

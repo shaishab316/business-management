@@ -1,58 +1,124 @@
-import type { Express } from 'express';
+import type { Express, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { GridFsStorage } from 'multer-gridfs-storage';
-import multer, { FileFilterCallback } from 'multer';
+import multer, { FileFilterCallback, StorageEngine } from 'multer';
 import ServerError from '../../errors/ServerError';
 import catchAsync from './catchAsync';
-import config from '../../config';
-import { errorLogger, logger } from '../../util/logger/logger';
-import colors from 'colors';
-import { json } from '../../util/transform/json';
-import { getBucket } from '../../util/server/connectDB';
+import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs/promises';
+import { existsSync } from 'fs';
+import ora from 'ora';
+import { errorLogger } from '../../util/logger/logger';
 
-/**
- * @description Multer middleware to handle image uploads to MongoDB GridFS
- */
-const capture = (fields: {
+export const fileValidators = {
+  images: {
+    validator: /^image\//,
+  },
+  videos: {
+    validator: /^video\//,
+  },
+  audios: {
+    validator: /^audio\//,
+  },
+  documents: {
+    validator: /(pdf|word|excel|text)/,
+  },
+  any: {
+    validator: /.*/,
+  },
+} as const;
+
+export const fileTypes = Object.keys(
+  fileValidators,
+) as (keyof typeof fileValidators)[];
+
+interface UploadFields {
   [field: string]: {
     default?: string | string[] | null;
     maxCount?: number;
     size?: number;
+    fileType: (typeof fileTypes)[number];
   };
-}) =>
+}
+
+// Base upload directory
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
+
+// Ensure upload directories exist (async)
+const ensureUploadDirs = async (): Promise<void> => {
+  try {
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+
+    await Promise.all(
+      fileTypes.map(type =>
+        fs.mkdir(path.join(UPLOAD_DIR, type), { recursive: true }),
+      ),
+    );
+  } catch (error) {
+    errorLogger.error('Failed to create upload directories:', error);
+    throw error;
+  }
+};
+
+// Initialize directories on module load
+ensureUploadDirs().catch(err =>
+  errorLogger.error('Upload directory initialization failed:', err),
+);
+
+/**
+ * Universal file uploader middleware
+ */
+const capture = (fields: UploadFields) =>
   catchAsync(async (req, res, next) => {
     req.tempFiles ??= [];
 
+    const spinner = ora(chalk.yellow('Uploading files...')).start();
+
     try {
       await new Promise<void>((resolve, reject) =>
-        upload(fields)(req, res, err => (err ? reject(err) : resolve())),
+        upload(fields)(req, res, (err: any) => (err ? reject(err) : resolve())),
       );
 
       const files = req.files as { [field: string]: Express.Multer.File[] };
 
-      Object.keys(fields).forEach(field => {
-        if (files?.[field]?.length) {
-          const images = files[field].map(
-            ({ filename }) => `/images/${filename}`,
+      for (const field of Object.keys(fields)) {
+        const fieldFiles = files?.[field];
+
+        if (fieldFiles?.length) {
+          const uploadedFiles = fieldFiles.map(
+            file => `/${fields[field].fileType}/${file.filename}`,
           );
 
           req.body[field] =
-            (fields[field]?.maxCount || 1) > 1 ? images : images[0];
+            (fields[field]?.maxCount || 1) > 1
+              ? uploadedFiles
+              : uploadedFiles[0];
 
-          //! for cleanup
-          req.tempFiles.push(...images);
+          req.tempFiles.push(...uploadedFiles);
+        } else {
+          req.body[field] = fields[field].default ?? null;
         }
-      });
-    } catch (error) {
-      errorLogger.error(error);
+      }
 
-      Object.keys(fields).forEach(field => {
-        req.body[field] = fields[field].default;
-      });
+      spinner.succeed(chalk.green('Files uploaded successfully'));
+    } catch (error) {
+      if (error instanceof Error) {
+        spinner.fail(chalk.red(`Error uploading files: ${error.message}`));
+      }
+
+      // Set defaults on error
+      for (const field of Object.keys(fields)) {
+        req.body[field] = fields[field].default ?? null;
+      }
     } finally {
+      // Parse JSON data if exists
       if (req.body?.data) {
-        Object.assign(req.body, json(req.body.data));
-        delete req.body.data;
+        try {
+          Object.assign(req.body, JSON.parse(req.body.data));
+          delete req.body.data;
+        } catch (err) {
+          errorLogger.error('Failed to parse JSON data:', err);
+        }
       }
 
       next();
@@ -62,120 +128,186 @@ const capture = (fields: {
 export default capture;
 
 /**
- * @description Retrieves an image from MongoDB GridFS
+ * Delete file from local disk (optimized with async)
+ *
  */
-export const imageRetriever = catchAsync(async (req, res) => {
-  if (!getBucket())
-    throw new ServerError(
-      StatusCodes.SERVICE_UNAVAILABLE,
-      'Images not available',
-    );
-
-  let filename = req.params.filename.replace(/[^\w.-]/g, '');
-  const shouldRedirect = !/\.png$/i.test(filename);
-
-  if (shouldRedirect) filename = `${filename.replace(/\.[a-zA-Z]+$/, '')}.png`;
-
-  const fileExists = await getBucket()!.find({ filename }).hasNext();
-  if (!fileExists)
-    throw new ServerError(StatusCodes.NOT_FOUND, 'Image not found');
-
-  if (shouldRedirect)
-    return res.redirect(
-      StatusCodes.MOVED_PERMANENTLY,
-      `/images/${encodeURIComponent(filename)}`,
-    );
-
-  return new Promise((resolve, reject) => {
-    res.set('Content-Type', 'image/png');
-    const stream = getBucket()!
-      .openDownloadStreamByName(filename)
-      .on('error', () =>
-        reject(new ServerError(StatusCodes.NOT_FOUND, 'Stream error')),
-      )
-      .pipe(res)
-      .on('finish', resolve);
-
-    res.on('close', () => stream.destroy());
-  });
-});
-
-/**
- * @description Deletes an image from MongoDB GridFS
- */
-export const deleteImage = async (filename: string) => {
-  filename = filename.replace(/^\/images\//, '');
+export const deleteFile = async (filename: string): Promise<boolean> => {
+  const sanitizedFilename = path.basename(filename);
 
   try {
-    if (!getBucket()) return;
+    const spinner = ora(
+      chalk.yellow(`Deleting file '${sanitizedFilename}'...`),
+    ).start();
 
-    logger.info(colors.yellow(`🗑️ Deleting image: '${filename}'`));
+    // Use Promise.all to check all directories concurrently
+    const deletePromises = fileTypes.map(async fileType => {
+      const filePath = path.join(UPLOAD_DIR, fileType, sanitizedFilename);
 
-    const result = await Promise.all(
-      (
-        await getBucket()!
-          .find({ filename: filename.replace(/^\/images\//, '') })
-          .toArray()
-      )?.map(({ _id }) => getBucket()!.delete(_id)),
-    );
+      if (existsSync(filePath)) {
+        await fs.unlink(filePath);
+        return fileType;
+      }
+      return null;
+    });
 
-    if (result)
-      logger.info(colors.green(`✔ image '${filename}' deleted successfully!`));
-    else logger.info(colors.red(`❌ image '${filename}' not deleted!`));
+    const results = await Promise.all(deletePromises);
+    const deletedFrom = results.filter(Boolean);
 
-    return result;
+    if (deletedFrom.length > 0) {
+      spinner.succeed(
+        chalk.green(
+          `File '${sanitizedFilename}' deleted from ${deletedFrom.join(', ')}`,
+        ),
+      );
+      return true;
+    }
+
+    spinner.fail(chalk.red(`File '${sanitizedFilename}' not found`));
+    return false;
   } catch (error: any) {
-    errorLogger.error(
-      colors.red(`❌ image '${filename}' not deleted!`),
-      error?.stack ?? error,
-    );
+    errorLogger.error(`Failed to delete file '${sanitizedFilename}':`, error);
+    return false;
   }
 };
 
-const storage = new GridFsStorage({
-  url: config.url.database,
-  file: (req, { originalname }) => ({
-    filename: `${originalname
-      .replace(/\..+$/, '')
-      .replace(/[^\w]+/g, '-')
-      .toLowerCase()}-${Date.now()}.png`,
-    bucketName: 'images',
-    metadata: {
-      uploadedBy: req?.user?.id?.oid ?? null,
-      originalName: originalname,
-    },
-  }),
-});
-
-const fileFilter = (
-  _: any,
-  file: Express.Multer.File,
-  cb: FileFilterCallback,
-) => {
-  if (
-    /^image\/.+/i.test(file.mimetype) ||
-    /\.(jpe?g|png|gif|webp|avif|svg|bmp|tiff?)$/i.test(file.originalname)
-  )
-    return cb(null, true);
-  cb(
-    new ServerError(
-      StatusCodes.BAD_REQUEST,
-      `${file.originalname} is not a valid image file`,
-    ),
-  );
+/**
+ * Delete multiple files concurrently
+ *
+ */
+export const deleteFiles = async (
+  filenames: string[] = [],
+): Promise<boolean[]> => {
+  return Promise.all(filenames.map(deleteFile));
 };
 
-const upload = (fields: {
-  [field: string]: {
-    default?: string | string[] | null;
-    maxCount?: number;
-    size?: number;
+/**
+ * Optimized disk storage configuration
+ */
+const storage: StorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const fileType =
+      (req as any).uploadFields?.[file.fieldname]?.fileType || 'any';
+    const dir = path.join(UPLOAD_DIR, fileType);
+
+    cb(null, dir);
+  },
+  filename: (_, file, cb) => {
+    // More efficient sanitization
+    const ext = path.extname(file.originalname).toLowerCase();
+    const basename = path
+      .basename(file.originalname, ext)
+      .replace(/[^\w]+/g, '-')
+      .toLowerCase()
+      .substring(0, 100); // Limit length
+
+    const filename = `${basename}-${Date.now()}${ext}`;
+    cb(null, filename);
+  },
+});
+
+/**
+ * File filter with better error messages
+ */
+const fileFilter =
+  (fields: UploadFields) =>
+  (_: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    const fieldConfig = fields[file.fieldname];
+
+    if (!fieldConfig) {
+      return cb(
+        new ServerError(
+          StatusCodes.BAD_REQUEST,
+          `Unexpected field: ${file.fieldname}`,
+        ),
+      );
+    }
+
+    const { fileType } = fieldConfig;
+    const validator = fileValidators[fileType]?.validator;
+
+    if (!validator) {
+      return cb(
+        new ServerError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          `Invalid file type configuration: ${fileType}`,
+        ),
+      );
+    }
+
+    const mime = file.mimetype.toLowerCase();
+
+    //? if mime is application/octet-stream, it's a binary file, so it's valid, but we need to check the file extension
+    if (mime === 'application/octet-stream' || validator.test(mime)) {
+      return cb(null, true);
+    }
+
+    cb(
+      new ServerError(
+        StatusCodes.BAD_REQUEST,
+        `File '${file.originalname}' is not a valid ${fileType} (got ${mime})`,
+      ),
+    );
   };
-}) =>
-  multer({ storage, fileFilter }).fields(
-    Object.keys(fields).map(field => ({
-      name: field,
-      maxCount: fields[field].maxCount || undefined,
-      size: (fields[field].size || 5) * 1024 * 1024,
+
+/**
+ * Create multer upload middleware
+ */
+const upload = (fields: UploadFields) => {
+  // Calculate max file size from all fields
+  const maxFileSize = Math.max(
+    ...Object.values(fields).map(f => (f.size || 5) * 1024 * 1024),
+  );
+
+  const multerInstance = multer({
+    storage,
+    fileFilter: fileFilter(fields),
+    limits: {
+      fileSize: maxFileSize,
+      files: Object.values(fields).reduce(
+        (sum, f) => sum + (f.maxCount || 1),
+        0,
+      ),
+    },
+  }).fields(
+    Object.entries(fields).map(([name, config]) => ({
+      name,
+      maxCount: config.maxCount || 1,
     })),
   );
+
+  // Wrapper to inject fields metadata
+  return (req: any, res: any, next: any) => {
+    req.uploadFields = fields;
+    return multerInstance(req, res, next);
+  };
+};
+
+/**
+ * Helper to get file path
+ */
+export const getFilePath = (fileUrl: string): string | null => {
+  try {
+    const [, fileType, filename] = fileUrl.split('/');
+    if (!fileType || !filename) return null;
+
+    const filePath = path.join(UPLOAD_DIR, fileType, filename);
+    return existsSync(filePath) ? filePath : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Check if file exists
+ */
+export const fileExists = async (fileUrl: string): Promise<boolean> => {
+  const filePath = getFilePath(fileUrl);
+  if (!filePath) return false;
+
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+};

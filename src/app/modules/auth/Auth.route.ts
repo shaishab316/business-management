@@ -15,8 +15,16 @@ const router = Router();
 
 router.post(
   '/register',
-  capture({ avatar: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+  capture({
+    avatar: { maxCount: 1, size: 5 * 1024 * 1024, fileType: 'images' },
+  }),
   purifyRequest(UserValidations.create, UserValidations.edit),
+  UserControllers.createUser,
+);
+
+router.post(
+  '/register-manager',
+  purifyRequest(UserValidations.registerManager),
   UserControllers.createUser,
 );
 

@@ -4,6 +4,7 @@ node_modules
 winston
 .vscode
 uploads
+logs
 dist
 prisma
 tmp
