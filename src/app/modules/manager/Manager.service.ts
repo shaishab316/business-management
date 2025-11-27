@@ -443,4 +443,48 @@ export const ManagerServices = {
       })),
     };
   },
+
+  async getPaymentDetails(campaignId: string) {
+    const task = await prisma.task.findFirst({
+      where: { campaignId },
+      select: {
+        matrix: true,
+        campaign: {
+          select: {
+            id: true,
+            banner: true,
+            title: true,
+            brand: true,
+            description: true,
+            budget: true,
+          },
+        },
+        Payment: {
+          select: { status: true, updatedAt: true },
+        },
+      },
+    });
+
+    if (!task) {
+      throw new ServerError(
+        StatusCodes.NOT_FOUND,
+        `No task found for campaign id ${campaignId}.`,
+      );
+    }
+
+    return {
+      campaignId: task.campaign.id,
+      campaignBanner: task.campaign.banner,
+      campaignTitle: task.campaign.title,
+      campaignBrand: task.campaign.brand,
+      campaignBudget: task.campaign.budget,
+      campaignDescription: task.campaign.description,
+      performanceMetrics: task.matrix ?? {},
+      isPaymentDone: task.Payment[0]?.status === EPaymentStatus.PAID,
+      paymentDoneAt:
+        task.Payment[0]?.status === EPaymentStatus.PAID
+          ? task.Payment[0]?.updatedAt
+          : null,
+    };
+  },
 };

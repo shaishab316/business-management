@@ -93,4 +93,13 @@ export const ManagerControllers = {
       data: campaigns,
     });
   }),
+
+  getPaymentDetails: catchAsync(async ({ params }, res) => {
+    const data = await ManagerServices.getPaymentDetails(params.campaignId);
+
+    serveResponse(res, {
+      message: 'Payment details fetched successfully!',
+      data,
+    });
+  }),
 };

@@ -107,6 +107,17 @@ const manager = Router().inject([
     purifyRequest(QueryValidations.list, ManagerValidations.getPayments),
     ManagerControllers.getPayments,
   );
+
+  /**
+   * Getting payment details of a particular campaign
+   *
+   * Includes performance metrics and payment status
+   */
+  manager.get(
+    '/payments/:campaignId',
+    purifyRequest(QueryValidations.exists('campaignId', 'campaign')),
+    ManagerControllers.getPaymentDetails,
+  );
 }
 
 export default manager;
