@@ -279,11 +279,9 @@ export const ManagerInfluencerServices = {
   }: TGetInfluencersInfoArgs) {
     const whereUser: Prisma.UserWhereInput = {
       role: 'INFLUENCER',
-      NOT: {
-        influencer_managers: {
-          some: {
-            managerId,
-          },
+      influencer_managers: {
+        none: {
+          isConnected: true,
         },
       },
     };
@@ -315,6 +313,9 @@ export const ManagerInfluencerServices = {
             status: true,
           },
         },
+        influencer_managers: {
+          select: { managerId: true },
+        },
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -324,17 +325,22 @@ export const ManagerInfluencerServices = {
       where: whereUser,
     });
 
-    const formattedInfluencers = influencers.map(({ Task, ...influencer }) => {
-      const activeCampaigns = Task.filter(
-        task => task.status === ETaskStatus.ACTIVE,
-      ).length;
+    const formattedInfluencers = influencers.map(
+      ({ Task, influencer_managers, ...influencer }) => {
+        const activeCampaigns = Task.filter(
+          task => task.status === ETaskStatus.ACTIVE,
+        ).length;
 
-      return {
-        ...influencer,
-        activeCampaigns,
-        completedCampaigns: Task.length - activeCampaigns,
-      };
-    });
+        return {
+          ...influencer,
+          activeCampaigns,
+          completedCampaigns: Task.length - activeCampaigns,
+          isRequested: influencer_managers.some(
+            im => im.managerId === managerId,
+          ),
+        };
+      },
+    );
 
     return {
       meta: {
