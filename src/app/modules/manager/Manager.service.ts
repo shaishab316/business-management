@@ -11,6 +11,7 @@ import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
 import {
   TManagerGetCampaignsArgs,
+  TManagerGetPaymentsArgs,
   TManagerSendPaymentRequestArgs,
   TManagerSubmitPostLinkArgs,
 } from './Manager.interface';
@@ -338,5 +339,108 @@ export const ManagerServices = {
     return prisma.payment.create({
       data: payload,
     });
+  },
+
+  async getPayments({
+    limit,
+    page,
+    search,
+    tab,
+    managerId,
+  }: TManagerGetPaymentsArgs) {
+    const where: Prisma.TaskWhereInput = {
+      influencer: {
+        influencer_managers: {
+          some: {
+            managerId,
+            isConnected: true,
+          },
+        },
+      },
+      isPaymentDone: tab === 'paid',
+    };
+
+    if (search) {
+      where.campaign = {
+        OR: campaignSearchableFields.map(field => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+    }
+
+    const tasks = await prisma.task.findMany({
+      where,
+      select: {
+        campaign: {
+          select: {
+            id: true,
+            banner: true,
+            title: true,
+            brand: true,
+            description: true,
+            duration: true,
+            expected_metrics: true,
+            budget: true,
+            payout_deadline: true,
+          },
+        },
+        influencer: {
+          select: { avatar: true, id: true, name: true },
+        },
+        Payment: {
+          //? ensure payment is not cancelled
+          where: {
+            status: { not: EPaymentStatus.CANCEL },
+          },
+          select: {
+            id: true,
+          },
+        },
+        isPaymentDone: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        campaign: {
+          duration: 'asc', //? Ordering by nearest deadline first
+        },
+      },
+    });
+
+    const total = await prisma.task.count({ where });
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        } satisfies TPagination,
+        query: {
+          search,
+          tab,
+        },
+      },
+      campaigns: tasks.map(t => ({
+        campaignId: t.campaign.id,
+        campaignBanner: t.campaign.banner,
+        campaignTitle: t.campaign.title,
+        campaignBrand: t.campaign.brand,
+        campaignDescription: t.campaign.description,
+        campaignDeadline: t.campaign.duration,
+        campaignPayoutDeadline: t.campaign.payout_deadline,
+        campaignBudget: t.campaign.budget,
+        requiredMetrics: t.campaign.expected_metrics,
+        influencerAvatar: t.influencer.avatar,
+        influencerId: t.influencer.id,
+        influencerName: t.influencer.name,
+        isPaymentRequested: t.isPaymentDone || Boolean(t.Payment?.length),
+        isPaymentDone: t.isPaymentDone,
+      })),
+    };
   },
 };

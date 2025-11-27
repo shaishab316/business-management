@@ -87,4 +87,10 @@ export const ManagerValidations = {
       invoices: z.array(z.string()).optional().nullable(),
     }),
   }),
+
+  getPayments: z.object({
+    query: z.object({
+      tab: z.enum(['pending', 'paid']).default('pending'),
+    }),
+  }),
 };

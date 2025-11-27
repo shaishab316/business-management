@@ -80,4 +80,17 @@ export const ManagerControllers = {
       data: payment,
     });
   }),
+
+  getPayments: catchAsync(async ({ query, user: manager }, res) => {
+    const { meta, campaigns } = await ManagerServices.getPayments({
+      ...query,
+      managerId: manager.id,
+    });
+
+    serveResponse(res, {
+      message: 'Payments fetched successfully!',
+      meta,
+      data: campaigns,
+    });
+  }),
 };

@@ -95,6 +95,18 @@ const manager = Router().inject([
     purifyRequest(ManagerValidations.sendPaymentRequest),
     ManagerControllers.sendPaymentRequest,
   );
+
+  /**
+   * Getting list of payment requests sent by the manager tab [pending, paid]
+   *
+   * - pending: payment requests that are not yet processed by admin
+   * - paid: payment requests that are processed and marked as paid by admin
+   */
+  manager.get(
+    '/payments',
+    purifyRequest(QueryValidations.list, ManagerValidations.getPayments),
+    ManagerControllers.getPayments,
+  );
 }
 
 export default manager;
