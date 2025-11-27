@@ -5,11 +5,15 @@ model Payment {
   taskId       String         @unique @db.ObjectId
   task         Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
   influencerId String         @db.ObjectId
-  influencer   User           @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  influencer   User           @relation("InfluencerPayments", fields: [influencerId], references: [id], onDelete: Cascade)
   amount       Int
   method       EPaymentMethod
   invoices     String[]       @default([])
   status       EPaymentStatus @default(PENDING)
+
+  isCompletedByManager Boolean @default(false)
+  managerId            String? @db.ObjectId
+  manager              User?   @relation("ManagerPayments", fields: [managerId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }

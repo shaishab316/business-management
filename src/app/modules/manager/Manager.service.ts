@@ -1,11 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
-import { ETaskStatus, Prisma } from '../../../../prisma';
+import { EPaymentMethod, ETaskStatus, Prisma } from '../../../../prisma';
 import ServerError from '../../../errors/ServerError';
 import prisma from '../../../util/prisma';
 import { TPagination } from '../../../util/server/serveResponse';
 import { TList } from '../query/Query.interface';
 import {
   TManagerGetCampaignsArgs,
+  TManagerSendPaymentRequestArgs,
   TManagerSubmitPostLinkArgs,
 } from './Manager.interface';
 import { campaignSearchableFields } from '../campaign/Campaign.constant';
@@ -267,5 +268,55 @@ export const ManagerServices = {
       influencerAvatar: task?.influencer.avatar || null,
       status: task?.statusText || 'unavailable',
     };
+  },
+
+  async sendPaymentRequest({
+    campaignId,
+    influencerId,
+    managerId,
+    method,
+    invoices,
+  }: TManagerSendPaymentRequestArgs) {
+    const task = await prisma.task.findFirst({
+      where: {
+        campaignId,
+        influencerId,
+      },
+      select: {
+        id: true,
+        budget: true,
+      },
+    });
+
+    if (!task) {
+      throw new ServerError(
+        StatusCodes.NOT_FOUND,
+        `No task found for campaign id ${campaignId} and influencer id ${influencerId}.`,
+      );
+    }
+
+    const payload: Prisma.PaymentCreateArgs['data'] = {
+      influencerId,
+      method,
+      amount: task.budget,
+      taskId: task.id,
+
+      //? Marking payment as manager initiated
+      managerId,
+      isCompletedByManager: true,
+    };
+
+    //? If payment method is invoice, invoices must be provided
+    if (method === EPaymentMethod.INVOICE) {
+      if (!invoices?.length) {
+        throw new ServerError(StatusCodes.BAD_REQUEST, 'Invoices is required!');
+      }
+
+      payload.invoices = invoices;
+    }
+
+    return prisma.payment.create({
+      data: payload,
+    });
   },
 };

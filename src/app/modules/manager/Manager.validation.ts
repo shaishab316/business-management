@@ -3,6 +3,7 @@ import { exists } from '../../../util/db/exists';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import prisma from '../../../util/prisma';
+import { EPaymentMethod } from '../../../../prisma';
 
 export const ManagerValidations = {
   submitPostLink: z.object({
@@ -71,4 +72,19 @@ export const ManagerValidations = {
       }),
     });
   },
+
+  sendPaymentRequest: z.object({
+    body: z.object({
+      campaignId: z.string().refine(exists('campaign'), campaignId => ({
+        message: `Campaign with id ${campaignId} does not exist.`,
+        path: ['campaignId'],
+      })),
+      influencerId: z.string().refine(exists('user'), influencerId => ({
+        message: `Influencer with id ${influencerId} does not exist.`,
+        path: ['influencerId'],
+      })),
+      method: z.nativeEnum(EPaymentMethod),
+      invoices: z.array(z.string()).optional(),
+    }),
+  }),
 };

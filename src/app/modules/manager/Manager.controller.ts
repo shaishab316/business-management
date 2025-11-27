@@ -68,4 +68,16 @@ export const ManagerControllers = {
       });
     },
   ),
+
+  sendPaymentRequest: catchAsync(async ({ body, user: manager }, res) => {
+    const payment = await ManagerServices.sendPaymentRequest({
+      ...body,
+      managerId: manager.id,
+    });
+
+    serveResponse(res, {
+      message: 'Payment request sent successfully!',
+      data: payment,
+    });
+  }),
 };

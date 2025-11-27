@@ -14,6 +14,8 @@ export const PaymentServices = {
     const existingPayment = await prisma.payment.findUnique({
       where: {
         taskId: paymentData.taskId,
+        //? Ensure that only non-cancelled payments are considered
+        status: { not: EPaymentStatus.CANCEL },
       },
     });
 

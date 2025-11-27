@@ -12,3 +12,7 @@ export type TManagerGetCampaignsArgs = z.infer<
   TList & {
     managerId: string;
   };
+
+export type TManagerSendPaymentRequestArgs = z.infer<
+  typeof ManagerValidations.sendPaymentRequest
+>['body'] & { managerId: string };

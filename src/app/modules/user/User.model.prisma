@@ -18,11 +18,12 @@ model User {
   reviewsGiven        Review[]            @relation("ReviewByUser")
   reviewsReceived     Review[]            @relation("ReviewForInfluencer")
   Compromise          Compromise[]
-  Payment             Payment[]
   Issue               Issue[]
   Notification        Notification[]
   manager_influencers ManagerInfluencer[] @relation("ManagerToManagerInfluencer")
   influencer_managers ManagerInfluencer[] @relation("InfluencerToManagerInfluencer")
+  manager_payments    Payment[]           @relation("ManagerPayments")
+  influencer_payments Payment[]           @relation("InfluencerPayments")
 
   nextRole EUserRole?
 
