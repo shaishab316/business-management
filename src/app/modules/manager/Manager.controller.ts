@@ -1,5 +1,6 @@
 import serveResponse from '../../../util/server/serveResponse';
 import catchAsync from '../../middlewares/catchAsync';
+import { TaskServices } from '../task/Task.service';
 import { ManagerServices } from './Manager.service';
 
 export const ManagerControllers = {
@@ -50,4 +51,21 @@ export const ManagerControllers = {
       data: campaign,
     });
   }),
+
+  uploadMatrix: catchAsync(
+    async ({ body: { campaignId, influencerId, ...payload } }, res) => {
+      await TaskServices.uploadMatrix(
+        {
+          campaignId,
+          influencerId,
+        },
+        payload,
+      );
+
+      serveResponse(res, {
+        message: 'Matrix uploaded successfully!',
+        data: payload,
+      });
+    },
+  ),
 };

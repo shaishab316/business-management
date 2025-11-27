@@ -4,6 +4,7 @@ import { ManagerControllers } from './Manager.controller';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import { ManagerValidations } from './Manager.validation';
+import capture from '../../middlewares/capture';
 
 const manager = Router().inject([
   {
@@ -34,6 +35,13 @@ const manager = Router().inject([
     '/submit-post-link',
     purifyRequest(ManagerValidations.submitPostLink),
     ManagerControllers.submitPostLink,
+  );
+
+  manager.post(
+    '/upload-matrix',
+    capture({ screenshot: { maxCount: 1, size: 5 * 1024 * 1024 } }),
+    purifyRequest(ManagerValidations.uploadMatrix),
+    ManagerControllers.uploadMatrix,
   );
 }
 

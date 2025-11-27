@@ -250,6 +250,8 @@ export const ManagerServices = {
       );
     }
 
+    const task = campaign.tasks[0];
+
     return {
       campaignId: campaign.id,
       campaignBanner: campaign.banner,
@@ -260,9 +262,10 @@ export const ManagerServices = {
       campaignDeadline: campaign.duration,
       requiredMetrics: campaign.expected_metrics,
       otherFields: campaign.other_fields,
-      influencerId: campaign.tasks[0]?.influencer.id || null,
-      influencerName: campaign.tasks[0]?.influencer.name || null,
-      influencerAvatar: campaign.tasks[0]?.influencer.avatar || null,
+      influencerId: task?.influencer.id || null,
+      influencerName: task?.influencer.name || null,
+      influencerAvatar: task?.influencer.avatar || null,
+      status: task?.statusText || 'unavailable',
     };
   },
 };
